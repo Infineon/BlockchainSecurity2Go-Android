@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Infineon Android App</string>
+    <string name="title_activity_nfc_read">NfcRead</string>
 </resources>
