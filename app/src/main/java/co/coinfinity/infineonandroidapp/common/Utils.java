@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp;
+package co.coinfinity.infineonandroidapp.common;
 
 public class Utils {
     public static String toHex(byte[] bytes) {

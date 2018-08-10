@@ -1,10 +1,10 @@
-package co.coinfinity.infineonandroidapp;
+package co.coinfinity.infineonandroidapp.nfc;
 
 import android.nfc.Tag;
 import android.nfc.tech.MifareClassic;
 import android.nfc.tech.MifareUltralight;
 
-import static co.coinfinity.infineonandroidapp.Utils.*;
+import static co.coinfinity.infineonandroidapp.common.Utils.*;
 
 public class DumpTagData {
     public static String dumpTagData(Tag tag) {

@@ -12,10 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
+import co.coinfinity.infineonandroidapp.nfc.NdefMessageParser;
+import co.coinfinity.infineonandroidapp.nfc.record.ParsedNdefRecord;
 
 import java.util.List;
 
-import static co.coinfinity.infineonandroidapp.DumpTagData.dumpTagData;
+import static co.coinfinity.infineonandroidapp.nfc.DumpTagData.dumpTagData;
 
 public class MainActivity extends AppCompatActivity {
 

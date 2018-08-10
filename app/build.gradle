@@ -25,6 +25,8 @@ android {
 
 dependencies {
     implementation 'com.google.guava:guava:26.0-jre'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.60'
+    implementation 'org.web3j:core:3.3.1-android'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'

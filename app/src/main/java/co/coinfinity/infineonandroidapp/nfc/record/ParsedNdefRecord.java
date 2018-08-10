@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp;
+package co.coinfinity.infineonandroidapp.nfc.record;
 
 public interface ParsedNdefRecord {
     String str();

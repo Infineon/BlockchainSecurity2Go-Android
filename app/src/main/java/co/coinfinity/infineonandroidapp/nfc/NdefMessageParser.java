@@ -14,17 +14,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package co.coinfinity.infineonandroidapp;
+package co.coinfinity.infineonandroidapp.nfc;
 
-import android.app.Activity;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
-
-import co.coinfinity.infineonandroidapp.R;
-import co.coinfinity.infineonandroidapp.ParsedNdefRecord;
-import co.coinfinity.infineonandroidapp.SmartPoster;
-import co.coinfinity.infineonandroidapp.TextRecord;
-import co.coinfinity.infineonandroidapp.UriRecord;
+import co.coinfinity.infineonandroidapp.nfc.record.ParsedNdefRecord;
+import co.coinfinity.infineonandroidapp.nfc.record.SmartPoster;
+import co.coinfinity.infineonandroidapp.nfc.record.TextRecord;
+import co.coinfinity.infineonandroidapp.nfc.record.UriRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,11 +47,7 @@ public class NdefMessageParser {
             } else if (SmartPoster.isPoster(record)) {
                 elements.add(SmartPoster.parse(record));
             } else {
-                elements.add(new ParsedNdefRecord() {
-                    public String str() {
-                        return new String(record.getPayload());
-                    }
-                });
+                elements.add(() -> new String(record.getPayload()));
             }
         }
 

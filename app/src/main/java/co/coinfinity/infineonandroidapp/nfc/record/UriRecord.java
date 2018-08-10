@@ -14,22 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package co.coinfinity.infineonandroidapp;
+package co.coinfinity.infineonandroidapp.nfc.record;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.nfc.NdefRecord;
-import android.text.util.Linkify;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.primitives.Bytes;
-import co.coinfinity.infineonandroidapp.R;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;

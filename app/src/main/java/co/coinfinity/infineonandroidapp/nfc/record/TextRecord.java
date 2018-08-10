@@ -14,14 +14,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package co.coinfinity.infineonandroidapp;
+package co.coinfinity.infineonandroidapp.nfc.record;
 
-import android.app.Activity;
 import android.nfc.NdefRecord;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.common.base.Preconditions;
 
