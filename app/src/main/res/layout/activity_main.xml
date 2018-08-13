@@ -6,26 +6,38 @@
                 android:layout_height="match_parent"
                 tools:context=".MainActivity">
 
-<ImageView
-        android:id="@+id/logo"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/logo"
-        android:layout_centerHorizontal="true"/>
+    <ImageView
+            android:id="@+id/logo"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="22dp"
+            android:src="@drawable/logo"
+            android:layout_centerHorizontal="true" android:layout_alignParentTop="true"/>
 
-<TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Hold a tag against the back of your device"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="50dp"
-        android:gravity="center_horizontal"
-        android:layout_below="@id/logo"/>
+    <TextView
+            android:id="@+id/text"
+            android:layout_width="335dp"
+            android:layout_height="wrap_content"
+            android:text="Hold a tag against the back of your device"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
+            android:layout_centerInParent="true"/>
+    <TextView
+            android:id="@+id/balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ETH: ???"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
+            android:layout_alignParentBottom="true" android:layout_marginBottom="32dp"
+            android:layout_centerHorizontal="true"/>
+    <ImageView
+            android:layout_width="176dp"
+            android:layout_height="164dp" app:srcCompat="@mipmap/ic_launcher_round"
+            android:id="@+id/qrCode"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/text"/>
 
 </RelativeLayout>

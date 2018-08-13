@@ -2,37 +2,88 @@ package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.os.Parcelable;
+import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import co.coinfinity.infineonandroidapp.nfc.NdefMessageParser;
-import co.coinfinity.infineonandroidapp.nfc.record.ParsedNdefRecord;
+import co.coinfinity.infineonandroidapp.common.EthereumUtils;
+import co.coinfinity.infineonandroidapp.common.QrCodeGenerator;
+import org.web3j.crypto.Keys;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.Web3jFactory;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.utils.Convert;
 
 import java.io.IOException;
-import java.util.List;
-
-import static co.coinfinity.infineonandroidapp.nfc.DumpTagData.dumpTagData;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class MainActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
     private TextView text;
+    private TextView balance;
+    private String balanceText;
+
+    private ImageView qrCodeView;
+
+//    byte[] SELECT = {
+//            (byte) 0x00, // CLA Class
+//            (byte) 0xA4, // INS Instruction
+//            (byte) 0x04, // P1  Parameter 1
+//            (byte) 0x00, // P2  Parameter 2
+//            (byte) 0x0D, // Length
+//            (byte) 0xD2,
+//            0x76,0x00,0x00,0x04,0x15,0x02,0x00,0x01,0x00,0x00,0x00,0x01 // AID
+//    };
+//
+//    //        reflector
+//    final byte[] REFLECTOR = {
+//            (byte) 0x80, // CLA Class
+//            (byte) 0xFF, // INS Instruction
+//            (byte) 0x00, // P1  Parameter 1
+//            (byte) 0x00, // P2  Parameter 2
+//            (byte) 0x01, // Length
+//            (byte) 0xFF,
+//            (byte) 0x00,
+//    };
+//
+//    //        get version
+//    final byte[] GET_VERSION = {
+//            (byte) 0x00, // CLA Class
+//            (byte) 0x88, // INS Instruction
+//            (byte) 0x00, // P1  Parameter 1
+//            (byte) 0x00, // P2  Parameter 2
+//            (byte) 0x00, // Length
+//    };
+//    //        create Key
+//    final byte[] CREATE_KEY = {
+//            (byte) 0x00, // CLA Class
+//            (byte) 0x02, // INS Instruction
+//            (byte) 0x01, // P1  Parameter 1
+//            (byte) 0x00, // P2  Parameter 2
+//            (byte) 0x00, // Length
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         text = (TextView) findViewById(R.id.text);
+        balance = (TextView) findViewById(R.id.balance);
+
+        qrCodeView = (ImageView) findViewById(R.id.qrCode);
+
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (nfcAdapter == null) {
@@ -70,137 +121,52 @@ public class MainActivity extends AppCompatActivity {
         resolveIntent(intent);
     }
 
+
+
     private void resolveIntent(Intent intent) {
-        String action = intent.getAction();
 
-        byte[] SELECT = {
-                (byte) 0x00, // CLA Class
-                (byte) 0xA4, // INS Instruction
-                (byte) 0x04, // P1  Parameter 1
-                (byte) 0x00, // P2  Parameter 2
-                (byte) 0x0A, // Length
-                0x63,0x64,0x63,0x00,0x00,0x00,0x00,0x32,0x32,0x31 // AID
-        };
-
-        //        reflector
-        final byte[] REFLECTOR = {
-                (byte) 0x80, // CLA Class
-                (byte) 0xFF, // INS Instruction
-                (byte) 0x00, // P1  Parameter 1
-                (byte) 0x00, // P2  Parameter 2
-                (byte) 0x01, // Length
-                (byte) 0xFF,
-                (byte) 0x00,
-        };
-
-        //        get pub key
-        final byte[] GET_PUB_KEY = {
-                (byte) 0x00, // CLA Class
-                (byte) 0x16, // INS Instruction
-                (byte) 0x00, // P1  Parameter 1
-                (byte) 0x00, // P2  Parameter 2
-                (byte) 0x00, // Length
-        };
-
-        //        get version
-        final byte[] GET_VERSION = {
-                (byte) 0x00, // CLA Class
-                (byte) 0x88, // INS Instruction
-                (byte) 0x00, // P1  Parameter 1
-                (byte) 0x00, // P2  Parameter 2
-                (byte) 0x00, // Length
-        };
-        //        create Key
-        final byte[] CREATE_KEY = {
-                (byte) 0x00, // CLA Class
-                (byte) 0x02, // INS Instruction
-                (byte) 0x01, // P1  Parameter 1
-                (byte) 0x00, // P2  Parameter 2
-                (byte) 0x00, // Length
-        };
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Log.d("TAG", "Tag found: " + tagFromIntent.toString());
-        Log.d("TAG", "Id: " + bytesToHex(tagFromIntent.getId()));
+        Log.d("TAG", "Id: " + EthereumUtils.bytesToHex(tagFromIntent.getId()));
         for (String tech: tagFromIntent.getTechList()) {
             Log.d("TAG", "Tech: " + tech);
         }
 
+        String pubKeyString = null;
         IsoDep isoDep = IsoDep.get(tagFromIntent);
         try {
             isoDep.connect();
-
-//            byte[] result = isoDep.transceive(SELECT);
-////            if (!(result[0] == (byte) 0x90 && result[1] == (byte) 0x00))
-////                throw new IOException("could not select applet");
-//
-//            String str = bytesToHex(result);
-//            text.setText(str);
-
-            byte[] result2 = isoDep.transceive(CREATE_KEY);
-            String str2 = bytesToHex(result2);
-            text.setText(text.getText()+" "+str2);
-
-//            byte[] result3 = isoDep.transceive(GET_PUB_KEY);
-//            String str3 = bytesToHex(result3);
-//            text.setText(text.getText()+" "+str3);
-
+            pubKeyString = EthereumUtils.getPublicKey(isoDep, 0x01);
             isoDep.close();
         } catch (Exception e) {
-            String error = e.getMessage();
-        }
-//
-//        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-//                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-//                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-//            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-//            NdefMessage[] msgs;
-//
-//            if (rawMsgs != null) {
-//                msgs = new NdefMessage[rawMsgs.length];
-//
-//                for (int i = 0; i < rawMsgs.length; i++) {
-//                    msgs[i] = (NdefMessage) rawMsgs[i];
-//                }
-//
-//            } else {
-//                byte[] empty = new byte[0];
-//                byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-//                Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-//                byte[] payload = dumpTagData(tag).getBytes();
-//                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-//                NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
-//                msgs = new NdefMessage[] {msg};
-//            }
-//
-//            displayMsgs(msgs);
-//        }
-    }
-
-    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
-    private void displayMsgs(NdefMessage[] msgs) {
-        if (msgs == null || msgs.length == 0)
-            return;
-
-        StringBuilder builder = new StringBuilder();
-        List<ParsedNdefRecord> records = NdefMessageParser.parse(msgs[0]);
-        final int size = records.size();
-
-        for (int i = 0; i < size; i++) {
-            ParsedNdefRecord record = records.get(i);
-            String str = record.str();
-            builder.append(str).append("\n");
+            e.printStackTrace();
         }
 
-        text.setText(builder.toString());
+        // use web3j to format this public key as ETH address
+        String ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
+        text.setText(text.getText()+" "+ethAddress);
+        Log.i("info",ethAddress);
+        qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
+
+
+        Handler mHandler = new Handler();
+
+        Thread thread = new Thread(() -> {
+            try {
+                while(true) {
+                    Thread.sleep(1000);
+                    balanceText = EthereumUtils.getBalance(ethAddress);
+                    mHandler.post(() -> balance.setText(balanceText));
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        thread.start();
     }
+
+
+
+
 }
