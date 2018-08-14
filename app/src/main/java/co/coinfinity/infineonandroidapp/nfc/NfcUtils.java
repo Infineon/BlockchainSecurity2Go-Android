@@ -8,6 +8,7 @@ import co.coinfinity.infineonandroidapp.common.Utils;
 import java.io.IOException;
 
 import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.infineonandroidapp.common.Utils.combineByteArrays;
 
 public class NfcUtils {
 
@@ -30,22 +31,24 @@ public class NfcUtils {
     public static String signTransaction(Tag tag, int parameter, String data) throws IOException {
 
         String hex = Utils.bytesToHex(data.getBytes());
-        final String dataSize = Integer.toHexString(hex.length() / 2);
+        Log.d(TAG, "signTransaction: data: '" + data);
+        final String dataSize = Integer.toHexString(data.getBytes().length);
+        Log.d(TAG, "signTransaction: dataSize: '" + dataSize);
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
                 (byte) 0x18, // INS Instruction
                 (byte) parameter, // P1  Parameter 1
                 (byte) 0x00, // P2  Parameter 2
-                (byte) Integer.parseInt(dataSize), // Lc
-                (byte) 0x00, //Le
+                (byte) Integer.parseInt(dataSize) // Lc
+                //                (byte) 0x00, //Le
         };
 
         IsoDep isoDep = IsoDep.get(tag);
         try {
             isoDep.connect();
 
-            final byte[] GEN_SIGN_WITH_DATA = Utils.combineByteArrays(GEN_SIGN, Utils.hexStringToByteArray(hex));
+            final byte[] GEN_SIGN_WITH_DATA = combineByteArrays(GEN_SIGN, Utils.hexStringToByteArray(hex + "00"));
 
             byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
             Log.d(TAG, "response GEN_SIGN_WITH_DATA: " + hex);
