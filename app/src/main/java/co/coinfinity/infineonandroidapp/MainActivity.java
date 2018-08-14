@@ -13,9 +13,10 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
-import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Log.d("TAG", "Tag found: " + tagFromIntent.toString());
-        Log.d("TAG", "Id: " + NfcUtils.bytesToHex(tagFromIntent.getId()));
+        Log.d("TAG", "Id: " + Utils.bytesToHex(tagFromIntent.getId()));
         for (String tech: tagFromIntent.getTechList()) {
             Log.d("TAG", "Tech: " + tech);
         }
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // use web3j to format this public key as ETH address
         String ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
         ethAddressView.setText(ethAddress);
-        Log.i("info",ethAddress);
+        Log.d("ETH", ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
 
 
@@ -118,6 +119,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         thread.start();
+
+//        Thread thread2 = new Thread(() -> {
+//            EthereumUtils.sendTransaction(new BigInteger("20000"),new BigInteger("20000"), ethAddress, "0xe09eD054044763E03e0e59460F773F69DB9A333A",new BigInteger("2000000"),tagFromIntent);
+//        });
+//
+//        thread2.start();
     }
 
 
