@@ -28,35 +28,37 @@ public class NfcUtils {
         return hex.subSequence(0, hex.length() - 4).toString();
     }
 
-    public static String signTransaction(Tag tag, int parameter, String data) throws IOException {
+    public static String signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
 
-        String hex = Utils.bytesToHex(data.getBytes());
-        Log.d(TAG, "signTransaction: data: '" + data);
-        final String dataSize = Integer.toHexString(data.getBytes().length);
-        Log.d(TAG, "signTransaction: dataSize: '" + dataSize);
+        String hex = Utils.bytesToHex(data);
+        hex = hex.subSequence(0, hex.length() - 4).toString();
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
                 (byte) 0x18, // INS Instruction
                 (byte) parameter, // P1  Parameter 1
                 (byte) 0x00, // P2  Parameter 2
-                (byte) Integer.parseInt(dataSize) // Lc
-                //                (byte) 0x00, //Le
+                (byte) data.length // Lc
+        };
+
+        final byte[] lastByte = {
+                (byte) 0x00
         };
 
         IsoDep isoDep = IsoDep.get(tag);
         try {
             isoDep.connect();
 
-            final byte[] GEN_SIGN_WITH_DATA = combineByteArrays(GEN_SIGN, Utils.hexStringToByteArray(hex + "00"));
+            final byte[] GEN_SIGN_WITH_DATA = combineByteArrays(GEN_SIGN, combineByteArrays(data, lastByte));
 
+            Log.d(TAG, "GEN_SIGN_WITH_DATA: " + Utils.bytesToHex(GEN_SIGN_WITH_DATA));
             byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
             Log.d(TAG, "response GEN_SIGN_WITH_DATA: " + hex);
 
             isoDep.close();
 
             String signedTransaction = Utils.bytesToHex(response);
-            return signedTransaction;
+            return signedTransaction.subSequence(0, signedTransaction.length() - 4).toString();
 
         } catch (Exception e) {
             e.printStackTrace();

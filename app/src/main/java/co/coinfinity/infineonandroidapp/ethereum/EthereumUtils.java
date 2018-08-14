@@ -4,6 +4,7 @@ import android.nfc.Tag;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import org.web3j.crypto.Hash;
 import org.web3j.crypto.RawTransaction;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
+
+import static org.web3j.crypto.TransactionEncoder.encode;
 
 public class EthereumUtils {
 
@@ -68,15 +71,16 @@ public class EthereumUtils {
         //SIGN transaction
         String signedMessage = null;
         try {
-//            byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, <credentials>);
-            signedMessage = NfcUtils.signTransaction(tagFromIntent, 0x01, rawTransaction.toString());
+            byte[] encodedTransaction = encode(rawTransaction);
+            final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
+            signedMessage = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         EthSendTransaction ethSendTransaction = null;
         try {
-            ethSendTransaction = web3.ethSendRawTransaction(signedMessage).sendAsync().get();
+            ethSendTransaction = web3.ethSendRawTransaction("0x" + signedMessage).sendAsync().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
