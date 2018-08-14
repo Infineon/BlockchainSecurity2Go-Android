@@ -2,6 +2,7 @@ package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.nfc.Tag;
 import android.util.Log;
+import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.web3j.crypto.Hash;
@@ -22,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 
 import static org.web3j.crypto.TransactionEncoder.encode;
 
+import static co.coinfinity.AppConstants.TAG;
+
 public class EthereumUtils {
 
     public static EthBalanceBean getBalance(String ethAddress) {
@@ -38,7 +41,7 @@ public class EthereumUtils {
         Log.d("WEB3J", unconfirmedWei + " Ether unconfirmed");
         Log.d("WEB3J", unconfirmedEther + " Wei unconfirmed");
 
-        return new EthBalanceBean(wei,ether,unconfirmedWei,unconfirmedEther);
+        return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
     }
 
     private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) {
@@ -49,7 +52,7 @@ public class EthereumUtils {
                     .ethGetBalance(ethAddress, defaultBlockParameterName)
                     .send();
 
-            if(ethGetBalance != null) {
+            if (ethGetBalance != null) {
                 wei = ethGetBalance.getBalance();
             }
         } catch (IOException e) {
@@ -67,16 +70,30 @@ public class EthereumUtils {
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value);
 
+        Transaction tx = new Transaction(
+                getNextNonce(web3, from).toByteArray(),
+                gasPrice.toByteArray(),
+                gasLimit.toByteArray(),
+                Utils.hexStringToByteArray(to),
+                value.toByteArray(),
+                new byte[0], // empty data field for now, we will need data for ERC-20 transfers
+                new Integer(3) // Chain ID: Production=1, Ropsten=3
+        );
+
+        // This is what needs to be signed for Ethereum:
+        byte[] rawTxHash = tx.getRawHash();
 
         //SIGN transaction
-        String signedMessage = null;
+        String txSignature = null;
         try {
             byte[] encodedTransaction = encode(rawTransaction);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
             signedMessage = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "exception while signing", e);
         }
+
+        // TODO: die signature muss hier och gemeinsam mit der rawTransaction gemeinsam serialisiert werden und das ergebnis wird dann gebroadcastet
 
         EthSendTransaction ethSendTransaction = null;
         try {
