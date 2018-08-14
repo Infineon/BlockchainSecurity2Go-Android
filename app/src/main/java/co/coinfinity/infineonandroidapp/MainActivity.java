@@ -13,73 +13,28 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import co.coinfinity.infineonandroidapp.common.EthereumUtils;
-import co.coinfinity.infineonandroidapp.common.QrCodeGenerator;
+import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
+import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
+import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.web3j.crypto.Keys;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.Web3jFactory;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetBalance;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.utils.Convert;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class MainActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
     private TextView text;
+    private TextView ethAddressView;
     private TextView balance;
     private String balanceText;
 
     private ImageView qrCodeView;
-
-//    byte[] SELECT = {
-//            (byte) 0x00, // CLA Class
-//            (byte) 0xA4, // INS Instruction
-//            (byte) 0x04, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x0D, // Length
-//            (byte) 0xD2,
-//            0x76,0x00,0x00,0x04,0x15,0x02,0x00,0x01,0x00,0x00,0x00,0x01 // AID
-//    };
-//
-//    //        reflector
-//    final byte[] REFLECTOR = {
-//            (byte) 0x80, // CLA Class
-//            (byte) 0xFF, // INS Instruction
-//            (byte) 0x00, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x01, // Length
-//            (byte) 0xFF,
-//            (byte) 0x00,
-//    };
-//
-//    //        get version
-//    final byte[] GET_VERSION = {
-//            (byte) 0x00, // CLA Class
-//            (byte) 0x88, // INS Instruction
-//            (byte) 0x00, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x00, // Length
-//    };
-//    //        create Key
-//    final byte[] CREATE_KEY = {
-//            (byte) 0x00, // CLA Class
-//            (byte) 0x02, // INS Instruction
-//            (byte) 0x01, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x00, // Length
-//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         text = (TextView) findViewById(R.id.text);
+        ethAddressView = (TextView) findViewById(R.id.ethAddress);
         balance = (TextView) findViewById(R.id.balance);
 
         qrCodeView = (ImageView) findViewById(R.id.qrCode);
@@ -127,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Log.d("TAG", "Tag found: " + tagFromIntent.toString());
-        Log.d("TAG", "Id: " + EthereumUtils.bytesToHex(tagFromIntent.getId()));
+        Log.d("TAG", "Id: " + NfcUtils.bytesToHex(tagFromIntent.getId()));
         for (String tech: tagFromIntent.getTechList()) {
             Log.d("TAG", "Tech: " + tech);
         }
@@ -136,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         IsoDep isoDep = IsoDep.get(tagFromIntent);
         try {
             isoDep.connect();
-            pubKeyString = EthereumUtils.getPublicKey(isoDep, 0x01);
+            pubKeyString = NfcUtils.getPublicKey(isoDep, 0x01);
             isoDep.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -144,19 +99,18 @@ public class MainActivity extends AppCompatActivity {
 
         // use web3j to format this public key as ETH address
         String ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
-        text.setText(text.getText()+" "+ethAddress);
+        ethAddressView.setText(ethAddress);
         Log.i("info",ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
 
 
         Handler mHandler = new Handler();
-
         Thread thread = new Thread(() -> {
             try {
                 while(true) {
-                    Thread.sleep(1000);
-                    balanceText = EthereumUtils.getBalance(ethAddress);
+                    balanceText = EthereumUtils.getBalance(ethAddress).toString();
                     mHandler.post(() -> balance.setText(balanceText));
+                    Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

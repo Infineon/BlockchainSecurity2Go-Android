@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp.common;
+package co.coinfinity.infineonandroidapp.qrcode;
 
 import android.graphics.Bitmap;
 import com.google.zxing.BarcodeFormat;
