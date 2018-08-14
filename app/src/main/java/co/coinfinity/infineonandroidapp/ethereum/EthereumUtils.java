@@ -2,7 +2,6 @@ package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.nfc.Tag;
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.web3j.crypto.Hash;
@@ -21,9 +20,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
+import static android.support.constraint.Constraints.TAG;
 import static org.web3j.crypto.TransactionEncoder.encode;
-
-import static co.coinfinity.AppConstants.TAG;
 
 public class EthereumUtils {
 
@@ -70,21 +68,21 @@ public class EthereumUtils {
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value);
 
-        Transaction tx = new Transaction(
-                getNextNonce(web3, from).toByteArray(),
-                gasPrice.toByteArray(),
-                gasLimit.toByteArray(),
-                Utils.hexStringToByteArray(to),
-                value.toByteArray(),
-                new byte[0], // empty data field for now, we will need data for ERC-20 transfers
-                new Integer(3) // Chain ID: Production=1, Ropsten=3
-        );
-
-        // This is what needs to be signed for Ethereum:
-        byte[] rawTxHash = tx.getRawHash();
+//        Transaction tx = new Transaction(
+//                getNextNonce(web3, from).toByteArray(),
+//                gasPrice.toByteArray(),
+//                gasLimit.toByteArray(),
+//                Utils.hexStringToByteArray(to),
+//                value.toByteArray(),
+//                new byte[0], // empty data field for now, we will need data for ERC-20 transfers
+//                new Integer(3) // Chain ID: Production=1, Ropsten=3
+//        );
+//
+//        // This is what needs to be signed for Ethereum:
+//        byte[] rawTxHash = tx.getRawHash();
 
         //SIGN transaction
-        String txSignature = null;
+        String signedMessage = null;
         try {
             byte[] encodedTransaction = encode(rawTransaction);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
