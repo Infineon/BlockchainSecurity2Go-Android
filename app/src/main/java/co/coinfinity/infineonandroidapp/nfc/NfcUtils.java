@@ -2,9 +2,12 @@ package co.coinfinity.infineonandroidapp.nfc;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 
 import java.io.IOException;
+
+import static co.coinfinity.AppConstants.TAG;
 
 public class NfcUtils {
 
@@ -20,7 +23,8 @@ public class NfcUtils {
 
         byte[] response = isoDep.transceive(GET_PUB_KEY);
         String hex = Utils.bytesToHex(response);
-        return hex.subSequence(0,hex.length()-4).toString();
+        Log.d(TAG, "response GET_PUB_KEY: " + hex);
+        return hex.subSequence(0, hex.length() - 4).toString();
     }
 
     public static String signTransaction(Tag tag, int parameter, String data) throws IOException {
@@ -44,6 +48,7 @@ public class NfcUtils {
             final byte[] GEN_SIGN_WITH_DATA = Utils.combineByteArrays(GEN_SIGN, Utils.hexStringToByteArray(hex));
 
             byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
+            Log.d(TAG, "response GEN_SIGN_WITH_DATA: " + hex);
 
             isoDep.close();
 

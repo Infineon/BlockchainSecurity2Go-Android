@@ -19,6 +19,8 @@ import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
 
+import static co.coinfinity.AppConstants.TAG;
+
 public class MainActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
@@ -78,14 +80,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void resolveIntent(Intent intent) {
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        Log.d("TAG", "Tag found: " + tagFromIntent.toString());
-        Log.d("TAG", "Id: " + Utils.bytesToHex(tagFromIntent.getId()));
-        for (String tech: tagFromIntent.getTechList()) {
-            Log.d("TAG", "Tech: " + tech);
+        Log.d(TAG, "Tag found: " + tagFromIntent.toString());
+        Log.d(TAG, "Id: " + Utils.bytesToHex(tagFromIntent.getId()));
+        for (String tech : tagFromIntent.getTechList()) {
+            Log.d(TAG, "Tech: " + tech);
         }
 
         String pubKeyString = null;
@@ -93,22 +94,23 @@ public class MainActivity extends AppCompatActivity {
         try {
             isoDep.connect();
             pubKeyString = NfcUtils.getPublicKey(isoDep, 0x01);
+            Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
             isoDep.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "exception while reading pubkey: ", e);
         }
 
         // use web3j to format this public key as ETH address
         String ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
         ethAddressView.setText(ethAddress);
-        Log.d("ETH", ethAddress);
+        Log.d(TAG, "ETH: address" + ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
 
 
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
-                while(true) {
+                while (true) {
                     balanceText = EthereumUtils.getBalance(ethAddress).toString();
                     mHandler.post(() -> balance.setText(balanceText));
                     Thread.sleep(1000);
@@ -126,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
 //
 //        thread2.start();
     }
-
-
 
 
 }
