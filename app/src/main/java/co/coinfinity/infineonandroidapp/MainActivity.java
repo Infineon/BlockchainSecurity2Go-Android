@@ -18,6 +18,9 @@ import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
+import org.web3j.utils.Convert;
+
+import java.math.BigDecimal;
 
 import static co.coinfinity.AppConstants.TAG;
 
@@ -122,11 +125,15 @@ public class MainActivity extends AppCompatActivity {
 
         thread.start();
 
-//        Thread thread2 = new Thread(() -> {
-//            EthereumUtils.sendTransaction(new BigInteger("20000"),new BigInteger("20000"), ethAddress, "0xe09eD054044763E03e0e59460F773F69DB9A333A",new BigInteger("2000000"),tagFromIntent);
-//        });
-//
-//        thread2.start();
+        String finalPubKeyString = pubKeyString;
+        Thread thread2 = new Thread(() -> {
+            final BigDecimal value = Convert.toWei("0.0003", Convert.Unit.ETHER);
+            final BigDecimal gasPrice = Convert.toWei("1", Convert.Unit.GWEI);
+            final BigDecimal gasLimit = Convert.toWei("121000", Convert.Unit.WEI);
+            EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, "0xe09eD054044763E03e0e59460F773F69DB9A333A", value.toBigInteger(), tagFromIntent, finalPubKeyString);
+        });
+
+        thread2.start();
     }
 
 
