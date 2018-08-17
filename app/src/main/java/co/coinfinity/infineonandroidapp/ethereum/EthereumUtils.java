@@ -4,16 +4,9 @@ import android.nfc.Tag;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
-import org.bouncycastle.asn1.x9.X9IntegerConverter;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.math.ec.ECAlgorithms;
-import org.bouncycastle.math.ec.ECPoint;
-import org.web3j.crypto.Hash;
-import org.web3j.crypto.RawTransaction;
-import org.web3j.crypto.Sign;
-import org.web3j.crypto.TransactionEncoder;
+import co.coinfinity.infineonandroidapp.nfc.NfcUtilsMock;
+import org.spongycastle.math.ec.custom.sec.SecP256K1Curve;
+import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -21,6 +14,7 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.ChainId;
 import org.web3j.utils.Bytes;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
@@ -33,7 +27,9 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static android.support.constraint.Constraints.TAG;
+import static co.coinfinity.infineonandroidapp.nfc.NfcUtilsMock.CURVE;
 import static org.web3j.crypto.TransactionEncoder.encode;
+import static org.web3j.utils.Assertions.verifyPrecondition;
 
 public class EthereumUtils {
 
@@ -87,26 +83,46 @@ public class EthereumUtils {
         String signedTransaction = null;
         String hexValue = null;
         try {
-//            byte[] encodedTransaction = encode(rawTransaction,Integer.valueOf(3).byteValue());
-            byte[] encodedTransaction = encode(rawTransaction);
+            byte[] encodedTransaction = encode(rawTransaction, ChainId.ROPSTEN);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-            signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
+            //TODO change mock here
+            signedTransaction = NfcUtilsMock.signTransaction(tagFromIntent, 0x01, hashedTransaction);
+//            signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
             Log.d(TAG, "signedTransaction: " + signedTransaction);
             assert signedTransaction != null;
             final byte[] signatureData = Utils.hexStringToByteArray(signedTransaction);
 
             final byte[] r = Bytes.trimLeadingZeroes(extractR(signatureData));
             final byte[] s = Bytes.trimLeadingZeroes(extractS(signatureData));
-            final byte v = getRecoveryId(r, s, hashedTransaction, Utils.hexStringToByteArray(publicKey));
+
+            ECDSASignature sig = new ECDSASignature(new BigInteger(r), new BigInteger(s));
+            // Now we have to work backwards to figure out the recId needed to recover the signature.
+            int recId = -1;
+            for (int i = 0; i < 4; i++) {
+                BigInteger k = recoverFromSignature(i, sig, hashedTransaction);
+                if (k != null && k.equals(new BigInteger(Utils.hexStringToByteArray(publicKey)))) {
+                    recId = i;
+                    break;
+                }
+            }
+            if (recId == -1) {
+                throw new RuntimeException(
+                        "Could not construct a recoverable key. This should never happen.");
+            }
+
+            int headerByte = recId + 27;
+
+            // 1 header + 32 bytes for R + 32 bytes for S
+            byte v = (byte) headerByte;
+
+
             Log.d(TAG, "r: " + Utils.bytesToHex(r));
             Log.d(TAG, "s: " + Utils.bytesToHex(s));
             Log.d(TAG, "v: " + v);
 
-//            byte vNeu = (byte) (v + (Integer.valueOf(3).byteValue() << 1) + 8);
-//            Sign.SignatureData signature = new Sign.SignatureData(vNeu,r,s);
-
-//            Sign.SignatureData signature = new Sign.SignatureData(vNeu, new byte[] {}, new byte[] {});
-            Sign.SignatureData signature = new Sign.SignatureData(Integer.valueOf(3 * 2 + 35 + Byte.valueOf(v).intValue()).byteValue(), r, s);
+            byte vNeu = (byte) (v + (ChainId.ROPSTEN << 1) + 8);
+            Sign.SignatureData signature = new Sign.SignatureData(vNeu, r, s);
+//            Sign.SignatureData signature = new Sign.SignatureData(Integer.valueOf(3 * 2 + 35 + Byte.valueOf(v).intValue()).byteValue(), r, s);
 
             Class c = TransactionEncoder.class;
             Object obj = c.newInstance();
@@ -133,7 +149,48 @@ public class EthereumUtils {
 
     }
 
-    private static BigInteger getNextNonce(Web3j web3j, String etherAddress) {
+    private static BigInteger recoverFromSignature(int recId, ECDSASignature sig, byte[] message) {
+        verifyPrecondition(recId >= 0, "recId must be positive");
+        verifyPrecondition(sig.r.signum() >= 0, "r must be positive");
+        verifyPrecondition(sig.s.signum() >= 0, "s must be positive");
+        verifyPrecondition(message != null, "message cannot be null");
+
+        BigInteger n = CURVE.getN();  // Curve order.
+        BigInteger i = BigInteger.valueOf((long) recId / 2);
+        BigInteger x = sig.r.add(i.multiply(n));
+
+        BigInteger prime = SecP256K1Curve.q;
+        if (x.compareTo(prime) >= 0) {
+            return null;
+        }
+
+        org.spongycastle.math.ec.ECPoint R = decompressKey(x, (recId & 1) == 1);
+
+        if (!R.multiply(n).isInfinity()) {
+            return null;
+        }
+
+        BigInteger e = new BigInteger(1, message);
+
+        BigInteger eInv = BigInteger.ZERO.subtract(e).mod(n);
+        BigInteger rInv = sig.r.modInverse(n);
+        BigInteger srInv = rInv.multiply(sig.s).mod(n);
+        BigInteger eInvrInv = rInv.multiply(eInv).mod(n);
+        org.spongycastle.math.ec.ECPoint q = org.spongycastle.math.ec.ECAlgorithms.sumOfTwoMultiplies(CURVE.getG(), eInvrInv, R, srInv);
+
+        byte[] qBytes = q.getEncoded(false);
+        // We remove the prefix
+        return new BigInteger(1, Arrays.copyOfRange(qBytes, 1, qBytes.length));
+    }
+
+    private static org.spongycastle.math.ec.ECPoint decompressKey(BigInteger xBN, boolean yBit) {
+        org.spongycastle.asn1.x9.X9IntegerConverter x9 = new org.spongycastle.asn1.x9.X9IntegerConverter();
+        byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(CURVE.getCurve()));
+        compEnc[0] = (byte) (yBit ? 0x03 : 0x02);
+        return CURVE.getCurve().decodePoint(compEnc);
+    }
+
+    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) {
         EthGetTransactionCount ethGetTransactionCount = null;
         try {
             ethGetTransactionCount = web3j.ethGetTransactionCount(
@@ -144,54 +201,6 @@ public class EthereumUtils {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * Determine the recovery ID for the given signature and public key.
-     *
-     * <p>Any signed message can resolve to one of two public keys due to the nature ECDSA. The
-     * recovery ID provides information about which one it is, allowing confirmation that the message
-     * was signed by a specific key.</p>
-     */
-    private static byte getRecoveryId(byte[] sigR, byte[] sigS, byte[] message, byte[] publicKey) {
-        ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec(SECP256K1);
-        BigInteger pointN = spec.getN();
-        for (int recoveryId = 0; recoveryId < 2; recoveryId++) {
-            try {
-                BigInteger pointX = new BigInteger(1, sigR);
-
-                X9IntegerConverter x9 = new X9IntegerConverter();
-                byte[] compEnc = x9.integerToBytes(pointX, 1 + x9.getByteLength(spec.getCurve()));
-                compEnc[0] = (byte) ((recoveryId & 1) == 1 ? 0x03 : 0x02);
-                ECPoint pointR = spec.getCurve().decodePoint(compEnc);
-                if (!pointR.multiply(pointN).isInfinity()) {
-                    continue;
-                }
-
-                BigInteger pointE = new BigInteger(1, message);
-                BigInteger pointEInv = BigInteger.ZERO.subtract(pointE).mod(pointN);
-                BigInteger pointRInv = new BigInteger(1, sigR).modInverse(pointN);
-                BigInteger srInv = pointRInv.multiply(new BigInteger(1, sigS)).mod(pointN);
-                BigInteger pointEInvRInv = pointRInv.multiply(pointEInv).mod(pointN);
-                ECPoint pointQ = ECAlgorithms.sumOfTwoMultiplies(spec.getG(), pointEInvRInv, pointR, srInv);
-                byte[] pointQBytes = pointQ.getEncoded(false);
-                boolean matchedKeys = true;
-                for (int j = 0; j < publicKey.length; j++) {
-                    if (pointQBytes[j] != publicKey[j]) {
-                        matchedKeys = false;
-                        break;
-                    }
-                }
-                if (!matchedKeys) {
-                    continue;
-                }
-                return (byte) (0xFF & recoveryId);
-            } catch (Exception e) {
-                Log.e(TAG, "exception on getRecoveryId", e);
-            }
-        }
-
-        return (byte) 0xFF;
     }
 
     private static byte[] extractR(byte[] signature) throws Exception {

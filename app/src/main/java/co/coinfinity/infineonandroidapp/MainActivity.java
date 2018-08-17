@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import co.coinfinity.infineonandroidapp.nfc.NfcUtilsMock;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
 import org.web3j.utils.Convert;
@@ -96,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
         IsoDep isoDep = IsoDep.get(tagFromIntent);
         try {
             isoDep.connect();
-            pubKeyString = NfcUtils.getPublicKey(isoDep, 0x01);
+            //TODO change mock here
+//            pubKeyString = NfcUtils.getPublicKey(isoDep, 0x01);
+            pubKeyString = NfcUtilsMock.getPublicKey(isoDep, 0x01);
             Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
             isoDep.close();
         } catch (Exception e) {
