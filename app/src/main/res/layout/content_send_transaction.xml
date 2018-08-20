@@ -9,6 +9,16 @@
         tools:showIn="@layout/activity_send_transaction"
         tools:context=".SendTransaction">
 
+    <TextView
+            android:id="@+id/text3"
+            android:layout_width="335dp"
+            android:layout_height="wrap_content"
+            android:text="Hold a card against the back of your device to make payment"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
+            android:layout_marginBottom="209dp"/>
     <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="61dp"
@@ -52,11 +62,10 @@
                 android:layout_height="wrap_content"
                 android:hint="Gas Limit" android:id="@+id/gasLimit" android:text="21000"/>
     </android.support.design.widget.TextInputLayout>
-    <Button
-            android:text="Send"
-            android:layout_width="134dp"
+    <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/send" android:onClick="onSend"
-            android:layout_alignParentEnd="true" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="245dp" android:layout_marginEnd="11dp"/>
+            android:layout_alignParentBottom="true"
+            android:id="@+id/progressBar" android:layout_centerHorizontal="true" android:layout_marginBottom="142dp"/>
 </RelativeLayout>

@@ -1,5 +1,7 @@
 package co.coinfinity.infineonandroidapp;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -24,12 +26,22 @@ public class SendTransaction extends AppCompatActivity {
     private String pubKeyString;
     private String ethAddress;
 
+    private NfcAdapter mAdapter;
+    private PendingIntent mPendingIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_transaction);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mAdapter = NfcAdapter.getDefaultAdapter(this);
+        // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
+        // will fill in the intent with the details of the discovered tag before delivering to
+        // this activity.
+        mPendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         recipientAddressTxt = (TextView) findViewById(R.id.recipientAddress);
         amountTxt = (TextView) findViewById(R.id.amount);
@@ -46,15 +58,31 @@ public class SendTransaction extends AppCompatActivity {
         });
     }
 
-    public void onSend(View view) {
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdapter != null) mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        resolveIntent(intent);
+    }
+
+    private void resolveIntent(Intent intent) {
         Bundle b = getIntent().getExtras();
         if (b != null) {
             pubKeyString = b.getString("pubKey");
             ethAddress = b.getString("ethAddress");
         }
 
-        Tag tagFromIntent = getIntent().getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         Thread thread = new Thread(() -> {
             final BigDecimal value = Convert.toWei(amountTxt.getText().toString(), Convert.Unit.ETHER);

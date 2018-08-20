@@ -18,7 +18,7 @@
             android:id="@+id/text"
             android:layout_width="335dp"
             android:layout_height="wrap_content"
-            android:text="Hold a tag against the back of your device"
+            android:text="Hold a card against the back of your device"
             android:textStyle="bold"
             android:textSize="20sp"
             android:gravity="center_horizontal"

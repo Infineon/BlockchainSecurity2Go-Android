@@ -4,7 +4,7 @@ import android.nfc.Tag;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtilsMock;
+import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.spongycastle.math.ec.custom.sec.SecP256K1Curve;
 import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
@@ -85,8 +85,8 @@ public class EthereumUtils {
             byte[] encodedTransaction = encode(rawTransaction);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
             //TODO change mock here
-            signedTransaction = NfcUtilsMock.signTransaction(tagFromIntent, 0x01, hashedTransaction);
-//            signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
+//            signedTransaction = NfcUtilsMock.signTransaction(tagFromIntent, 0x01, hashedTransaction);
+            signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
             Log.d(TAG, "signedTransaction: " + signedTransaction);
             assert signedTransaction != null;
             final byte[] signatureData = Utils.hexStringToByteArray(signedTransaction);
