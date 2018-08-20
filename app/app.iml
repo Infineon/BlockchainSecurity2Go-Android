@@ -124,6 +124,7 @@
     <orderEntry type="library" name="Gradle: com.madgag.spongycastle:prov:1.54.0.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout-1.1.2" level="project" />
     <orderEntry type="library" name="Gradle: com.journeyapps:zxing-android-embedded-3.2.0" level="project" />
+    <orderEntry type="library" name="Gradle: cz.msebera.android:httpclient:4.3.6@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okhttp3:logging-interceptor:3.8.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-compat-26.0.0" level="project" />
     <orderEntry type="library" name="Gradle: org.web3j:rlp:3.3.1-android@jar" level="project" />
@@ -141,6 +142,7 @@
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.web3j:core:3.3.1-android@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: net.sf.kxml:kxml2:2.3.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.loopj.android:android-async-http:1.4.9@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.web3j:tuples:3.3.1-android@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:runner-1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-annotations:26.0.0@jar" level="project" />

@@ -6,16 +6,23 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import co.coinfinity.infineonandroidapp.common.HttpUtils;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import cz.msebera.android.httpclient.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
+
+import static co.coinfinity.AppConstants.TAG;
 
 public class SendTransaction extends AppCompatActivity {
 
@@ -23,6 +30,8 @@ public class SendTransaction extends AppCompatActivity {
     private TextView amountTxt;
     private TextView gasPriceTxt;
     private TextView gasLimitTxt;
+
+    private TextView priceInEuroTxt;
 
     private String pubKeyString;
     private String ethAddress;
@@ -49,13 +58,48 @@ public class SendTransaction extends AppCompatActivity {
         gasPriceTxt = (TextView) findViewById(R.id.gasPrice);
         gasLimitTxt = (TextView) findViewById(R.id.gasLimit);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        priceInEuroTxt = (TextView) findViewById(R.id.priceInEuro);
+
+        Handler mHandler = new Handler();
+        Thread thread = new Thread(() -> {
+            try {
+                while (true) {
+                    mHandler.post(() -> {
+                        readPriceFromApi();
+                    });
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException e) {
+                Log.e(TAG, "exception while reading price info from API in thread: ", e);
             }
+        });
+
+        thread.start();
+    }
+
+    private void readPriceFromApi() {
+        HttpUtils.get("https://coinfinity.co/price/XBTEUR", null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.d(TAG, "XBTEUR Price: " + response);
+                try {
+                    JSONObject serverResp = new JSONObject(response.toString());
+
+                    if (!gasPriceTxt.getText().toString().equals("") && !gasLimitTxt.getText().toString().equals("")) {
+                        BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
+                        BigDecimal gasLimit = new BigDecimal(gasLimitTxt.getText().toString());
+                        final BigDecimal weiGasPrice = Convert.toWei(gasPrice.multiply(gasLimit), Convert.Unit.GWEI);
+                        final BigDecimal ethGasPrice = Convert.fromWei(weiGasPrice, Convert.Unit.ETHER);
+
+                        String priceStr = String.format("Price: %.2f€ \n Tx Fee: %.2f€", serverResp.getDouble("ask") * Double.parseDouble(amountTxt.getText().toString()), ethGasPrice.floatValue() * serverResp.getDouble("ask"));
+                        priceInEuroTxt.setText(priceStr);
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "exception while reading price info from API: ", e);
+                }
+            }
+
         });
     }
 
