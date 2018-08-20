@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,9 +20,6 @@ import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtilsMock;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
-import org.web3j.utils.Convert;
-
-import java.math.BigDecimal;
 
 import static co.coinfinity.AppConstants.TAG;
 
@@ -35,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView qrCodeView;
 
+    private Button sendBtn;
+
+    private String pubKeyString;
+    private String ethAddress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         balance = (TextView) findViewById(R.id.balance);
 
         qrCodeView = (ImageView) findViewById(R.id.qrCode);
+
+        sendBtn = (Button) findViewById(R.id.send);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -92,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Tech: " + tech);
         }
 
-        String pubKeyString = null;
         IsoDep isoDep = IsoDep.get(tagFromIntent);
         try {
             isoDep.connect();
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // use web3j to format this public key as ETH address
-        String ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
+        ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
         ethAddressView.setText(ethAddress);
         Log.d(TAG, "ETH: address" + ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
@@ -117,7 +122,12 @@ public class MainActivity extends AppCompatActivity {
             try {
                 while (true) {
                     balanceText = EthereumUtils.getBalance(ethAddress).toString();
-                    mHandler.post(() -> balance.setText(balanceText));
+                    mHandler.post(() -> {
+                        balance.setText(balanceText);
+                        if (!sendBtn.isEnabled()) {
+                            sendBtn.setEnabled(true);
+                        }
+                    });
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
@@ -126,17 +136,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         thread.start();
-
-        String finalPubKeyString = pubKeyString;
-        Thread thread2 = new Thread(() -> {
-            final BigDecimal value = Convert.toWei("0.0003", Convert.Unit.ETHER);
-            final BigDecimal gasPrice = Convert.toWei("1", Convert.Unit.GWEI);
-            final BigDecimal gasLimit = Convert.toWei("121000", Convert.Unit.WEI);
-            EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, "0xe09eD054044763E03e0e59460F773F69DB9A333A", value.toBigInteger(), tagFromIntent, finalPubKeyString);
-        });
-
-        thread2.start();
     }
 
 
+    public void onSend(View view) {
+        Intent intent = new Intent(this, SendTransaction.class);
+        Bundle b = new Bundle();
+        b.putString("pubKey", pubKeyString);
+        b.putString("ethAddress", ethAddress);
+        intent.putExtras(b);
+        startActivity(intent);
+//        finish();
+    }
 }

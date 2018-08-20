@@ -45,5 +45,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/ethAddress" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
             android:layout_marginBottom="93dp"/>
+    <Button
+            android:text="Send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/send" android:layout_centerHorizontal="true" android:layout_alignParentTop="true"
+            android:layout_marginTop="247dp" android:onClick="onSend" android:visibility="visible"
+            android:enabled="false"/>
 
 </RelativeLayout>
