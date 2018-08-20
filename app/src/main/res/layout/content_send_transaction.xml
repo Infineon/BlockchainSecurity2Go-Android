@@ -25,7 +25,7 @@
     >
 
         <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
+                android:layout_width="349dp"
                 android:layout_height="wrap_content"
                 android:hint="Recipient Address" android:id="@+id/recipientAddress"
                 android:text="0xe09eD054044763E03e0e59460F773F69DB9A333A" android:textSize="14sp"/>
@@ -68,4 +68,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:id="@+id/progressBar" android:layout_centerHorizontal="true" android:layout_marginBottom="142dp"/>
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="47dp"
+            android:id="@+id/scanQr" android:layout_alignParentEnd="true"
+            android:layout_marginEnd="13dp" android:layout_alignParentTop="true"
+            android:src="@drawable/qrcode" android:scaleType="fitCenter" android:onClick="scanQrCode"/>
 </RelativeLayout>
