@@ -14,7 +14,6 @@ import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.ChainId;
 import org.web3j.utils.Bytes;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
@@ -83,7 +82,7 @@ public class EthereumUtils {
         String signedTransaction = null;
         String hexValue = null;
         try {
-            byte[] encodedTransaction = encode(rawTransaction, ChainId.ROPSTEN);
+            byte[] encodedTransaction = encode(rawTransaction);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
             //TODO change mock here
             signedTransaction = NfcUtilsMock.signTransaction(tagFromIntent, 0x01, hashedTransaction);
@@ -94,34 +93,14 @@ public class EthereumUtils {
 
             final byte[] r = Bytes.trimLeadingZeroes(extractR(signatureData));
             final byte[] s = Bytes.trimLeadingZeroes(extractS(signatureData));
-
-            ECDSASignature sig = new ECDSASignature(new BigInteger(r), new BigInteger(s));
-            // Now we have to work backwards to figure out the recId needed to recover the signature.
-            int recId = -1;
-            for (int i = 0; i < 4; i++) {
-                BigInteger k = recoverFromSignature(i, sig, hashedTransaction);
-                if (k != null && k.equals(new BigInteger(Utils.hexStringToByteArray(publicKey)))) {
-                    recId = i;
-                    break;
-                }
-            }
-            if (recId == -1) {
-                throw new RuntimeException(
-                        "Could not construct a recoverable key. This should never happen.");
-            }
-
-            int headerByte = recId + 27;
-
-            // 1 header + 32 bytes for R + 32 bytes for S
-            byte v = (byte) headerByte;
-
-
             Log.d(TAG, "r: " + Utils.bytesToHex(r));
             Log.d(TAG, "s: " + Utils.bytesToHex(s));
+
+            byte v = getV(publicKey, hashedTransaction, r, s);
             Log.d(TAG, "v: " + v);
 
-            byte vNeu = (byte) (v + (ChainId.ROPSTEN << 1) + 8);
-            Sign.SignatureData signature = new Sign.SignatureData(vNeu, r, s);
+//            byte vNeu = (byte) (v + (ChainId.ROPSTEN << 1) + 8);
+            Sign.SignatureData signature = new Sign.SignatureData(v, r, s);
 //            Sign.SignatureData signature = new Sign.SignatureData(Integer.valueOf(3 * 2 + 35 + Byte.valueOf(v).intValue()).byteValue(), r, s);
 
             Class c = TransactionEncoder.class;
@@ -145,8 +124,31 @@ public class EthereumUtils {
         assert ethSendTransaction != null;
         String transactionHash = ethSendTransaction.getTransactionHash();
         Log.d(TAG, "TransactionHash: " + transactionHash);
+        Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
         // poll for transaction response via org.web3j.protocol.Web3j.ethGetTransactionReceipt(<txHash>)
 
+    }
+
+    private static byte getV(String publicKey, byte[] hashedTransaction, byte[] r, byte[] s) {
+        ECDSASignature sig = new ECDSASignature(new BigInteger(r), new BigInteger(s));
+        // Now we have to work backwards to figure out the recId needed to recover the signature.
+        int recId = -1;
+        for (int i = 0; i < 4; i++) {
+            BigInteger k = recoverFromSignature(i, sig, hashedTransaction);
+            if (k != null && k.equals(new BigInteger(Utils.hexStringToByteArray(publicKey)))) {
+                recId = i;
+                break;
+            }
+        }
+        if (recId == -1) {
+            throw new RuntimeException(
+                    "Could not construct a recoverable key. This should never happen.");
+        }
+
+        int headerByte = recId + 27;
+
+        // 1 header + 32 bytes for R + 32 bytes for S
+        return (byte) headerByte;
     }
 
     private static BigInteger recoverFromSignature(int recId, ECDSASignature sig, byte[] message) {
