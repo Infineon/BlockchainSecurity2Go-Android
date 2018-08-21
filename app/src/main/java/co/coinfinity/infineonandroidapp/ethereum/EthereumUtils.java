@@ -36,31 +36,30 @@ public class EthereumUtils {
     private static final ECDomainParameters CURVE = new ECDomainParameters(
             CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
 
+    private static final String HTTPS = "https://";
+    private static final String BASEURL = ".infura.io/v3/7b40d72779e541a498cb0da69aa418a2";
+    private static final String ROPSTEN_TESTNET = HTTPS + "ropsten" + BASEURL;
+    private static final String MAINNET = HTTPS + "mainnet" + BASEURL;
+
     public static EthBalanceBean getBalance(String ethAddress) {
         // connect to node
-        Web3j web3 = Web3jFactory.build(new HttpService("https://ropsten.infura.io/v3/7b40d72779e541a498cb0da69aa418a2"));
+        Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_TESTNET));
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
         BigDecimal ether = Convert.fromWei(wei.toString(), Convert.Unit.ETHER);
-//        Log.d("WEB3J", ether + " Ether");
-//        Log.d("WEB3J", wei + " Wei");
 
         BigInteger unconfirmedWei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.PENDING);
         BigDecimal unconfirmedEther = Convert.fromWei(unconfirmedWei.toString(), Convert.Unit.ETHER);
-//        Log.d("WEB3J", unconfirmedWei + " Ether unconfirmed");
-//        Log.d("WEB3J", unconfirmedEther + " Wei unconfirmed");
 
         return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
     }
 
     private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) {
         BigInteger wei = null;
-        // send synchronous requests to get balance
         try {
             EthGetBalance ethGetBalance = web3
                     .ethGetBalance(ethAddress, defaultBlockParameterName)
                     .send();
-
             if (ethGetBalance != null) {
                 wei = ethGetBalance.getBalance();
             }
@@ -73,8 +72,7 @@ public class EthereumUtils {
 
     public static void sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
         // connect to node
-        Web3j web3 = Web3jFactory.build(new HttpService("https://ropsten.infura.io/v3/7b40d72779e541a498cb0da69aa418a2"));
-//        Web3j web3 = Web3jFactory.build(new HttpService("https://mainnet.infura.io/v3/7b40d72779e541a498cb0da69aa418a2"));
+        Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_TESTNET));
 
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value);
@@ -182,7 +180,6 @@ public class EthereumUtils {
         }
 
         int headerByte = recId + 27;
-
         // 1 header + 32 bytes for R + 32 bytes for S
         return (byte) headerByte;
     }

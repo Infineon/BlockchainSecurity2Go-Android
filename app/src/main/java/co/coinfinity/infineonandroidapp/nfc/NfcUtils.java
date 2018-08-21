@@ -25,6 +25,8 @@ public class NfcUtils {
 
         byte[] response = isoDep.transceive(GET_PUB_KEY);
         String hex = Utils.bytesToHex(response);
+        checkErrorCode(hex);
+
         Log.d(TAG, "response GET_PUB_KEY: " + hex);
         return hex.subSequence(2, hex.length() - 4).toString();
     }
@@ -55,6 +57,8 @@ public class NfcUtils {
             isoDep.close();
 
             String signedTransaction = Utils.bytesToHex(response);
+            checkErrorCode(signedTransaction);
+
             return signedTransaction.subSequence(0, signedTransaction.length() - 4).toString();
 
         } catch (Exception e) {
@@ -62,6 +66,17 @@ public class NfcUtils {
         }
 
         return null;
+    }
+
+    private static void checkErrorCode(String response) {
+        if (response.length() < 4) {
+            throw new IllegalArgumentException("Response from card has no error code!");
+        } else {
+            if (response.substring(response.length() - 4).equals("9000")) {
+                return;
+            }
+            throw new IllegalArgumentException("Error! Card respond with an error code of " + response.substring(response.length() - 4));
+        }
     }
 
     //    byte[] SELECT = {
