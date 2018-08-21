@@ -25,13 +25,10 @@ public class NfcUtils {
         byte[] response = isoDep.transceive(GET_PUB_KEY);
         String hex = Utils.bytesToHex(response);
         Log.d(TAG, "response GET_PUB_KEY: " + hex);
-        return hex.subSequence(0, hex.length() - 4).toString();
+        return hex.subSequence(2, hex.length() - 4).toString();
     }
 
     public static String signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
-
-        String hex = Utils.bytesToHex(data);
-        hex = hex.subSequence(0, hex.length() - 4).toString();
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
@@ -53,7 +50,6 @@ public class NfcUtils {
 
             Log.d(TAG, "GEN_SIGN_WITH_DATA: " + Utils.bytesToHex(GEN_SIGN_WITH_DATA));
             byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
-            Log.d(TAG, "response GEN_SIGN_WITH_DATA: " + hex);
 
             isoDep.close();
 

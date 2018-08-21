@@ -27,12 +27,17 @@ public class NfcUtilsMock {
     public static final ECDomainParameters CURVE = new ECDomainParameters(
             CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
 
-    static Credentials credentials = Credentials.create(new BigInteger("79166386603517236976726811532830064984355265773618493467297037703400211058279").toString(16),
-            new BigInteger("1151270011825183223805235897419104860957743818568039421199126264923822213203842512949016734652068699212645732466302596308750268989266518249615792739627611").toString(16));
+    //    static Credentials credentials = Credentials.create(new BigInteger("79166386603517236976726811532830064984355265773618493467297037703400211058279").toString(16),
+//            new BigInteger("1151270011825183223805235897419104860957743818568039421199126264923822213203842512949016734652068699212645732466302596308750268989266518249615792739627611").toString(16));
+    static Credentials credentials = Credentials.create("e3894ff8a138ca87e02609ff8b9c18314b6d02144121cda9d33da12880f48d00",
+            "504faa0283ad44177451f74b354f0b886d224c5ff8a091449458a3c32e538649d5d010c21c9fe5479008ee7432cf347c1b2c320be63acc60e7bfb01d3bc93667");
 
     public static String getPublicKey(IsoDep isoDep, int parameter) throws IOException {
         byte[] response = credentials.getEcKeyPair().getPublicKey().toByteArray();
         String hex = Utils.bytesToHex(response);
+
+        Log.d(TAG, "PRIVATE KEY (hex): " + credentials.getEcKeyPair().getPrivateKey().toString(16));
+        Log.d(TAG, "PUBLIC KEY (hex): " + credentials.getEcKeyPair().getPublicKey().toString(16));
         return hex;
     }
 

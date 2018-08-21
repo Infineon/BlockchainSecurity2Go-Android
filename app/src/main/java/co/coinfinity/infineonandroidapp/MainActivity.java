@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             isoDep.connect();
             //TODO change mock here
-            pubKeyString = NfcUtils.getPublicKey(isoDep, 0x01);
+            pubKeyString = NfcUtils.getPublicKey(isoDep, 0x00);
 //            pubKeyString = NfcUtilsMock.getPublicKey(isoDep, 0x01);
             Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
             isoDep.close();

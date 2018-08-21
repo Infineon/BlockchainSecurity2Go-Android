@@ -38,13 +38,13 @@ public class EthereumUtils {
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
         BigDecimal ether = Convert.fromWei(wei.toString(), Convert.Unit.ETHER);
-        Log.d("WEB3J", ether + " Ether");
-        Log.d("WEB3J", wei + " Wei");
+//        Log.d("WEB3J", ether + " Ether");
+//        Log.d("WEB3J", wei + " Wei");
 
         BigInteger unconfirmedWei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.PENDING);
         BigDecimal unconfirmedEther = Convert.fromWei(unconfirmedWei.toString(), Convert.Unit.ETHER);
-        Log.d("WEB3J", unconfirmedWei + " Ether unconfirmed");
-        Log.d("WEB3J", unconfirmedEther + " Wei unconfirmed");
+//        Log.d("WEB3J", unconfirmedWei + " Ether unconfirmed");
+//        Log.d("WEB3J", unconfirmedEther + " Wei unconfirmed");
 
         return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
     }
@@ -67,8 +67,6 @@ public class EthereumUtils {
         return wei;
     }
 
-    private static final String SECP256K1 = "secp256k1";
-
     public static void sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
 
         // connect to node
@@ -86,7 +84,7 @@ public class EthereumUtils {
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
             //TODO change mock here
 //            signedTransaction = NfcUtilsMock.signTransaction(tagFromIntent, 0x01, hashedTransaction);
-            signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x01, hashedTransaction);
+            signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x00, hashedTransaction);
             Log.d(TAG, "signedTransaction: " + signedTransaction);
             assert signedTransaction != null;
             final byte[] signatureData = Utils.hexStringToByteArray(signedTransaction);
@@ -99,9 +97,7 @@ public class EthereumUtils {
             byte v = getV(publicKey, hashedTransaction, r, s);
             Log.d(TAG, "v: " + v);
 
-//            byte vNeu = (byte) (v + (ChainId.ROPSTEN << 1) + 8);
             Sign.SignatureData signature = new Sign.SignatureData(v, r, s);
-//            Sign.SignatureData signature = new Sign.SignatureData(Integer.valueOf(3 * 2 + 35 + Byte.valueOf(v).intValue()).byteValue(), r, s);
 
             Class c = TransactionEncoder.class;
             Object obj = c.newInstance();
@@ -130,12 +126,12 @@ public class EthereumUtils {
     }
 
     private static byte getV(String publicKey, byte[] hashedTransaction, byte[] r, byte[] s) {
-        ECDSASignature sig = new ECDSASignature(new BigInteger(r), new BigInteger(s));
+        ECDSASignature sig = new ECDSASignature(new BigInteger(1, r), new BigInteger(1, s));
         // Now we have to work backwards to figure out the recId needed to recover the signature.
         int recId = -1;
         for (int i = 0; i < 4; i++) {
             BigInteger k = recoverFromSignature(i, sig, hashedTransaction);
-            if (k != null && k.equals(new BigInteger(Utils.hexStringToByteArray(publicKey)))) {
+            if (k != null && k.equals(new BigInteger(1, Utils.hexStringToByteArray(publicKey)))) {
                 recId = i;
                 break;
             }
