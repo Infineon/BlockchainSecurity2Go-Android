@@ -15,7 +15,8 @@ import static co.coinfinity.AppConstants.TAG;
 
 public class CoinfinityClient extends JsonHttpResponseHandler {
 
-    private static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = "https://coinfinity.co/price/XBTEUR";
+    private static final String ETHEUR = "ETHEUR";
+    private static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = "https://coinfinity.co/price/" + ETHEUR;
     private static final String ASK = "ask";
 
     private TransactionPriceBean transactionPriceBean;
