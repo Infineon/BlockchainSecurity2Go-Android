@@ -2,6 +2,7 @@ package co.coinfinity.infineonandroidapp.nfc;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.support.constraint.Constraints;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 
@@ -57,7 +58,7 @@ public class NfcUtils {
             return signedTransaction.subSequence(0, signedTransaction.length() - 4).toString();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(Constraints.TAG, "exception while signing transaction via NFC", e);
         }
 
         return null;

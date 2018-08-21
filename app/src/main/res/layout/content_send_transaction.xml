@@ -18,11 +18,12 @@
             android:textSize="20sp"
             android:gravity="center_horizontal"
             android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="209dp"/>
+            android:layout_marginBottom="90dp"/>
     <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="61dp"
-    >
+            android:layout_alignParentStart="true" android:layout_alignParentTop="true" android:layout_marginTop="33dp"
+            android:layout_marginStart="10dp">
 
         <android.support.design.widget.TextInputEditText
                 android:layout_width="349dp"
@@ -31,9 +32,10 @@
                 android:text="0xe09eD054044763E03e0e59460F773F69DB9A333A" android:textSize="14sp"/>
     </android.support.design.widget.TextInputLayout>
     <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+            android:layout_width="388dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true" android:layout_alignParentTop="true" android:layout_marginTop="80dp">
+            android:layout_alignParentStart="true" android:layout_alignParentTop="true"
+            android:layout_marginTop="126dp" android:layout_marginStart="12dp">
 
         <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
@@ -41,10 +43,10 @@
                 android:hint="Amount ETH" android:id="@+id/amount" android:text="0.0003"/>
     </android.support.design.widget.TextInputLayout>
     <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+            android:layout_width="385dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true" android:layout_alignParentTop="true"
-            android:layout_marginTop="159dp">
+            android:layout_marginTop="203dp" android:layout_marginStart="14dp">
 
         <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
@@ -52,10 +54,10 @@
                 android:hint="Gas Price" android:id="@+id/gasPrice" android:text="1"/>
     </android.support.design.widget.TextInputLayout>
     <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+            android:layout_width="386dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true" android:layout_alignParentTop="true"
-            android:layout_marginTop="231dp">
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" android:layout_marginStart="13dp">
 
         <android.support.design.widget.TextInputEditText
                 android:layout_width="match_parent"
@@ -67,17 +69,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:id="@+id/progressBar" android:layout_centerHorizontal="true" android:layout_marginBottom="142dp"/>
+            android:id="@+id/progressBar" android:layout_centerHorizontal="true" android:layout_marginBottom="21dp"/>
     <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="47dp"
+            android:layout_width="55dp"
+            android:layout_height="49dp"
             android:id="@+id/scanQr" android:layout_alignParentEnd="true"
-            android:layout_marginEnd="13dp" android:layout_alignParentTop="true"
-            android:src="@drawable/qrcode" android:scaleType="fitCenter" android:onClick="scanQrCode"/>
+            android:src="@drawable/qrcode" android:scaleType="fitCenter" android:onClick="scanQrCode"
+            android:layout_alignParentTop="true" android:layout_marginTop="36dp"/>
     <TextView
-            android:text="Price in €"
-            android:layout_width="131dp"
-            android:layout_height="wrap_content" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="278dp" android:id="@+id/priceInEuro" android:layout_alignParentStart="true"
-            android:layout_marginStart="21dp"/>
+            android:text="Price: 0€\n Tx Fee: 0€"
+            android:layout_width="385dp"
+            android:layout_height="61dp" android:layout_alignParentBottom="true"
+            android:layout_marginBottom="185dp" android:id="@+id/priceInEuro" android:layout_alignParentStart="true"
+            android:layout_marginStart="12dp" android:textSize="18sp" android:textAlignment="center"/>
 </RelativeLayout>

@@ -8,14 +8,13 @@
 
     <ImageView
             android:id="@+id/logo"
-            android:layout_width="180dp"
-            android:layout_height="157dp"
-            android:layout_marginTop="11dp"
+            android:layout_width="157dp"
+            android:layout_height="134dp"
             android:src="@drawable/logo"
             android:layout_centerHorizontal="true" android:layout_alignParentTop="true"/>
 
     <TextView
-            android:id="@+id/text"
+            android:id="@+id/holdCard"
             android:layout_width="335dp"
             android:layout_height="wrap_content"
             android:text="Hold a card against the back of your device"
@@ -25,32 +24,39 @@
             android:layout_centerHorizontal="true" android:layout_below="@+id/logo"/>
     <TextView
             android:id="@+id/balance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ETH: ???"
+            android:layout_width="387dp"
+            android:layout_height="132dp"
+            android:text="ETH"
             android:textStyle="bold"
             android:textSize="20sp"
             android:gravity="center_horizontal"
-            android:layout_alignParentBottom="true" android:layout_marginBottom="48dp"
-            android:layout_centerHorizontal="true"/>
+            android:layout_alignParentBottom="true" android:layout_marginBottom="83dp"
+            android:layout_centerHorizontal="true" android:textIsSelectable="true"/>
     <ImageView
             android:layout_width="176dp"
             android:layout_height="164dp" app:srcCompat="@mipmap/ic_launcher_round"
             android:id="@+id/qrCode"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true" android:layout_marginBottom="119dp"/>
+            android:layout_centerHorizontal="true" android:layout_below="@+id/holdCard"/>
     <TextView
-            android:text="ethAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ethAddress" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="93dp"/>
+            android:text="Address"
+            android:layout_width="389dp"
+            android:layout_height="29dp"
+            android:id="@+id/ethAddress" android:layout_centerHorizontal="true"
+            android:layout_below="@+id/qrCode" android:textIsSelectable="true" android:textAlignment="center"
+            android:textSize="16sp"/>
     <Button
-            android:text="Send"
+            android:text="Send ETH"
+            android:layout_width="152dp"
+            android:layout_height="59dp"
+            android:id="@+id/send"
+            android:onClick="onSend" android:visibility="visible"
+            android:enabled="false" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
+            android:layout_marginBottom="19dp" android:textSize="18sp"/>
+    <ProgressBar
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/send" android:layout_centerHorizontal="true" android:layout_alignParentTop="true"
-            android:layout_marginTop="247dp" android:onClick="onSend" android:visibility="visible"
-            android:enabled="false"/>
+            android:id="@+id/progressBar" android:layout_centerHorizontal="true" android:layout_below="@+id/balance"
+            android:layout_marginTop="-137dp"/>
 
 </RelativeLayout>

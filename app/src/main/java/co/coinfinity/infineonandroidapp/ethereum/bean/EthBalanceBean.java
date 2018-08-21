@@ -50,10 +50,10 @@ public class EthBalanceBean {
 
     @Override
     public String toString() {
-        if(ether != null && unconfirmedEther != null && ether.toString().equals(unconfirmedEther.toString())) {
+        if (ether != null && unconfirmedEther != null && ether.toString().equals(unconfirmedEther.toString())) {
             return ether + " ETH\n" + wei + " WEI";
         }
 
-        return ether + " ETH ("+unconfirmedEther+")\n" + wei + " WEI ("+unconfirmedWei+")";
+        return ether + " ETH\n(" + unconfirmedEther + " unconfirmed)\n" + wei + " WEI \n(" + unconfirmedWei + " unconfirmed)";
     }
 }

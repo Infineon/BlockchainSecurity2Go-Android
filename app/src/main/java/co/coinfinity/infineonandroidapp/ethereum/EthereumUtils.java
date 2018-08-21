@@ -5,6 +5,9 @@ import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import org.spongycastle.asn1.x9.X9ECParameters;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
+import org.spongycastle.crypto.params.ECDomainParameters;
 import org.spongycastle.math.ec.custom.sec.SecP256K1Curve;
 import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
@@ -26,11 +29,14 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static android.support.constraint.Constraints.TAG;
-import static co.coinfinity.infineonandroidapp.nfc.NfcUtilsMock.CURVE;
 import static org.web3j.crypto.TransactionEncoder.encode;
 import static org.web3j.utils.Assertions.verifyPrecondition;
 
 public class EthereumUtils {
+
+    private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
+    private static final ECDomainParameters CURVE = new ECDomainParameters(
+            CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
 
     public static EthBalanceBean getBalance(String ethAddress) {
         // connect to node
@@ -61,14 +67,13 @@ public class EthereumUtils {
                 wei = ethGetBalance.getBalance();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "exception while reading balance from api", e);
         }
 
         return wei;
     }
 
     public static void sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
-
         // connect to node
         Web3j web3 = Web3jFactory.build(new HttpService("https://ropsten.infura.io/v3/7b40d72779e541a498cb0da69aa418a2"));
 //        Web3j web3 = Web3jFactory.build(new HttpService("https://mainnet.infura.io/v3/7b40d72779e541a498cb0da69aa418a2"));
@@ -82,8 +87,6 @@ public class EthereumUtils {
         try {
             byte[] encodedTransaction = encode(rawTransaction);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-            //TODO change mock here
-//            signedTransaction = NfcUtilsMock.signTransaction(tagFromIntent, 0x01, hashedTransaction);
             signedTransaction = NfcUtils.signTransaction(tagFromIntent, 0x00, hashedTransaction);
             Log.d(TAG, "signedTransaction: " + signedTransaction);
             assert signedTransaction != null;
@@ -99,11 +102,11 @@ public class EthereumUtils {
 
             Sign.SignatureData signature = new Sign.SignatureData(v, r, s);
 
+            //TODO calls private methode of web3j lib
             Class c = TransactionEncoder.class;
             Object obj = c.newInstance();
             Method m = c.getDeclaredMethod("encode", RawTransaction.class, Sign.SignatureData.class);
             m.setAccessible(true);
-
             final byte[] invoke = (byte[]) m.invoke(obj, rawTransaction, signature);
             hexValue = Numeric.toHexString(invoke);
 
@@ -121,8 +124,33 @@ public class EthereumUtils {
         String transactionHash = ethSendTransaction.getTransactionHash();
         Log.d(TAG, "TransactionHash: " + transactionHash);
         Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
-        // poll for transaction response via org.web3j.protocol.Web3j.ethGetTransactionReceipt(<txHash>)
+    }
 
+    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) {
+        EthGetTransactionCount ethGetTransactionCount = null;
+        try {
+            ethGetTransactionCount = web3j.ethGetTransactionCount(
+                    etherAddress, DefaultBlockParameterName.LATEST).send();
+
+            return ethGetTransactionCount.getTransactionCount();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static byte[] extractR(byte[] signature) throws Exception {
+        int startR = (signature[1] & 0x80) != 0 ? 3 : 2;
+        int lengthR = signature[startR + 1];
+        return Arrays.copyOfRange(signature, startR + 2, startR + 2 + lengthR);
+    }
+
+    private static byte[] extractS(byte[] signature) throws Exception {
+        int startR = (signature[1] & 0x80) != 0 ? 3 : 2;
+        int lengthR = signature[startR + 1];
+        int startS = startR + 2 + lengthR;
+        int lengthS = signature[startS + 1];
+        return Arrays.copyOfRange(signature, startS + 2, startS + 2 + lengthS);
     }
 
     private static byte getV(String publicKey, byte[] hashedTransaction, byte[] r, byte[] s) {
@@ -186,32 +214,5 @@ public class EthereumUtils {
         byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(CURVE.getCurve()));
         compEnc[0] = (byte) (yBit ? 0x03 : 0x02);
         return CURVE.getCurve().decodePoint(compEnc);
-    }
-
-    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) {
-        EthGetTransactionCount ethGetTransactionCount = null;
-        try {
-            ethGetTransactionCount = web3j.ethGetTransactionCount(
-                    etherAddress, DefaultBlockParameterName.LATEST).send();
-
-            return ethGetTransactionCount.getTransactionCount();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static byte[] extractR(byte[] signature) throws Exception {
-        int startR = (signature[1] & 0x80) != 0 ? 3 : 2;
-        int lengthR = signature[startR + 1];
-        return Arrays.copyOfRange(signature, startR + 2, startR + 2 + lengthR);
-    }
-
-    private static byte[] extractS(byte[] signature) throws Exception {
-        int startR = (signature[1] & 0x80) != 0 ? 3 : 2;
-        int lengthR = signature[startR + 1];
-        int startS = startR + 2 + lengthR;
-        int lengthS = signature[startS + 1];
-        return Arrays.copyOfRange(signature, startS + 2, startS + 2 + lengthS);
     }
 }

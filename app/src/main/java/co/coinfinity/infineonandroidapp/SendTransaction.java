@@ -2,7 +2,6 @@ package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -12,12 +11,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import co.coinfinity.infineonandroidapp.common.HttpUtils;
+import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
+import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
+import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -38,6 +35,8 @@ public class SendTransaction extends AppCompatActivity {
 
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
+
+    private CoinfinityClient coinfinityClient = new CoinfinityClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +64,9 @@ public class SendTransaction extends AppCompatActivity {
             try {
                 while (true) {
                     mHandler.post(() -> {
-                        readPriceFromApi();
+                        TransactionPriceBean transactionPriceBean = coinfinityClient.readEthPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                        if (transactionPriceBean != null)
+                            priceInEuroTxt.setText(transactionPriceBean.toString());
                     });
                     Thread.sleep(1000);
                 }
@@ -75,32 +76,6 @@ public class SendTransaction extends AppCompatActivity {
         });
 
         thread.start();
-    }
-
-    private void readPriceFromApi() {
-        HttpUtils.get("https://coinfinity.co/price/XBTEUR", null, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // If the response is JSONObject instead of expected JSONArray
-//                Log.d(TAG, "XBTEUR Price: " + response);
-                try {
-                    JSONObject serverResp = new JSONObject(response.toString());
-
-                    if (!gasPriceTxt.getText().toString().equals("") && !gasLimitTxt.getText().toString().equals("")) {
-                        BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
-                        BigDecimal gasLimit = new BigDecimal(gasLimitTxt.getText().toString());
-                        final BigDecimal weiGasPrice = Convert.toWei(gasPrice.multiply(gasLimit), Convert.Unit.GWEI);
-                        final BigDecimal ethGasPrice = Convert.fromWei(weiGasPrice, Convert.Unit.ETHER);
-
-                        String priceStr = String.format("Price: %.2f€ \n Tx Fee: %.2f€", serverResp.getDouble("ask") * Double.parseDouble(amountTxt.getText().toString()), ethGasPrice.floatValue() * serverResp.getDouble("ask"));
-                        priceInEuroTxt.setText(priceStr);
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "exception while reading price info from API: ", e);
-                }
-            }
-
-        });
     }
 
     @Override
@@ -141,20 +116,7 @@ public class SendTransaction extends AppCompatActivity {
     }
 
     public void scanQrCode(View view) {
-        try {
-
-            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); // "PRODUCT_MODE for bar codes
-
-            startActivityForResult(intent, 0);
-
-        } catch (Exception e) {
-
-            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-            Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
-            startActivity(marketIntent);
-
-        }
+        QrCodeScanner.scanQrCode(view, this);
     }
 
     @Override

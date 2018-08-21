@@ -11,15 +11,17 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import co.coinfinity.infineonandroidapp.common.Utils;
+import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
+import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
+import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
+
+import java.util.Locale;
 
 import static co.coinfinity.AppConstants.TAG;
 
@@ -27,32 +29,32 @@ public class MainActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
-    private TextView text;
+
+    private TextView holdCard;
     private TextView ethAddressView;
     private TextView balance;
-    private String balanceText;
-
     private ImageView qrCodeView;
-
     private Button sendBtn;
+    private ProgressBar progressBar;
 
     private String pubKeyString;
     private String ethAddress;
+    private String balanceText;
+
+    private CoinfinityClient coinfinityClient = new CoinfinityClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        text = (TextView) findViewById(R.id.text);
+
         ethAddressView = (TextView) findViewById(R.id.ethAddress);
         balance = (TextView) findViewById(R.id.balance);
-
         qrCodeView = (ImageView) findViewById(R.id.qrCode);
-
         sendBtn = (Button) findViewById(R.id.send);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-
         if (nfcAdapter == null) {
             Toast.makeText(this, "No NFC", Toast.LENGTH_SHORT).show();
             finish();
@@ -71,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         if (nfcAdapter != null) {
             if (!nfcAdapter.isEnabled())
                 showWirelessSettings();
-
             nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
         }
     }
@@ -101,9 +102,7 @@ public class MainActivity extends AppCompatActivity {
         IsoDep isoDep = IsoDep.get(tagFromIntent);
         try {
             isoDep.connect();
-            //TODO change mock here
             pubKeyString = NfcUtils.getPublicKey(isoDep, 0x00);
-//            pubKeyString = NfcUtilsMock.getPublicKey(isoDep, 0x01);
             Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
             isoDep.close();
         } catch (Exception e) {
@@ -116,16 +115,21 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "ETH: address" + ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
 
-
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
                 while (true) {
-                    balanceText = EthereumUtils.getBalance(ethAddress).toString();
+                    final EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
+                    balanceText = balance.toString();
+                    final TransactionPriceBean transactionPriceBean = coinfinityClient.readEthPriceFromApi("0", "0", balance.getEther().toString());
+                    if (transactionPriceBean != null) {
+                        balanceText += String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro());
+                    }
                     mHandler.post(() -> {
-                        balance.setText(balanceText);
+                        this.balance.setText(balanceText);
                         if (!sendBtn.isEnabled()) {
                             sendBtn.setEnabled(true);
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
                     });
                     Thread.sleep(1000);
@@ -138,14 +142,12 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }
 
-
     public void onSend(View view) {
         Intent intent = new Intent(this, SendTransaction.class);
-        Bundle b = new Bundle();
-        b.putString("pubKey", pubKeyString);
-        b.putString("ethAddress", ethAddress);
-        intent.putExtras(b);
+        Bundle bundle = new Bundle();
+        bundle.putString("pubKey", pubKeyString);
+        bundle.putString("ethAddress", ethAddress);
+        intent.putExtras(bundle);
         startActivity(intent);
-//        finish();
     }
 }
