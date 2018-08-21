@@ -8,7 +8,6 @@ import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.spongycastle.asn1.x9.X9ECParameters;
 import org.spongycastle.crypto.ec.CustomNamedCurves;
 import org.spongycastle.crypto.params.ECDomainParameters;
-import org.spongycastle.math.ec.custom.sec.SecP256K1Curve;
 import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -30,7 +29,6 @@ import java.util.concurrent.ExecutionException;
 
 import static android.support.constraint.Constraints.TAG;
 import static org.web3j.crypto.TransactionEncoder.encode;
-import static org.web3j.utils.Assertions.verifyPrecondition;
 
 public class EthereumUtils {
 
@@ -134,7 +132,7 @@ public class EthereumUtils {
 
             return ethGetTransactionCount.getTransactionCount();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "exception while getting next nonce", e);
         }
         return null;
     }
@@ -158,7 +156,21 @@ public class EthereumUtils {
         // Now we have to work backwards to figure out the recId needed to recover the signature.
         int recId = -1;
         for (int i = 0; i < 4; i++) {
-            BigInteger k = recoverFromSignature(i, sig, hashedTransaction);
+
+            BigInteger k = null;
+            //TODO calls private methode of web3j lib
+            Class c = Sign.class;
+            Object obj = null;
+            try {
+                obj = c.newInstance();
+                Method m = c.getDeclaredMethod("recoverFromSignature", int.class, ECDSASignature.class, byte[].class);
+                m.setAccessible(true);
+
+                k = (BigInteger) m.invoke(obj, i, sig, hashedTransaction);
+            } catch (Exception e) {
+                Log.e(TAG, "exception while calling private method recoverFromSignature", e);
+            }
+
             if (k != null && k.equals(new BigInteger(1, Utils.hexStringToByteArray(publicKey)))) {
                 recId = i;
                 break;
@@ -173,46 +185,5 @@ public class EthereumUtils {
 
         // 1 header + 32 bytes for R + 32 bytes for S
         return (byte) headerByte;
-    }
-
-    private static BigInteger recoverFromSignature(int recId, ECDSASignature sig, byte[] message) {
-        verifyPrecondition(recId >= 0, "recId must be positive");
-        verifyPrecondition(sig.r.signum() >= 0, "r must be positive");
-        verifyPrecondition(sig.s.signum() >= 0, "s must be positive");
-        verifyPrecondition(message != null, "message cannot be null");
-
-        BigInteger n = CURVE.getN();  // Curve order.
-        BigInteger i = BigInteger.valueOf((long) recId / 2);
-        BigInteger x = sig.r.add(i.multiply(n));
-
-        BigInteger prime = SecP256K1Curve.q;
-        if (x.compareTo(prime) >= 0) {
-            return null;
-        }
-
-        org.spongycastle.math.ec.ECPoint R = decompressKey(x, (recId & 1) == 1);
-
-        if (!R.multiply(n).isInfinity()) {
-            return null;
-        }
-
-        BigInteger e = new BigInteger(1, message);
-
-        BigInteger eInv = BigInteger.ZERO.subtract(e).mod(n);
-        BigInteger rInv = sig.r.modInverse(n);
-        BigInteger srInv = rInv.multiply(sig.s).mod(n);
-        BigInteger eInvrInv = rInv.multiply(eInv).mod(n);
-        org.spongycastle.math.ec.ECPoint q = org.spongycastle.math.ec.ECAlgorithms.sumOfTwoMultiplies(CURVE.getG(), eInvrInv, R, srInv);
-
-        byte[] qBytes = q.getEncoded(false);
-        // We remove the prefix
-        return new BigInteger(1, Arrays.copyOfRange(qBytes, 1, qBytes.length));
-    }
-
-    private static org.spongycastle.math.ec.ECPoint decompressKey(BigInteger xBN, boolean yBit) {
-        org.spongycastle.asn1.x9.X9IntegerConverter x9 = new org.spongycastle.asn1.x9.X9IntegerConverter();
-        byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(CURVE.getCurve()));
-        compEnc[0] = (byte) (yBit ? 0x03 : 0x02);
-        return CURVE.getCurve().decodePoint(compEnc);
     }
 }
