@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             isoDep.connect();
             pubKeyString = NfcUtils.getPublicKey(isoDep, 0x00);
+//              pubKeyString = NfcUtilsMock.getPublicKey(isoDep, 0x00);
             Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
             isoDep.close();
         } catch (Exception e) {

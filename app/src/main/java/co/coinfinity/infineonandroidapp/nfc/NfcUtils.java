@@ -7,6 +7,7 @@ import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.common.Utils.combineByteArrays;
@@ -31,7 +32,7 @@ public class NfcUtils {
         return hex.subSequence(2, hex.length() - 4).toString();
     }
 
-    public static String signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
+    public static byte[] signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
@@ -59,7 +60,7 @@ public class NfcUtils {
             String signedTransaction = Utils.bytesToHex(response);
             checkErrorCode(signedTransaction);
 
-            return signedTransaction.subSequence(0, signedTransaction.length() - 4).toString();
+            return Arrays.copyOfRange(response, 0, response.length - 2);
 
         } catch (Exception e) {
             Log.e(Constraints.TAG, "exception while signing transaction via NFC", e);
