@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         // use web3j to format this public key as ETH address
         ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
         ethAddressView.setText(ethAddress);
-        Log.d(TAG, "ETH: address" + ethAddress);
+        Log.d(TAG, "ETH address: " + ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
 
         Handler mHandler = new Handler();
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onSend(View view) {
-        Intent intent = new Intent(this, SendTransaction.class);
+        Intent intent = new Intent(this, SendTransactionActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("pubKey", pubKeyString);
         bundle.putString("ethAddress", ethAddress);

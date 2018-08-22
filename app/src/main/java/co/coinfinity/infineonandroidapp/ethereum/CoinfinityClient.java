@@ -42,7 +42,7 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
         try {
             JSONObject serverResp = new JSONObject(response.toString());
 
-            if (!gasPriceStr.equals("") && !gasLimitStr.equals("")) {
+            if (!gasPriceStr.equals("") && !gasLimitStr.equals("") && !amount.equals("")) {
                 BigDecimal gasPrice = new BigDecimal(gasPriceStr);
                 BigDecimal gasLimit = new BigDecimal(gasLimitStr);
                 final BigDecimal weiGasPrice = Convert.toWei(gasPrice.multiply(gasLimit), Convert.Unit.GWEI);

@@ -11,17 +11,20 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 
+import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
 
-public class SendTransaction extends AppCompatActivity {
+public class SendTransactionActivity extends AppCompatActivity {
 
     private TextView recipientAddressTxt;
     private TextView amountTxt;
@@ -49,7 +52,7 @@ public class SendTransaction extends AppCompatActivity {
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
         // will fill in the intent with the details of the discovered tag before delivering to
         // this activity.
-        mPendingIntent = PendingIntent.getActivity(this, 0,
+        mPendingIntent = getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         recipientAddressTxt = (TextView) findViewById(R.id.recipientAddress);
@@ -108,7 +111,15 @@ public class SendTransaction extends AppCompatActivity {
             final BigDecimal value = Convert.toWei(amountTxt.getText().toString(), Convert.Unit.ETHER);
             final BigDecimal gasPrice = Convert.toWei(gasPriceTxt.getText().toString(), Convert.Unit.GWEI);
             final BigDecimal gasLimit = Convert.toWei(gasLimitTxt.getText().toString(), Convert.Unit.WEI);
-            EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString);
+            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString);
+
+            if (response.getError() != null) {
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, response.getError().getMessage(),
+                        Toast.LENGTH_LONG).show());
+            } else {
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, "ETH sent!",
+                        Toast.LENGTH_LONG).show());
+            }
         });
 
         thread.start();

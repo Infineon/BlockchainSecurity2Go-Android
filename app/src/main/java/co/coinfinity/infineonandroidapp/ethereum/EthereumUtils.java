@@ -70,7 +70,7 @@ public class EthereumUtils {
         return wei;
     }
 
-    public static void sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
+    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
         // connect to node
         Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_TESTNET));
 
@@ -120,6 +120,11 @@ public class EthereumUtils {
         String transactionHash = ethSendTransaction.getTransactionHash();
         Log.d(TAG, "TransactionHash: " + transactionHash);
         Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
+        if (ethSendTransaction.getError() != null) {
+            Log.d(TAG, "TransactionError: " + ethSendTransaction.getError().getMessage());
+        }
+
+        return ethSendTransaction;
     }
 
     public static BigInteger getNextNonce(Web3j web3j, String etherAddress) {

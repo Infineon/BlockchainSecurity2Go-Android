@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".SendTransaction"
+                android:name=".SendTransactionActivity"
                 android:label="@string/title_activity_send_transaction"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
