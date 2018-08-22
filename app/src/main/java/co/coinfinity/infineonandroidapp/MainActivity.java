@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             isoDep.connect();
             pubKeyString = NfcUtils.getPublicKey(isoDep, 0x00);
-//              pubKeyString = NfcUtilsMock.getPublicKey(isoDep, 0x00);
             Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
             isoDep.close();
         } catch (Exception e) {
@@ -136,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.e(TAG, "exception while reading euro price from api: ", e);
             }
         });
 

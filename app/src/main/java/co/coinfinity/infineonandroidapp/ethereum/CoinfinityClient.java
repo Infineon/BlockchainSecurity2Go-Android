@@ -37,7 +37,6 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
 
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-        // If the response is JSONObject instead of expected JSONArray
 //                Log.d(TAG, "XBTEUR Price: " + response);
         try {
             JSONObject serverResp = new JSONObject(response.toString());

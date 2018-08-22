@@ -6,9 +6,6 @@ import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.Utils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
-import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.crypto.ec.CustomNamedCurves;
-import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -28,20 +25,11 @@ import java.math.BigInteger;
 import java.util.Arrays;
 
 import static android.support.constraint.Constraints.TAG;
+import static co.coinfinity.AppConstants.ROPSTEN_CHAIN_ID;
+import static co.coinfinity.AppConstants.ROPSTEN_TESTNET;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
 public class EthereumUtils {
-
-    private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
-    private static final ECDomainParameters CURVE = new ECDomainParameters(
-            CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
-
-    private static final String HTTPS = "https://";
-    private static final String BASEURL = ".infura.io/v3/7b40d72779e541a498cb0da69aa418a2";
-    private static final String ROPSTEN_TESTNET = HTTPS + "ropsten" + BASEURL;
-    private static final String MAINNET = HTTPS + "mainnet" + BASEURL;
-
-    private static final byte ROPSTEN_CHAIN_ID = 3;
 
     public static EthBalanceBean getBalance(String ethAddress) {
         // connect to node
@@ -72,9 +60,6 @@ public class EthereumUtils {
         return wei;
     }
 
-//    static final X9ECParameters curve = SECNamedCurves.getByName("secp256k1");
-//    static final ECDomainParameters domain = new ECDomainParameters(curve.getCurve(), curve.getG(), curve.getN(), curve.getH());
-
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
         // connect to node
         Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_TESTNET));
@@ -87,7 +72,6 @@ public class EthereumUtils {
         try {
             byte[] encodedTransaction = encode(rawTransaction, ROPSTEN_CHAIN_ID);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-//            final byte[] signatureData = NfcUtilsMock.signTransaction(tagFromIntent, 0x00, hashedTransaction);
             final byte[] signatureData = NfcUtils.signTransaction(tagFromIntent, 0x00, hashedTransaction);
 
             Log.d(Constraints.TAG, "signed transaction: " + Utils.bytesToHex(signatureData));
@@ -99,18 +83,6 @@ public class EthereumUtils {
 
             s = getCanonicalisedS(r, s);
             Log.d(TAG, "s canonicalised: " + Utils.bytesToHex(s));
-
-//            ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
-//            byte[] pubKey = Utils.hexStringToByteArray(publicKey);
-//            byte[] prefix ={
-//                    0x04
-//            };
-//            pubKey = Utils.combineByteArrays(prefix, pubKey);
-//
-//            signer.init(false, new ECPublicKeyParameters(curve.getCurve().decodePoint(pubKey), domain));
-//            signer.init(false, bpubKey);
-//            final boolean b = signer.verifySignature(hashedTransaction, new BigInteger(1, r), new BigInteger(1, s));
-//            Log.d(TAG, "###########SIGNATURE: " + b);
 
             byte v = getV(publicKey, hashedTransaction, r, s);
             Log.d(TAG, "v: " + v);
@@ -152,8 +124,9 @@ public class EthereumUtils {
         EthGetTransactionCount ethGetTransactionCount = null;
         try {
             ethGetTransactionCount = web3j.ethGetTransactionCount(
-                    etherAddress, DefaultBlockParameterName.LATEST).send();
+                    etherAddress, DefaultBlockParameterName.PENDING).send();
 
+            Log.d(TAG, "Nonce: " + ethGetTransactionCount.getTransactionCount());
             return ethGetTransactionCount.getTransactionCount();
         } catch (IOException e) {
             Log.e(TAG, "exception while getting next nonce", e);
