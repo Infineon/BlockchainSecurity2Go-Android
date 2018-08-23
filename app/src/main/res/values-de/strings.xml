@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_send_transaction">ETH Überweisung durchführen</string>
+    <string name="hold_card">Halte eine Karte an die Rückseite des Gerätes</string>
+    <string name="send_eth">Sende ETH</string>
+    <string name="recipient_address">Empfänger Adresse</string>
+    <string name="amount_eth">Anzahl ETH</string>
+    <string name="gas_price">Gas Preis</string>
+    <string name="gas_limit">Gas Limit</string>
+    <string name="hold_card_payment">Halte eine Karte an die Rückseite des Gerätes um eine Zahlung durchzuführen
+    </string>
+    <string name="card_found">Karte gefunden</string>
+    <string name="send_success">ETH Sent</string>
+</resources>

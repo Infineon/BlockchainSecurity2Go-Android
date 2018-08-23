@@ -17,7 +17,7 @@
             android:id="@+id/holdCard"
             android:layout_width="335dp"
             android:layout_height="wrap_content"
-            android:text="Hold a card against the back of your device"
+            android:text="@string/hold_card"
             android:textStyle="bold"
             android:textSize="20sp"
             android:gravity="center_horizontal"
@@ -45,13 +45,12 @@
             android:layout_below="@+id/qrCode" android:textIsSelectable="true" android:textAlignment="center"
             android:textSize="16sp"/>
     <Button
-            android:text="Send ETH"
             android:layout_width="152dp"
             android:layout_height="59dp"
             android:id="@+id/send"
             android:onClick="onSend" android:visibility="visible"
             android:enabled="false" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="19dp" android:textSize="18sp"/>
+            android:layout_marginBottom="19dp" android:textSize="18sp" android:text="@string/send_eth"/>
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"

@@ -1,5 +1,14 @@
 <resources>
-    <string name="app_name">Infineon Android App</string>
-    <string name="title_activity_nfc_read">NfcRead</string>
-    <string name="title_activity_send_transaction">SendTransaction</string>
+    <string name="app_name" translatable="false">Coinfineon</string>
+    <string name="title_activity_nfc_read" translatable="false">NfcRead</string>
+    <string name="title_activity_send_transaction">Send ETH Transaction</string>
+    <string name="hold_card">Hold a card against the back of your device</string>
+    <string name="send_eth">Send ETH</string>
+    <string name="recipient_address">Recipient Address</string>
+    <string name="amount_eth">Amount ETH</string>
+    <string name="gas_price">Gas Price</string>
+    <string name="gas_limit">Gas Limit</string>
+    <string name="hold_card_payment">Hold a card against the back of your device to make payment</string>
+    <string name="card_found">Card found</string>
+    <string name="send_success">ETH Sent</string>
 </resources>

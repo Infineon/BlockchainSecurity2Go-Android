@@ -12,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import co.coinfinity.infineonandroidapp.common.Utils;
+import co.coinfinity.infineonandroidapp.common.ByteUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
@@ -23,6 +23,7 @@ import org.web3j.crypto.Keys;
 
 import java.util.Locale;
 
+import static co.coinfinity.AppConstants.CARD_ID;
 import static co.coinfinity.AppConstants.TAG;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,16 +31,15 @@ public class MainActivity extends AppCompatActivity {
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
 
-    private TextView holdCard;
     private TextView ethAddressView;
     private TextView balance;
     private ImageView qrCodeView;
+    private TextView holdCard;
     private Button sendBtn;
     private ProgressBar progressBar;
 
     private String pubKeyString;
     private String ethAddress;
-    private String balanceText;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
 
@@ -48,11 +48,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ethAddressView = (TextView) findViewById(R.id.ethAddress);
-        balance = (TextView) findViewById(R.id.balance);
-        qrCodeView = (ImageView) findViewById(R.id.qrCode);
-        sendBtn = (Button) findViewById(R.id.send);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        ethAddressView = findViewById(R.id.ethAddress);
+        balance = findViewById(R.id.balance);
+        qrCodeView = findViewById(R.id.qrCode);
+        sendBtn = findViewById(R.id.send);
+        progressBar = findViewById(R.id.progressBar);
+        holdCard = findViewById(R.id.holdCard);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
@@ -93,45 +94,35 @@ public class MainActivity extends AppCompatActivity {
     private void resolveIntent(Intent intent) {
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        Log.d(TAG, "Tag found: " + tagFromIntent.toString());
-        Log.d(TAG, "Id: " + Utils.bytesToHex(tagFromIntent.getId()));
-        for (String tech : tagFromIntent.getTechList()) {
-            Log.d(TAG, "Tech: " + tech);
-        }
+        logTagInfo(tagFromIntent);
 
         IsoDep isoDep = IsoDep.get(tagFromIntent);
-        try {
-            isoDep.connect();
-            pubKeyString = NfcUtils.getPublicKey(isoDep, 0x00);
-            Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
-            isoDep.close();
-        } catch (Exception e) {
-            Log.e(TAG, "exception while reading pubkey: ", e);
-        }
 
+        pubKeyString = NfcUtils.getPublicKey(isoDep, CARD_ID);
+        Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
         // use web3j to format this public key as ETH address
         ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
         ethAddressView.setText(ethAddress);
         Log.d(TAG, "ETH address: " + ethAddress);
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
+        holdCard.setText(R.string.card_found);
 
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
                 while (true) {
-                    final EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
-                    balanceText = balance.toString();
-                    final TransactionPriceBean transactionPriceBean = coinfinityClient.readEthPriceFromApi("0", "0", balance.getEther().toString());
+                    EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
+                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi("0", "0", balance.getEther().toString());
                     if (transactionPriceBean != null) {
-                        balanceText += String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro());
+                        mHandler.post(() -> {
+                            this.balance.setText(String.format("%s%s", balance.toString(),
+                                    String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
+                            if (!sendBtn.isEnabled()) {
+                                sendBtn.setEnabled(true);
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }
+                        });
                     }
-                    mHandler.post(() -> {
-                        this.balance.setText(balanceText);
-                        if (!sendBtn.isEnabled()) {
-                            sendBtn.setEnabled(true);
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                    });
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
@@ -140,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         thread.start();
+    }
+
+    private void logTagInfo(Tag tagFromIntent) {
+        Log.d(TAG, "Tag found: " + tagFromIntent.toString());
+        Log.d(TAG, "Id: " + ByteUtils.bytesToHex(tagFromIntent.getId()));
+        for (String tech : tagFromIntent.getTechList()) {
+            Log.d(TAG, "Tech: " + tech);
+        }
     }
 
     public void onSend(View view) {

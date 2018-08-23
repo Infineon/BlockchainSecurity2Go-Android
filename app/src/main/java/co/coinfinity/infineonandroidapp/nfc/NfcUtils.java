@@ -4,17 +4,17 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.support.constraint.Constraints;
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.common.Utils;
+import co.coinfinity.infineonandroidapp.common.ByteUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
-import static co.coinfinity.infineonandroidapp.common.Utils.combineByteArrays;
+import static co.coinfinity.infineonandroidapp.common.ByteUtils.combineByteArrays;
 
 public class NfcUtils {
 
-    public static String getPublicKey(IsoDep isoDep, int parameter) throws IOException {
+    public static String getPublicKey(IsoDep isoDep, int parameter) {
 
         final byte[] GET_PUB_KEY = {
                 (byte) 0x00, // CLA Class
@@ -24,8 +24,19 @@ public class NfcUtils {
                 (byte) 0x00, // Length
         };
 
-        byte[] response = isoDep.transceive(GET_PUB_KEY);
-        String hex = Utils.bytesToHex(response);
+        byte[] response = new byte[0];
+        try {
+            isoDep.connect();
+
+            response = isoDep.transceive(GET_PUB_KEY);
+
+            isoDep.close();
+
+        } catch (IOException e) {
+            Log.e(TAG, "exception while reading pubkey via NFC ", e);
+        }
+
+        String hex = ByteUtils.bytesToHex(response);
         checkErrorCode(hex);
 
         Log.d(TAG, "response GET_PUB_KEY: " + hex);
@@ -39,7 +50,7 @@ public class NfcUtils {
                 (byte) 0x18, // INS Instruction
                 (byte) parameter, // P1  Parameter 1
                 (byte) 0x00, // P2  Parameter 2
-                (byte) data.length // Lc
+                (byte) data.length // LC
         };
 
         final byte[] lastByte = {
@@ -52,18 +63,18 @@ public class NfcUtils {
 
             final byte[] GEN_SIGN_WITH_DATA = combineByteArrays(GEN_SIGN, combineByteArrays(data, lastByte));
 
-            Log.d(TAG, "GEN_SIGN_WITH_DATA: " + Utils.bytesToHex(GEN_SIGN_WITH_DATA));
+            Log.d(TAG, "GEN_SIGN_WITH_DATA: " + ByteUtils.bytesToHex(GEN_SIGN_WITH_DATA));
             byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
 
             isoDep.close();
 
-            String signedTransaction = Utils.bytesToHex(response);
+            String signedTransaction = ByteUtils.bytesToHex(response);
             checkErrorCode(signedTransaction);
 
             return Arrays.copyOfRange(response, 0, response.length - 2);
 
         } catch (Exception e) {
-            Log.e(Constraints.TAG, "exception while signing transaction via NFC", e);
+            Log.e(Constraints.TAG, "exception while signing transaction via NFC ", e);
         }
 
         return null;

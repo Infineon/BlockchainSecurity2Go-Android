@@ -3,11 +3,8 @@ package co.coinfinity.infineonandroidapp.ethereum.bean;
 import java.util.Locale;
 
 public class TransactionPriceBean {
-    Double priceInEuro;
-    Double txFeeInEuro;
-
-    public TransactionPriceBean() {
-    }
+    private Double priceInEuro;
+    private Double txFeeInEuro;
 
     public TransactionPriceBean(Double priceInEuro, Double txFeeInEuro) {
         this.priceInEuro = priceInEuro;

@@ -3,11 +3,10 @@ package co.coinfinity.infineonandroidapp.qrcode;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 public class QrCodeScanner {
 
-    public static void scanQrCode(View view, AppCompatActivity appCompatActivity) {
+    public static void scanQrCode(AppCompatActivity appCompatActivity) {
         try {
 
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");

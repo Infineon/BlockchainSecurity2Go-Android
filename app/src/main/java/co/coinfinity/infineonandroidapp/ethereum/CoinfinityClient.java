@@ -11,24 +11,20 @@ import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class CoinfinityClient extends JsonHttpResponseHandler {
-
-    private static final String ETHEUR = "ETHEUR";
-    private static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = "https://coinfinity.co/price/" + ETHEUR;
-    private static final String ASK = "ask";
 
     private TransactionPriceBean transactionPriceBean;
     private String gasPriceStr;
     private String gasLimitStr;
-    private String amount;
+    private String etherAmount;
 
 
-    public TransactionPriceBean readEthPriceFromApi(String gasPriceStr, String gasLimitStr, String amount) {
+    public TransactionPriceBean readEuroPriceFromApi(String gasPriceStr, String gasLimitStr, String etherAmount) {
         this.gasPriceStr = gasPriceStr;
         this.gasLimitStr = gasLimitStr;
-        this.amount = amount;
+        this.etherAmount = etherAmount;
 
         HttpUtils.get(HTTPS_COINFINITY_CO_PRICE_XBTEUR, null, this);
 
@@ -37,17 +33,16 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
 
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                Log.d(TAG, "XBTEUR Price: " + response);
         try {
             JSONObject serverResp = new JSONObject(response.toString());
 
-            if (!gasPriceStr.equals("") && !gasLimitStr.equals("") && !amount.equals("")) {
+            if (!gasPriceStr.equals("") && !gasLimitStr.equals("") && !etherAmount.equals("")) {
                 BigDecimal gasPrice = new BigDecimal(gasPriceStr);
                 BigDecimal gasLimit = new BigDecimal(gasLimitStr);
                 final BigDecimal weiGasPrice = Convert.toWei(gasPrice.multiply(gasLimit), Convert.Unit.GWEI);
                 final BigDecimal ethGasPrice = Convert.fromWei(weiGasPrice, Convert.Unit.ETHER);
 
-                transactionPriceBean = new TransactionPriceBean(serverResp.getDouble(ASK) * Double.parseDouble(amount), ethGasPrice.floatValue() * serverResp.getDouble(ASK));
+                transactionPriceBean = new TransactionPriceBean(serverResp.getDouble(ASK) * Double.parseDouble(etherAmount), ethGasPrice.floatValue() * serverResp.getDouble(ASK));
             }
         } catch (JSONException e) {
             Log.e(TAG, "exception while reading price info from API: ", e);

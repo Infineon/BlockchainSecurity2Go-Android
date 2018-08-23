@@ -1,6 +1,6 @@
 package co.coinfinity.infineonandroidapp.common;
 
-public class Utils {
+public class ByteUtils {
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
     public static String bytesToHex(byte[] bytes) {

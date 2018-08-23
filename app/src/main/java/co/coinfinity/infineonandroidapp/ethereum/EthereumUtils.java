@@ -3,7 +3,7 @@ package co.coinfinity.infineonandroidapp.ethereum;
 import android.nfc.Tag;
 import android.support.constraint.Constraints;
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.common.Utils;
+import co.coinfinity.infineonandroidapp.common.ByteUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.web3j.crypto.*;
@@ -19,21 +19,18 @@ import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
 import static android.support.constraint.Constraints.TAG;
-import static co.coinfinity.AppConstants.ROPSTEN_CHAIN_ID;
-import static co.coinfinity.AppConstants.ROPSTEN_TESTNET;
+import static co.coinfinity.AppConstants.*;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
 public class EthereumUtils {
 
     public static EthBalanceBean getBalance(String ethAddress) {
-        // connect to node
-        Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_TESTNET));
+        Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
         BigDecimal ether = Convert.fromWei(wei.toString(), Convert.Unit.ETHER);
@@ -61,42 +58,35 @@ public class EthereumUtils {
     }
 
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
-        // connect to node
-        Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_TESTNET));
+        Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value);
 
-        //SIGN transaction
         String hexValue = null;
         try {
-            byte[] encodedTransaction = encode(rawTransaction, ROPSTEN_CHAIN_ID);
+            byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-            final byte[] signatureData = NfcUtils.signTransaction(tagFromIntent, 0x00, hashedTransaction);
+            final byte[] signedTransaction = NfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
 
-            Log.d(Constraints.TAG, "signed transaction: " + Utils.bytesToHex(signatureData));
+            Log.d(Constraints.TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
 
-            byte[] r = Bytes.trimLeadingZeroes(extractR(signatureData));
-            byte[] s = Bytes.trimLeadingZeroes(extractS(signatureData));
-            Log.d(TAG, "r: " + Utils.bytesToHex(r));
-            Log.d(TAG, "s: " + Utils.bytesToHex(s));
+            byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction));
+            byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction));
+            Log.d(TAG, "r: " + ByteUtils.bytesToHex(r));
+            Log.d(TAG, "s: " + ByteUtils.bytesToHex(s));
 
             s = getCanonicalisedS(r, s);
-            Log.d(TAG, "s canonicalised: " + Utils.bytesToHex(s));
+            Log.d(TAG, "s canonicalised: " + ByteUtils.bytesToHex(s));
 
             byte v = getV(publicKey, hashedTransaction, r, s);
             Log.d(TAG, "v: " + v);
 
-            Sign.SignatureData signature = new Sign.SignatureData(v, r, s);
-            signature = TransactionEncoder.createEip155SignatureData(signature, ROPSTEN_CHAIN_ID);
+            Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
+            signatureData = TransactionEncoder.createEip155SignatureData(signatureData, CHAIN_ID);
 
-            //TODO calls private method of web3j lib
-            Class c = TransactionEncoder.class;
-            Object obj = c.newInstance();
-            Method m = c.getDeclaredMethod("encode", RawTransaction.class, Sign.SignatureData.class);
-            m.setAccessible(true);
-            final byte[] invoke = (byte[]) m.invoke(obj, rawTransaction, signature);
-            hexValue = Numeric.toHexString(invoke);
+            //calls private method form web3j lib
+            hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
             Log.d(TAG, "hexValue: " + hexValue);
 
         } catch (Exception e) {
@@ -160,21 +150,10 @@ public class EthereumUtils {
         int recId = -1;
         for (int i = 0; i < 4; i++) {
 
-            BigInteger k = null;
-            //TODO calls private method of web3j lib
-            Class c = Sign.class;
-            Object obj = null;
-            try {
-                obj = c.newInstance();
-                Method m = c.getDeclaredMethod("recoverFromSignature", int.class, ECDSASignature.class, byte[].class);
-                m.setAccessible(true);
+            //calls private method form web3j lib
+            BigInteger k = Sign.recoverFromSignature(i, sig, hashedTransaction);
 
-                k = (BigInteger) m.invoke(obj, i, sig, hashedTransaction);
-            } catch (Exception e) {
-                Log.e(TAG, "exception while calling private method recoverFromSignature", e);
-            }
-
-            if (k != null && k.equals(new BigInteger(1, Utils.hexStringToByteArray(publicKey)))) {
+            if (k != null && k.equals(new BigInteger(1, ByteUtils.hexStringToByteArray(publicKey)))) {
                 recId = i;
                 break;
             }

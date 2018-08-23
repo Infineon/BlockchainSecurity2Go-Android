@@ -45,7 +45,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_transaction);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -55,19 +55,18 @@ public class SendTransactionActivity extends AppCompatActivity {
         mPendingIntent = getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        recipientAddressTxt = (TextView) findViewById(R.id.recipientAddress);
-        amountTxt = (TextView) findViewById(R.id.amount);
-        gasPriceTxt = (TextView) findViewById(R.id.gasPrice);
-        gasLimitTxt = (TextView) findViewById(R.id.gasLimit);
-
-        priceInEuroTxt = (TextView) findViewById(R.id.priceInEuro);
+        recipientAddressTxt = findViewById(R.id.recipientAddress);
+        amountTxt = findViewById(R.id.amount);
+        gasPriceTxt = findViewById(R.id.gasPrice);
+        gasLimitTxt = findViewById(R.id.gasLimit);
+        priceInEuroTxt = findViewById(R.id.priceInEuro);
 
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
                 while (true) {
                     mHandler.post(() -> {
-                        TransactionPriceBean transactionPriceBean = coinfinityClient.readEthPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
                         if (transactionPriceBean != null)
                             priceInEuroTxt.setText(transactionPriceBean.toString());
                     });
@@ -117,8 +116,7 @@ public class SendTransactionActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, response.getError().getMessage(),
                         Toast.LENGTH_LONG).show());
             } else {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, "ETH sent!",
-                        Toast.LENGTH_LONG).show());
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_LONG).show());
             }
         });
 
@@ -127,7 +125,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     }
 
     public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(view, this);
+        QrCodeScanner.scanQrCode(this);
     }
 
     @Override
