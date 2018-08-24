@@ -50,7 +50,7 @@ public class EthBalanceBean {
 
     @Override
     public String toString() {
-        if (ether != null && unconfirmedEther != null && ether.toString().equals(unconfirmedEther.toString())) {
+        if (ether != null && unconfirmedEther != null && unconfirmedEther.equals(new BigDecimal("0"))) {
             return ether + " ETH\n" + wei + " WEI";
         }
 

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
+import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
@@ -110,7 +111,7 @@ public class SendTransactionActivity extends AppCompatActivity {
             final BigDecimal value = Convert.toWei(amountTxt.getText().toString(), Convert.Unit.ETHER);
             final BigDecimal gasPrice = Convert.toWei(gasPriceTxt.getText().toString(), Convert.Unit.GWEI);
             final BigDecimal gasLimit = Convert.toWei(gasLimitTxt.getText().toString(), Convert.Unit.WEI);
-            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString);
+            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils());
 
             if (response.getError() != null) {
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, response.getError().getMessage(),

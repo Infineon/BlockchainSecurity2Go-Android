@@ -35,7 +35,7 @@ public class EthereumUtils {
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
         BigDecimal ether = Convert.fromWei(wei.toString(), Convert.Unit.ETHER);
 
-        BigInteger unconfirmedWei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.PENDING);
+        BigInteger unconfirmedWei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.PENDING).subtract(wei);
         BigDecimal unconfirmedEther = Convert.fromWei(unconfirmedWei.toString(), Convert.Unit.ETHER);
 
         return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
@@ -57,7 +57,7 @@ public class EthereumUtils {
         return wei;
     }
 
-    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey) {
+    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey, NfcUtils nfcUtils) {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
@@ -67,7 +67,7 @@ public class EthereumUtils {
         try {
             byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-            final byte[] signedTransaction = NfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
+            final byte[] signedTransaction = nfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
 
             Log.d(Constraints.TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
 

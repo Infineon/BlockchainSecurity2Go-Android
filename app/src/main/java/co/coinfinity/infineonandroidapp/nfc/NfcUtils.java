@@ -14,7 +14,7 @@ import static co.coinfinity.infineonandroidapp.common.ByteUtils.combineByteArray
 
 public class NfcUtils {
 
-    public static String getPublicKey(IsoDep isoDep, int parameter) {
+    public String getPublicKey(IsoDep isoDep, int parameter) {
 
         final byte[] GET_PUB_KEY = {
                 (byte) 0x00, // CLA Class
@@ -43,7 +43,7 @@ public class NfcUtils {
         return hex.subSequence(2, hex.length() - 4).toString();
     }
 
-    public static byte[] signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
+    public byte[] signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
@@ -80,7 +80,7 @@ public class NfcUtils {
         return null;
     }
 
-    private static void checkErrorCode(String response) {
+    private void checkErrorCode(String response) {
         if (response.length() < 4) {
             throw new IllegalArgumentException("Response from card has no error code!");
         } else {

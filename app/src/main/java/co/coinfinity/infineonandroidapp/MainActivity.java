@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
-        pubKeyString = NfcUtils.getPublicKey(isoDep, CARD_ID);
+        pubKeyString = new NfcUtils().getPublicKey(isoDep, CARD_ID);
         Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
         // use web3j to format this public key as ETH address
         ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
