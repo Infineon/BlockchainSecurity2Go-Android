@@ -49,8 +49,18 @@
             android:layout_height="59dp"
             android:id="@+id/send"
             android:onClick="onSend" android:visibility="visible"
-            android:enabled="false" android:layout_centerHorizontal="true" android:layout_alignParentBottom="true"
-            android:layout_marginBottom="19dp" android:textSize="18sp" android:text="@string/send_eth"/>
+            android:enabled="false"
+            android:textSize="18sp" android:text="@string/send_eth"
+            android:layout_alignParentBottom="true" android:layout_marginBottom="12dp"
+            android:layout_alignStart="@+id/holdCard"/>
+    <Button
+            android:layout_width="152dp"
+            android:layout_height="59dp"
+            android:id="@+id/sendErc20"
+            android:onClick="onSendErc20" android:visibility="visible"
+            android:enabled="false"
+            android:textSize="18sp" android:text="SEND ERC20" android:layout_alignEnd="@+id/holdCard"
+            android:layout_alignTop="@+id/send"/>
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"

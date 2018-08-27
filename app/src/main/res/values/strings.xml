@@ -11,4 +11,5 @@
     <string name="hold_card_payment">Hold a card against the back of your device to make payment</string>
     <string name="card_found">Card found</string>
     <string name="send_success">ETH Sent</string>
+    <string name="title_activity_send_erc20_tokens">Send ERC 20 Tokens</string>
 </resources>

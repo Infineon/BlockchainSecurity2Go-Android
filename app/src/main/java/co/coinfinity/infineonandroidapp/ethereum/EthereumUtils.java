@@ -57,11 +57,11 @@ public class EthereumUtils {
         return wei;
     }
 
-    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey, NfcUtils nfcUtils) {
+    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey, NfcUtils nfcUtils, String data) {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
-        RawTransaction rawTransaction = RawTransaction.createEtherTransaction(
-                getNextNonce(web3, from), gasPrice, gasLimit, to, value);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(
+                getNextNonce(web3, from), gasPrice, gasLimit, to, value, data);
 
         String hexValue = null;
         try {

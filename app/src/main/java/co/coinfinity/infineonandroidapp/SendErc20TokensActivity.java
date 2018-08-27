@@ -9,44 +9,38 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
-import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
-import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
-import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
 
-public class SendTransactionActivity extends AppCompatActivity {
+public class SendErc20TokensActivity extends AppCompatActivity {
+
+    private String pubKeyString;
+    private String ethAddress;
 
     private TextView recipientAddressTxt;
     private TextView amountTxt;
     private TextView gasPriceTxt;
     private TextView gasLimitTxt;
-
-    private TextView priceInEuroTxt;
-
-    private String pubKeyString;
-    private String ethAddress;
+    private TextView contractAddress;
+    private TextView currentBalance;
 
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
 
-    private CoinfinityClient coinfinityClient = new CoinfinityClient();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_send_transaction);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_send_erc20_tokens);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -60,21 +54,34 @@ public class SendTransactionActivity extends AppCompatActivity {
         amountTxt = findViewById(R.id.amount);
         gasPriceTxt = findViewById(R.id.gasPrice);
         gasLimitTxt = findViewById(R.id.gasLimit);
-        priceInEuroTxt = findViewById(R.id.priceInEuro);
+        contractAddress = findViewById(R.id.contractAddress);
+
+        currentBalance = findViewById(R.id.currentBalance);
+
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            pubKeyString = b.getString("pubKey");
+            ethAddress = b.getString("ethAddress");
+        }
 
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
                 while (true) {
                     mHandler.post(() -> {
-                        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                        BigInteger transactionPriceBean = null;
+                        try {
+                            transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
+                        } catch (Exception e) {
+                            Log.e(TAG, "exception while reading ERC20 Balance: ", e);
+                        }
                         if (transactionPriceBean != null)
-                            priceInEuroTxt.setText(transactionPriceBean.toString());
+                            currentBalance.setText(String.format("Current Token Balance: %s", transactionPriceBean));
                     });
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
-                Log.e(TAG, "exception while reading price info from API in thread: ", e);
+                Log.e(TAG, "exception while reading ERC20 Balance: ", e);
             }
         });
 
@@ -93,31 +100,29 @@ public class SendTransactionActivity extends AppCompatActivity {
         if (mAdapter != null) mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
     }
 
+
     @Override
     public void onNewIntent(Intent intent) {
         resolveIntent(intent);
     }
 
     private void resolveIntent(Intent intent) {
-        Bundle b = getIntent().getExtras();
-        if (b != null) {
-            pubKeyString = b.getString("pubKey");
-            ethAddress = b.getString("ethAddress");
-        }
-
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         Thread thread = new Thread(() -> {
-            final BigDecimal value = Convert.toWei(amountTxt.getText().toString(), Convert.Unit.ETHER);
             final BigDecimal gasPrice = Convert.toWei(gasPriceTxt.getText().toString(), Convert.Unit.GWEI);
             final BigDecimal gasLimit = Convert.toWei(gasLimitTxt.getText().toString(), Convert.Unit.WEI);
-            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils(), "");
+            try {
+                final TransactionReceipt response = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
+                        , recipientAddressTxt.getText().toString(), new BigInteger(amountTxt.getText().toString()), gasPrice.toBigInteger(), gasLimit.toBigInteger());
 
-            if (response.getError() != null) {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, response.getError().getMessage(),
-                        Toast.LENGTH_LONG).show());
-            } else {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_LONG).show());
+                if (response != null) {
+                    this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, response.getStatus(),
+                            Toast.LENGTH_LONG).show());
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "exception while sending ERC20 tokens: ", e);
             }
         });
 
@@ -125,21 +130,4 @@ public class SendTransactionActivity extends AppCompatActivity {
         finish();
     }
 
-    public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(this);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
-
-            if (resultCode == RESULT_OK) {
-                recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
-            }
-            if (resultCode == RESULT_CANCELED) {
-                //handle cancel
-            }
-        }
-    }
 }

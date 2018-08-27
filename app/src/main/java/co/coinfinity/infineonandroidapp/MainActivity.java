@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView qrCodeView;
     private TextView holdCard;
     private Button sendBtn;
+    private Button sendErc20Btn;
     private ProgressBar progressBar;
 
     private String pubKeyString;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
         balance = findViewById(R.id.balance);
         qrCodeView = findViewById(R.id.qrCode);
         sendBtn = findViewById(R.id.send);
+        sendErc20Btn = findViewById(R.id.sendErc20);
         progressBar = findViewById(R.id.progressBar);
         holdCard = findViewById(R.id.holdCard);
 
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                     String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
                             if (!sendBtn.isEnabled()) {
                                 sendBtn.setEnabled(true);
+                                sendErc20Btn.setEnabled(true);
                                 progressBar.setVisibility(View.INVISIBLE);
                             }
                         });
@@ -143,6 +146,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSend(View view) {
         Intent intent = new Intent(this, SendTransactionActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("pubKey", pubKeyString);
+        bundle.putString("ethAddress", ethAddress);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public void onSendErc20(View view) {
+        Intent intent = new Intent(this, SendErc20TokensActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("pubKey", pubKeyString);
         bundle.putString("ethAddress", ethAddress);

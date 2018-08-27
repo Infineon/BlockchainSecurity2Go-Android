@@ -32,7 +32,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.guava:guava:26.0-jre'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.60'
-    implementation 'com.github.UnknownEnergy:web3j:android-SNAPSHOT'
+    implementation 'com.github.UnknownEnergy:web3j:android_with_erc20_contract-SNAPSHOT'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.android.support:design:27.1.1'
