@@ -108,9 +108,12 @@ public class SendTransactionActivity extends AppCompatActivity {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         Thread thread = new Thread(() -> {
-            final BigDecimal value = Convert.toWei(amountTxt.getText().toString(), Convert.Unit.ETHER);
-            final BigDecimal gasPrice = Convert.toWei(gasPriceTxt.getText().toString(), Convert.Unit.GWEI);
-            final BigDecimal gasLimit = Convert.toWei(gasLimitTxt.getText().toString(), Convert.Unit.WEI);
+            final String valueStr = amountTxt.getText().toString();
+            final BigDecimal value = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
+            final String gasPriceStr = gasPriceTxt.getText().toString();
+            final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
+            final String gasLimitStr = gasLimitTxt.getText().toString();
+            final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
             final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils(), "");
 
             if (response.getError() != null) {

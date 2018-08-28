@@ -68,13 +68,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         Thread thread = new Thread(() -> {
             try {
                 while (true) {
+                    BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
                     mHandler.post(() -> {
-                        BigInteger transactionPriceBean = null;
-                        try {
-                            transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
-                        } catch (Exception e) {
-                            Log.e(TAG, "exception while reading ERC20 Balance: ", e);
-                        }
                         if (transactionPriceBean != null)
                             currentBalance.setText(String.format("Current Token Balance: %s", transactionPriceBean));
                     });
@@ -112,18 +107,15 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         Thread thread = new Thread(() -> {
             final BigDecimal gasPrice = Convert.toWei(gasPriceTxt.getText().toString(), Convert.Unit.GWEI);
             final BigDecimal gasLimit = Convert.toWei(gasLimitTxt.getText().toString(), Convert.Unit.WEI);
-            try {
-                final TransactionReceipt response = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
-                        , recipientAddressTxt.getText().toString(), new BigInteger(amountTxt.getText().toString()), gasPrice.toBigInteger(), gasLimit.toBigInteger());
 
-                if (response != null) {
-                    this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, response.getStatus(),
-                            Toast.LENGTH_LONG).show());
-                }
+            final TransactionReceipt response = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
+                    , recipientAddressTxt.getText().toString(), new BigInteger(amountTxt.getText().toString()), gasPrice.toBigInteger(), gasLimit.toBigInteger());
 
-            } catch (Exception e) {
-                Log.e(TAG, "exception while sending ERC20 tokens: ", e);
+            if (response != null) {
+                this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, response.getStatus(),
+                        Toast.LENGTH_LONG).show());
             }
+
         });
 
         thread.start();

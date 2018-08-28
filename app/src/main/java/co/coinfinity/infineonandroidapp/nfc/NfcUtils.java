@@ -37,13 +37,17 @@ public class NfcUtils {
         }
 
         String hex = ByteUtils.bytesToHex(response);
-        checkErrorCode(hex);
+
+        if (!checkKeyPairAvailable(response)) {
+            generateKeyPair(isoDep, 0x00);
+            return getPublicKey(isoDep, parameter);
+        }
 
         Log.d(TAG, "response GET_PUB_KEY: " + hex);
         return hex.subSequence(2, hex.length() - 4).toString();
     }
 
-    public byte[] signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
+    public byte[] signTransaction(Tag tag, int parameter, byte[] data) {
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
@@ -68,8 +72,7 @@ public class NfcUtils {
 
             isoDep.close();
 
-            String signedTransaction = ByteUtils.bytesToHex(response);
-            checkErrorCode(signedTransaction);
+            checkErrorCode(response);
 
             return Arrays.copyOfRange(response, 0, response.length - 2);
 
@@ -80,15 +83,62 @@ public class NfcUtils {
         return null;
     }
 
-    private void checkErrorCode(String response) {
-        if (response.length() < 4) {
-            throw new IllegalArgumentException("Response from card has no error code!");
-        } else {
-            if (response.substring(response.length() - 4).equals("9000")) {
-                return;
-            }
-            throw new IllegalArgumentException("Error! Card respond with an error code of " + response.substring(response.length() - 4));
+    public byte[] generateKeyPair(IsoDep isoDep, int parameter) {
+
+        final byte[] GEN_KEY_PAIR = {
+                (byte) 0x00, // CLA Class
+                (byte) 0x02, // INS Instruction
+                (byte) parameter, // P1  Parameter 1
+                (byte) 0x00, // P2  Parameter 2
+                (byte) 0x00, // Lc
+        };
+
+        byte[] response = new byte[0];
+        try {
+            isoDep.connect();
+
+            Log.d(TAG, "generating new key pair via NFC");
+            response = isoDep.transceive(GEN_KEY_PAIR);
+
+            isoDep.close();
+
+        } catch (IOException e) {
+            Log.e(TAG, "exception while generating key pair via NFC ", e);
         }
+
+        checkErrorCode(response);
+
+        return Arrays.copyOfRange(response, 0, response.length - 2);
+    }
+
+    private boolean checkKeyPairAvailable(byte[] response) {
+        final byte[] errorCode = getErrorCode(response);
+
+        if (errorCode == null) {
+            return true;
+        }
+
+        return errorCode[0] != 106 || errorCode[1] != -120;
+    }
+
+    private void checkErrorCode(byte[] response) {
+        final byte[] errorCode = getErrorCode(response);
+        if (errorCode != null) {
+            throw new IllegalArgumentException("Error! Card respond with an error code of " + ByteUtils.bytesToHex(errorCode));
+        }
+    }
+
+    private byte[] getErrorCode(byte[] response) {
+        final byte[] statusCode = Arrays.copyOfRange(response, response.length - 2, response.length);
+        if (statusCode.length != 2) {
+            throw new IllegalArgumentException("Response from card has no status code!");
+        }
+
+        if (statusCode[0] != -112 || statusCode[1] != 0) {
+            return statusCode;
+        }
+
+        return null;
     }
 
     //    byte[] SELECT = {

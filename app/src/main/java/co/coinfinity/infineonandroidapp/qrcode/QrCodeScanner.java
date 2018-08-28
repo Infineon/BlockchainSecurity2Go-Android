@@ -8,7 +8,6 @@ public class QrCodeScanner {
 
     public static void scanQrCode(AppCompatActivity appCompatActivity) {
         try {
-
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); // "PRODUCT_MODE for bar codes
 
