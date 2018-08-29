@@ -17,7 +17,6 @@ import org.spongycastle.crypto.params.ECDomainParameters;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
 import org.spongycastle.crypto.signers.ECDSASigner;
 import org.spongycastle.crypto.signers.HMacDSAKCalculator;
-import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Int8;
 import org.web3j.crypto.Credentials;
@@ -59,12 +58,12 @@ public class EthereumUtilsTest {
     public void testContract() throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
         Voting contract = Voting.load(
-                "0x2a3b669106964538281432f88e9083FcfDBCA07a", web3j, credentials, GAS_PRICE, GAS_LIMIT);
+                "0x9A2E6e29A966221f040A9D02eF01Fcd5bD8d82ee", web3j, credentials, GAS_PRICE, GAS_LIMIT);
         System.out.println("TEST");
-        final TransactionReceipt voted = contract.give_vote(new Utf8String("da"), new Int8(2)).send();
+        final TransactionReceipt voted = contract.giveVote(new Utf8String("daa"), new Int8(2)).send();
         System.out.println(voted.getTransactionHash());
-        final Bool send = contract.get_status().send();
-        System.out.println(send.getValue());
+        final TransactionReceipt send = contract.getVote().send();
+        System.out.println(send.getStatus());
     }
 
     @Test
