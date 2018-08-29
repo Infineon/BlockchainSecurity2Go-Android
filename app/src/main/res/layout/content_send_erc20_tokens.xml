@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Contract Address" android:text="0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"
-                android:textSize="14sp" android:id="@+id/contractAddress"/>
+                android:textSize="14sp" android:id="@+id/contractAddress" android:enabled="false"/>
     </android.support.design.widget.TextInputLayout>
     <TextView
             android:text="Current Token Balance:"

@@ -36,13 +36,12 @@ public class NfcUtils {
             Log.e(TAG, "exception while reading pubkey via NFC ", e);
         }
 
-        String hex = ByteUtils.bytesToHex(response);
-
         if (!checkKeyPairAvailable(response)) {
             generateKeyPair(isoDep, 0x00);
             return getPublicKey(isoDep, parameter);
         }
 
+        String hex = ByteUtils.bytesToHex(response);
         Log.d(TAG, "response GET_PUB_KEY: " + hex);
         return hex.subSequence(2, hex.length() - 4).toString();
     }
@@ -167,14 +166,6 @@ public class NfcUtils {
 //            (byte) 0x00, // CLA Class
 //            (byte) 0x88, // INS Instruction
 //            (byte) 0x00, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x00, // Length
-//    };
-//    //        create Key
-//    final byte[] CREATE_KEY = {
-//            (byte) 0x00, // CLA Class
-//            (byte) 0x02, // INS Instruction
-//            (byte) 0x01, // P1  Parameter 1
 //            (byte) 0x00, // P2  Parameter 2
 //            (byte) 0x00, // Length
 //    };

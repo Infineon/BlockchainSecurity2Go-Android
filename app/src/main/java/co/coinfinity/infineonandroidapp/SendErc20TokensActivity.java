@@ -105,11 +105,14 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         Thread thread = new Thread(() -> {
-            final BigDecimal gasPrice = Convert.toWei(gasPriceTxt.getText().toString(), Convert.Unit.GWEI);
-            final BigDecimal gasLimit = Convert.toWei(gasLimitTxt.getText().toString(), Convert.Unit.WEI);
+            final String valueStr = amountTxt.getText().toString();
+            final String gasPriceStr = gasPriceTxt.getText().toString();
+            final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
+            final String gasLimitStr = gasLimitTxt.getText().toString();
+            final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
 
             final TransactionReceipt response = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
-                    , recipientAddressTxt.getText().toString(), new BigInteger(amountTxt.getText().toString()), gasPrice.toBigInteger(), gasLimit.toBigInteger());
+                    , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger());
 
             if (response != null) {
                 this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, response.getStatus(),

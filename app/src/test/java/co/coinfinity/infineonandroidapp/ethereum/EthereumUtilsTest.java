@@ -4,6 +4,7 @@ import android.nfc.Tag;
 import co.coinfinity.infineonandroidapp.common.ByteUtils;
 import co.coinfinity.infineonandroidapp.common.ByteWriter;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
+import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
 import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +17,15 @@ import org.spongycastle.crypto.params.ECDomainParameters;
 import org.spongycastle.crypto.params.ECPrivateKeyParameters;
 import org.spongycastle.crypto.signers.ECDSASigner;
 import org.spongycastle.crypto.signers.HMacDSAKCalculator;
+import org.web3j.abi.datatypes.Bool;
+import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.generated.Int8;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECDSASignature;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.utils.Numeric;
 
@@ -34,6 +39,8 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.web3j.tx.Contract.GAS_LIMIT;
+import static org.web3j.tx.ManagedTransaction.GAS_PRICE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EthereumUtilsTest {
@@ -47,6 +54,18 @@ public class EthereumUtilsTest {
     Tag tag;
     @Mock
     NfcUtils nfcUtils;
+
+    @Test
+    public void testContract() throws Exception {
+        Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
+        Voting contract = Voting.load(
+                "0x2a3b669106964538281432f88e9083FcfDBCA07a", web3j, credentials, GAS_PRICE, GAS_LIMIT);
+        System.out.println("TEST");
+        final TransactionReceipt voted = contract.give_vote(new Utf8String("da"), new Int8(2)).send();
+        System.out.println(voted.getTransactionHash());
+        final Bool send = contract.get_status().send();
+        System.out.println(send.getValue());
+    }
 
     @Test
     public void getBalanceTest() {
