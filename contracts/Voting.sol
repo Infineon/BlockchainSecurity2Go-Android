@@ -48,8 +48,8 @@ contract Voting {
 
         // everything ok add voter
         voters[msg.sender] = Voter(voterName, answer, true);
-
         voterCount++;
+
         return true;
     }
 
@@ -57,7 +57,7 @@ contract Voting {
     /* -------------------------------------------------------------------
     getVote - Return answer of voter if voter already voted or not.
     ------------------------------------------------------------------- */
-    function getVote() public returns (int8) {
+    function getVote() public view returns (int8) {
         //check if voter exists in mapping
         require(voters[msg.sender].exists);
 
