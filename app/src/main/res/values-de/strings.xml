@@ -27,4 +27,5 @@
     <string name="votes_count">Wähler: %s</string>
     <string name="title_activity_send_erc20_tokens">Sende ERC 20 Tokens</string>
     <string name="title_activity_voting">Wählen</string>
+    <string name="please_wait">Please wait...</string>
 </resources>

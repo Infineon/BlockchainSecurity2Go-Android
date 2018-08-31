@@ -9,15 +9,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.abi.datatypes.generated.Uint8;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
+import static co.coinfinity.AppConstants.TAG;
 
 public class VotingActivity extends AppCompatActivity {
 
@@ -27,6 +30,8 @@ public class VotingActivity extends AppCompatActivity {
     private RadioGroup radioGroup;
     private EditText votingName;
     private EditText contractAddress;
+    private EditText gasPrice;
+    private EditText gasLimit;
     private TextView answer1Votes;
     private TextView answer2Votes;
     private TextView answer3Votes;
@@ -47,6 +52,8 @@ public class VotingActivity extends AppCompatActivity {
         radioGroup = findViewById(R.id.radioGroup);
         votingName = findViewById(R.id.votingName);
         contractAddress = findViewById(R.id.contractAddress);
+        gasPrice = findViewById(R.id.gasPrice);
+        gasLimit = findViewById(R.id.gasLimit);
         answer1Votes = findViewById(R.id.answer1Votes);
         answer2Votes = findViewById(R.id.answer2Votes);
         answer3Votes = findViewById(R.id.answer3Votes);
@@ -93,14 +100,25 @@ public class VotingActivity extends AppCompatActivity {
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
 
-            final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress);
+            final BigInteger gasLimit = getGasLimitFromString();
+            final BigInteger gasPrice = getGasPriceFromString();
+
+            final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (votersAnswer == 0) {
-                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
-                        Toast.LENGTH_LONG).show());
                 mHandler.post(() -> {
                     progressBar.setVisibility(View.VISIBLE);
                 });
-                VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx + 1);
+                try {
+                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
+                            Toast.LENGTH_LONG).show());
+                    VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx + 1, gasPrice, gasLimit);
+                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
+                            Toast.LENGTH_LONG).show());
+                } catch (Exception e) {
+                    Log.e(TAG, "exception while voting: ", e);
+                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, e.getMessage(),
+                            Toast.LENGTH_LONG).show());
+                }
                 handleAfterVote(mHandler);
             }
         });
@@ -110,18 +128,21 @@ public class VotingActivity extends AppCompatActivity {
     }
 
     private void handleAfterVote(Handler mHandler) {
-        final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress);
+        final BigInteger gasLimit = getGasLimitFromString();
+        final BigInteger gasPrice = getGasPriceFromString();
+
+        final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
         if (votersAnswer != 0) {
             ((RadioButton) radioGroup.getChildAt(votersAnswer - 1)).setChecked(true);
             for (int i = 0; i < radioGroup.getChildCount(); i++) {
                 radioGroup.getChildAt(i).setEnabled(false);
             }
 
-            final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress);
+            final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             votingName.setText(votersName);
             votingName.setEnabled(false);
 
-            final List<Uint8> answerCounts = VotingUtils.getAnswerCounts(contractAddress.getText().toString(), ethAddress);
+            final List<Uint8> answerCounts = VotingUtils.getAnswerCounts(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             mHandler.post(() -> {
                 answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
                 answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
@@ -167,5 +188,29 @@ public class VotingActivity extends AppCompatActivity {
                 //handle cancel
             }
         }
+    }
+
+    private BigInteger getGasPriceFromString() {
+        String gasPriceStr = gasPrice.getText().toString();
+        BigInteger gasPrice;
+        if (gasPriceStr.equals("")) {
+            gasPrice = new BigInteger("0");
+        } else {
+            gasPrice = new BigInteger(gasPriceStr);
+        }
+
+        return gasPrice;
+    }
+
+    private BigInteger getGasLimitFromString() {
+        String gasLimitStr = gasLimit.getText().toString();
+        BigInteger gasLimit;
+        if (gasLimitStr.equals("")) {
+            gasLimit = new BigInteger("0");
+        } else {
+            gasLimit = new BigInteger(gasLimitStr);
+        }
+
+        return gasLimit;
     }
 }

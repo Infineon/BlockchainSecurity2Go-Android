@@ -13,26 +13,21 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.TransactionManager;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
 import static co.coinfinity.AppConstants.TAG;
-import static org.web3j.tx.Contract.GAS_LIMIT;
-import static org.web3j.tx.ManagedTransaction.GAS_PRICE;
 
 public class VotingUtils {
 
-    public static void vote(String contractAddress, Tag tag, String publicKey, String from, String votingName, int vote) {
-        Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from);
-        try {
-            contract.giveVote(new Utf8String(votingName), new Uint8(vote)).send();
-        } catch (Exception e) {
-            Log.e(TAG, "exception while voting: ", e);
-        }
+    public static void vote(String contractAddress, Tag tag, String publicKey, String from, String votingName, int vote, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+        Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit);
+        contract.giveVote(new Utf8String(votingName), new Uint8(vote)).send();
     }
 
-    public static int getVotersAnswer(String contractAddress, String from) {
-        Voting contract = prepareReadOnlyVotingContract(contractAddress, from);
+    public static int getVotersAnswer(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+        Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
             final Uint8 voted = contract.getVotersAnswer().send();
             return voted.getValue().intValue();
@@ -42,8 +37,8 @@ public class VotingUtils {
         return -1;
     }
 
-    public static String getVotersName(String contractAddress, String from) {
-        Voting contract = prepareReadOnlyVotingContract(contractAddress, from);
+    public static String getVotersName(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+        Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
             final Utf8String votersName = contract.getVotersName().send();
             return votersName.getValue();
@@ -53,8 +48,8 @@ public class VotingUtils {
         return null;
     }
 
-    public static List<Uint8> getAnswerCounts(String contractAddress, String from) {
-        Voting contract = prepareReadOnlyVotingContract(contractAddress, from);
+    public static List<Uint8> getAnswerCounts(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+        Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
             final DynamicArray<Uint8> votersName = contract.getAnswerCounts().send();
             return votersName.getValue();
@@ -64,19 +59,19 @@ public class VotingUtils {
         return null;
     }
 
-    private static Voting prepareWriteVotingContract(String contractAddress, Tag tag, String publicKey, String from) {
+    private static Voting prepareWriteVotingContract(String contractAddress, Tag tag, String publicKey, String from, BigInteger gasPrice, BigInteger gasLimit) {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey);
 
         return Voting.load(
-                contractAddress, web3j, transactionManager, GAS_PRICE, GAS_LIMIT);
+                contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 
-    private static Voting prepareReadOnlyVotingContract(String contractAddress, String from) {
+    private static Voting prepareReadOnlyVotingContract(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
         TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, from);
 
         return Voting.load(
-                contractAddress, web3j, transactionManager, GAS_PRICE, GAS_LIMIT);
+                contractAddress, web3j, transactionManager, gasPrice, gasLimit);
     }
 }

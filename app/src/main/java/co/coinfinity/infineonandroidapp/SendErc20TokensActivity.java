@@ -75,7 +75,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
                         if (transactionPriceBean != null)
                             currentBalance.setText(String.format(getString(R.string.current_token_balance), transactionPriceBean));
                     });
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "exception while reading ERC20 Balance: ", e);

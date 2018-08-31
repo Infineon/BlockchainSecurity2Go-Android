@@ -33,9 +33,16 @@ public class EthereumUtils {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
+        if (wei == null) {
+            wei = new BigInteger("0");
+        }
         BigDecimal ether = Convert.fromWei(wei.toString(), Convert.Unit.ETHER);
 
-        BigInteger unconfirmedWei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.PENDING).subtract(wei);
+        BigInteger unconfirmedWei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.PENDING);
+        if (unconfirmedWei == null) {
+            unconfirmedWei = new BigInteger("0");
+        }
+        unconfirmedWei = unconfirmedWei.subtract(wei);
         BigDecimal unconfirmedEther = Convert.fromWei(unconfirmedWei.toString(), Convert.Unit.ETHER);
 
         return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
