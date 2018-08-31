@@ -17,14 +17,22 @@
                 android:text="@string/contract_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView4"/>
-        <EditText
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:text="0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5"
-                android:ems="10"
-                android:id="@+id/contractAddress" android:textSize="14sp"
-        />
+                android:layout_height="wrap_content">
+            <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:id="@+id/contractAddress" android:textSize="14sp"
+                    android:layout_weight=".90"/>
+            <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" app:srcCompat="@drawable/qrcode" android:id="@+id/imageButton"
+                    android:scaleType="fitCenter" android:layout_weight=".10" android:onClick="scanQrCode"/>
+        </LinearLayout>
         <TextView
                 android:text="Choose one of the following answers:"
                 android:layout_width="match_parent"
@@ -35,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/votingName" android:hint="Voting Name"/>
+                android:id="@+id/votingName" android:hint="@string/voting_name"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -86,10 +94,15 @@
                         android:textSize="36sp" android:textAlignment="center"/>
             </LinearLayout>
         </LinearLayout>
-        <TextView
-                android:text="Hold a card to the back of the device to start voting"
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView2" android:textAlignment="center"
-                android:textSize="30sp"/>
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" android:visibility="visible"/>
+        <TextView
+                android:text="@string/hold_a_card_to_the_back_of_the_device_to_start_voting"
+                android:layout_height="match_parent" android:id="@+id/infoText"
+                android:textSize="30sp" android:textAlignment="center"
+                android:layout_width="match_parent" android:gravity="bottom"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

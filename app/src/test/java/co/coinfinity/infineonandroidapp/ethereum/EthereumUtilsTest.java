@@ -47,8 +47,9 @@ public class EthereumUtilsTest {
     private static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
     public static final ECDomainParameters CURVE = new ECDomainParameters(
             CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
-    static Credentials credentials = Credentials.create(new BigInteger("79166386603517236976726811532830064984355265773618493467297037703400211058279").toString(16),
-            new BigInteger("1151270011825183223805235897419104860957743818568039421199126264923822213203842512949016734652068699212645732466302596308750268989266518249615792739627611").toString(16));
+    //    static Credentials credentials = Credentials.create(new BigInteger("79166386603517236976726811532830064984355265773618493467297037703400211058279").toString(16),
+//            new BigInteger("1151270011825183223805235897419104860957743818568039421199126264923822213203842512949016734652068699212645732466302596308750268989266518249615792739627611").toString(16));
+    static Credentials credentials = Credentials.create("0x8105dc1bcfac5c5be13da822c3cd7568ef55124ab45a2afac691f61d193cfd69");
     @Mock
     Tag tag;
     @Mock
@@ -60,7 +61,7 @@ public class EthereumUtilsTest {
         Voting contract = Voting.load(
                 "0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5", web3j, credentials, GAS_PRICE, GAS_LIMIT);
         System.out.println("TEST");
-        final TransactionReceipt voted = contract.giveVote(new Utf8String("daa"), new Uint8(3)).send();
+        final TransactionReceipt voted = contract.giveVote(new Utf8String("daa"), new Uint8(1)).send();
         System.out.println(voted.getTransactionHash());
         final Uint8 send = contract.getVotersAnswer().send();
         System.out.println(send.getValue());

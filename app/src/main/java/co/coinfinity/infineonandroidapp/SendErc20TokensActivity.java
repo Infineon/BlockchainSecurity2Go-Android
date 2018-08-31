@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
+import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
 
@@ -71,7 +73,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
                     BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
                     mHandler.post(() -> {
                         if (transactionPriceBean != null)
-                            currentBalance.setText(String.format("Current Token Balance: %s", transactionPriceBean));
+                            currentBalance.setText(String.format(getString(R.string.current_token_balance), transactionPriceBean));
                     });
                     Thread.sleep(1000);
                 }
@@ -125,4 +127,21 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         finish();
     }
 
+    public void scanQrCode(View view) {
+        QrCodeScanner.scanQrCode(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+
+            if (resultCode == RESULT_OK) {
+                recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //handle cancel
+            }
+        }
+    }
 }

@@ -26,7 +26,7 @@
             android:id="@+id/balance"
             android:layout_width="387dp"
             android:layout_height="132dp"
-            android:text="ETH"
+            android:text="@string/eth"
             android:textStyle="bold"
             android:textSize="20sp"
             android:gravity="center_horizontal"
@@ -38,7 +38,7 @@
             android:id="@+id/qrCode"
             android:layout_centerHorizontal="true" android:layout_below="@+id/holdCard"/>
     <TextView
-            android:text="Address"
+            android:text="@string/address"
             android:layout_width="389dp"
             android:layout_height="29dp"
             android:id="@+id/ethAddress" android:layout_centerHorizontal="true"
@@ -59,7 +59,7 @@
             android:id="@+id/sendErc20"
             android:onClick="onSendErc20" android:visibility="visible"
             android:enabled="false"
-            android:textSize="18sp" android:text="SEND ERC20"
+            android:textSize="18sp" android:text="@string/send_erc20"
             android:layout_alignTop="@+id/send" android:layout_centerHorizontal="true"/>
     <Button
             android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
             android:id="@+id/voting"
             android:onClick="onVoting" android:visibility="visible"
             android:enabled="false"
-            android:textSize="18sp" android:text="Voting"
+            android:textSize="18sp" android:text="@string/voting"
             android:layout_alignTop="@+id/send" android:layout_alignEnd="@+id/balance"/>
     <ProgressBar
             style="?android:attr/progressBarStyle"

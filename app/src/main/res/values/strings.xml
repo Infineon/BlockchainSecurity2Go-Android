@@ -10,8 +10,22 @@
     <string name="gas_limit">Gas Limit</string>
     <string name="hold_card_payment">Hold a card against the back of your device to make payment</string>
     <string name="card_found">Card found</string>
-    <string name="send_success">ETH Sent</string>
+    <string name="send_success">ETH Sent!</string>
     <string name="title_activity_send_erc20_tokens">Send ERC 20 Tokens</string>
-    <string name="title_activity_voting">VotingActivity</string>
+    <string name="title_activity_voting">Voting</string>
+    <string name="already_voted">Already voted!</string>
+    <string name="voted_successfully">Voted successfully!</string>
+    <string name="eth" translatable="false">ETH</string>
+    <string name="address">Address</string>
+    <string name="send_erc20">Send ERC20</string>
+    <string name="voting">Voting</string>
+    <string name="token_amount">Token Amount</string>
     <string name="contract_address">Contract Address</string>
+    <string name="current_token_balance_default">Current Token Balance: -</string>
+    <string name="voting_name">Voting Name</string>
+    <string name="hold_a_card_to_the_back_of_the_device_to_start_voting">Hold a card to the back of the device to start
+        voting
+    </string>
+    <string name="current_token_balance">Current Token Balance: %s</string>
+    <string name="votes_count">Votes: %s</string>
 </resources>

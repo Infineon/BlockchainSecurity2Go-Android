@@ -28,7 +28,6 @@
                 android:layout_width="349dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/recipientAddress"
-                android:text="0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"
                 android:textSize="14sp" android:hint="@string/recipient_address"/>
     </android.support.design.widget.TextInputLayout>
     <android.support.design.widget.TextInputLayout

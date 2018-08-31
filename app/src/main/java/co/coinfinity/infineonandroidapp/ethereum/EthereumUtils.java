@@ -46,11 +46,11 @@ public class EthereumUtils {
         try {
             EthGetBalance ethGetBalance = web3
                     .ethGetBalance(ethAddress, defaultBlockParameterName)
-                    .send();
+                    .sendAsync().get();
             if (ethGetBalance != null) {
                 wei = ethGetBalance.getBalance();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "exception while reading balance from api", e);
         }
 

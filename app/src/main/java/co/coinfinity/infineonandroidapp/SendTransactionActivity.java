@@ -2,6 +2,7 @@ package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -62,6 +63,10 @@ public class SendTransactionActivity extends AppCompatActivity {
         gasLimitTxt = findViewById(R.id.gasLimit);
         priceInEuroTxt = findViewById(R.id.priceInEuro);
 
+        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        String savedRecipientAddressTxt = mPrefs.getString("recipientAddressTxt", "");
+        recipientAddressTxt.setText(savedRecipientAddressTxt);
+
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
@@ -85,6 +90,10 @@ public class SendTransactionActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+
+        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        SharedPreferences.Editor mEditor = mPrefs.edit();
+        mEditor.putString("recipientAddressTxt", recipientAddressTxt.getText().toString()).apply();
     }
 
     @Override
