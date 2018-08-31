@@ -45,22 +45,30 @@
             android:layout_below="@+id/qrCode" android:textIsSelectable="true" android:textAlignment="center"
             android:textSize="16sp"/>
     <Button
-            android:layout_width="152dp"
+            android:layout_width="124dp"
             android:layout_height="59dp"
             android:id="@+id/send"
             android:onClick="onSend" android:visibility="visible"
             android:enabled="false"
             android:textSize="18sp" android:text="@string/send_eth"
-            android:layout_alignParentBottom="true" android:layout_marginBottom="12dp"
-            android:layout_alignStart="@+id/holdCard"/>
+            android:layout_alignParentBottom="true" android:layout_marginBottom="13dp"
+            android:layout_alignStart="@+id/balance"/>
     <Button
-            android:layout_width="152dp"
+            android:layout_width="wrap_content"
             android:layout_height="59dp"
             android:id="@+id/sendErc20"
             android:onClick="onSendErc20" android:visibility="visible"
             android:enabled="false"
-            android:textSize="18sp" android:text="SEND ERC20" android:layout_alignEnd="@+id/holdCard"
-            android:layout_alignTop="@+id/send"/>
+            android:textSize="18sp" android:text="SEND ERC20"
+            android:layout_alignTop="@+id/send" android:layout_centerHorizontal="true"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="59dp"
+            android:id="@+id/voting"
+            android:onClick="onVoting" android:visibility="visible"
+            android:enabled="false"
+            android:textSize="18sp" android:text="Voting"
+            android:layout_alignTop="@+id/send" android:layout_alignEnd="@+id/balance"/>
     <ProgressBar
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"

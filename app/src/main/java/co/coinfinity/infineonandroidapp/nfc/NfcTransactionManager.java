@@ -1,7 +1,7 @@
-package co.coinfinity.infineonandroidapp.ethereum;
+package co.coinfinity.infineonandroidapp.nfc;
 
 import android.nfc.Tag;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.TransactionManager;

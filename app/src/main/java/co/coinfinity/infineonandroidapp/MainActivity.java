@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView holdCard;
     private Button sendBtn;
     private Button sendErc20Btn;
+    private Button votingBtn;
     private ProgressBar progressBar;
 
     private String pubKeyString;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         qrCodeView = findViewById(R.id.qrCode);
         sendBtn = findViewById(R.id.send);
         sendErc20Btn = findViewById(R.id.sendErc20);
+        votingBtn = findViewById(R.id.voting);
         progressBar = findViewById(R.id.progressBar);
         holdCard = findViewById(R.id.holdCard);
 
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                             if (!sendBtn.isEnabled()) {
                                 sendBtn.setEnabled(true);
                                 sendErc20Btn.setEnabled(true);
+                                votingBtn.setEnabled(true);
                                 progressBar.setVisibility(View.INVISIBLE);
                             }
                         });
@@ -132,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "exception while reading euro price from api: ", e);
             }
         });
-
         thread.start();
     }
 
@@ -155,6 +157,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSendErc20(View view) {
         Intent intent = new Intent(this, SendErc20TokensActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("pubKey", pubKeyString);
+        bundle.putString("ethAddress", ethAddress);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    public void onVoting(View view) {
+        Intent intent = new Intent(this, VotingActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString("pubKey", pubKeyString);
         bundle.putString("ethAddress", ethAddress);

@@ -3,6 +3,7 @@ package co.coinfinity.infineonandroidapp.ethereum;
 import android.nfc.Tag;
 import android.support.constraint.Constraints;
 import android.util.Log;
+import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
 import org.web3j.contracts.token.ERC20Contract;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;

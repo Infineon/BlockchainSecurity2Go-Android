@@ -11,4 +11,5 @@
     </string>
     <string name="card_found">Karte gefunden</string>
     <string name="send_success">ETH Sent</string>
+    <string name="contract_address">Contract Address</string>
 </resources>
