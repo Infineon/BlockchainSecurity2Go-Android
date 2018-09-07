@@ -12,7 +12,7 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" android:layout_margin="30px">
         <TextView
                 android:text="@string/contract_address"
                 android:layout_width="match_parent"
@@ -69,7 +69,7 @@
                 android:text="Choose one of the following answers:"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
-                android:textSize="24sp" android:textStyle="bold"/>
+                android:textSize="18sp" android:textStyle="bold"/>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -81,22 +81,22 @@
                         android:text="Answer 1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton4" android:layout_weight="1"
-                        android:textSize="36sp"/>
+                        android:textSize="30sp"/>
                 <RadioButton
                         android:text="Answer 2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton3" android:layout_weight="1"
-                        android:textSize="36sp"/>
+                        android:textSize="30sp"/>
                 <RadioButton
                         android:text="Answer 3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton" android:layout_weight="1"
-                        android:textSize="36sp"/>
+                        android:textSize="30sp"/>
                 <RadioButton
                         android:text="Answer 4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton2" android:layout_weight="1"
-                        android:textSize="36sp"/>
+                        android:textSize="30sp"/>
             </RadioGroup>
             <LinearLayout
                     android:orientation="vertical"
@@ -128,7 +128,7 @@
         <TextView
                 android:text="@string/hold_a_card_to_the_back_of_the_device_to_start_voting"
                 android:layout_height="match_parent" android:id="@+id/infoText"
-                android:textSize="30sp" android:textAlignment="center"
+                android:textSize="24sp" android:textAlignment="center"
                 android:layout_width="match_parent"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
