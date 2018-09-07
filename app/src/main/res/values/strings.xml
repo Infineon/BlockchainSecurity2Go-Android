@@ -28,5 +28,7 @@
     </string>
     <string name="current_token_balance">Current Token Balance: %s</string>
     <string name="votes_count">Votes: %s</string>
-    <string name="please_wait">Please wait...</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="logo" translatable="false">Logo</string>
+    <string name="qr_code" translatable="false">QR Code</string>
 </resources>
