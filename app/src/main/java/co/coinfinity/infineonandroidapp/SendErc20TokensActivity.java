@@ -41,6 +41,10 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
 
+    private boolean isContractScan;
+
+    private Thread thread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +75,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
 
         Handler mHandler = new Handler();
-        Thread thread = new Thread(() -> {
+        thread = new Thread(() -> {
             try {
                 while (true) {
                     BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
@@ -93,6 +97,15 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+
+        if (thread != null) {
+            thread.interrupt();
+            try {
+                thread.join(500);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "exception while wait for thread end: ", e);
+            }
+        }
     }
 
     @Override
@@ -121,8 +134,12 @@ public class SendErc20TokensActivity extends AppCompatActivity {
                     , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger());
 
             if (response != null) {
-                this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, response.getStatus(),
-                        Toast.LENGTH_LONG).show());
+                if (response.getStatus().equals("0x1")) {
+                    this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, R.string.send_success, Toast.LENGTH_LONG).show());
+                } else {
+                    this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, response.getStatus(),
+                            Toast.LENGTH_LONG).show());
+                }
             }
 
         });
@@ -131,17 +148,17 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         finish();
     }
 
-    public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(this);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
 
             if (resultCode == RESULT_OK) {
-                recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
+                if (isContractScan) {
+                    contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
+                } else {
+                    recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
+                }
             }
             if (resultCode == RESULT_CANCELED) {
                 //handle cancel
@@ -159,5 +176,15 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    public void onScanContract(View view) {
+        isContractScan = true;
+        QrCodeScanner.scanQrCode(this);
+    }
+
+    public void onScanRecipient(View view) {
+        isContractScan = false;
+        QrCodeScanner.scanQrCode(this);
     }
 }

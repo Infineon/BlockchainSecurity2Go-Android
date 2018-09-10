@@ -26,7 +26,13 @@ public class Erc20Utils {
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey);
 
-        ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, gasPrice, gasLimit);
+        ERC20Contract erc = null;
+        try {
+            erc = ERC20Contract.load(ercContract, web3j, transactionManager, gasPrice, gasLimit);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "exception while reading contract: ", e);
+            return null;
+        }
 
         final RemoteCall<TransactionReceipt> transfer = erc.transfer(to, amount);
         TransactionReceipt transactionReceipt = null;
@@ -45,7 +51,14 @@ public class Erc20Utils {
         if (ercContract != null && !ercContract.equals("") && ethAddress != null && !ethAddress.equals("")) {
             Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
             ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(web3j, ethAddress);
-            ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, BigInteger.ZERO, BigInteger.ZERO);
+
+            ERC20Contract erc = null;
+            try {
+                erc = ERC20Contract.load(ercContract, web3j, transactionManager, BigInteger.ZERO, BigInteger.ZERO);
+            } catch (RuntimeException e) {
+                Log.e(TAG, "exception while reading contract: ", e);
+                return new BigInteger("0");
+            }
 
             try {
                 return erc.balanceOf(ethAddress).sendAsync().get();

@@ -10,7 +10,7 @@
     <string name="hold_card_payment">Halte eine Karte an die Rückseite des Gerätes um eine Zahlung durchzuführen
     </string>
     <string name="card_found">Karte gefunden</string>
-    <string name="send_success">ETH gesendet!</string>
+    <string name="send_success">Erfolgreich gesendet!</string>
     <string name="already_voted">Bereits gewählt!</string>
     <string name="voted_successfully">Erfolgreich gewählt!</string>
     <string name="address">Adresse</string>
