@@ -9,10 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import co.coinfinity.infineonandroidapp.common.ByteUtils;
+import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
@@ -49,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         ethAddressView = findViewById(R.id.ethAddress);
         balance = findViewById(R.id.balance);
@@ -171,5 +178,17 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("ethAddress", ethAddress);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return UiUtils.handleOptionITemSelected(this, item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
     }
 }

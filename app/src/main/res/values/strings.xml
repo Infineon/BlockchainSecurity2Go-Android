@@ -31,4 +31,5 @@
     <string name="please_wait">Please wait…</string>
     <string name="logo" translatable="false">Logo</string>
     <string name="qr_code" translatable="false">QR Code</string>
+    <string name="visit_website">Visit our Website</string>
 </resources>

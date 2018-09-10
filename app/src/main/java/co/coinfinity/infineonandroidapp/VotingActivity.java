@@ -10,8 +10,11 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.abi.datatypes.generated.Uint8;
@@ -46,6 +49,7 @@ public class VotingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voting);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -212,5 +216,17 @@ public class VotingActivity extends AppCompatActivity {
         }
 
         return gasLimit;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return UiUtils.handleOptionITemSelected(this, item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
     }
 }

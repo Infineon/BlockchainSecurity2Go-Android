@@ -10,9 +10,12 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
@@ -47,9 +50,9 @@ public class SendTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_transaction);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         mAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
         // will fill in the intent with the details of the discovered tag before delivering to
@@ -153,5 +156,17 @@ public class SendTransactionActivity extends AppCompatActivity {
                 //handle cancel
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return UiUtils.handleOptionITemSelected(this, item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
     }
 }
