@@ -39,7 +39,7 @@ contract Voting {
     --------------------------- */
     function giveVote(string voterName, uint8 answer) public returns (bool){
         // answer must be given
-        require(answer <= maxAnswers);
+        require(answer < maxAnswers, "argument answer must be less than contract configured maxAnswer");
 
         bytes memory voterNameBytes = bytes(voterName);
         //  voter name has to have at least 3 chars

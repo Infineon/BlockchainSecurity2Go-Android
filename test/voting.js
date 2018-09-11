@@ -1,3 +1,6 @@
+
+
+
 var Voting = artifacts.require("./Voting.sol");
 
 contract('Voting', function (accounts) {
@@ -32,10 +35,26 @@ contract('Voting', function (accounts) {
             await catchRevert(meta.giveVote("vo", 1, {from: accounts[2]}));
         });
     });
-    it("should not allow give vote with not allowed answer", function () {
+    it("should not allow voting on not allowed answer", function () {
         return Voting.deployed().then(async function (instance) {
             meta = instance;
             await catchRevert(meta.giveVote("vo", 9999, {from: accounts[3]}));
+        });
+    });
+    it("should allow to vote on index 0", function () {
+        return Voting.deployed().then(function (instance) {
+            meta = instance;
+            return meta.giveVote("voter3", 0, {from: accounts[4]});
+        }).then(function () {
+            return meta.getVotersAnswer.call({from: accounts[4]});
+        }).then(function (vote) {
+            assert.equal(vote.valueOf(), 0, "Incorrect vote returned");
+        })
+    });
+    it("should not allow to vote on first out of bounds index 4 (allowed: 0..3)", function () {
+        return Voting.deployed().then(async function (instance) {
+            meta = instance;
+            await catchRevert(meta.giveVote("vo", 4, {from: accounts[3]}));
         });
     });
     it("should give all vote counts back", function () {
@@ -43,7 +62,7 @@ contract('Voting', function (accounts) {
             meta = instance;
             return meta.getAnswerCounts.call({from: accounts[0]});
         }).then(function (answerCount) {
-            assert.equal(answerCount[0].toNumber(), 0, "Incorrect voter count returned");
+            assert.equal(answerCount[0].toNumber(), 1, "Incorrect voter count returned");
             assert.equal(answerCount[1].toNumber(), 1, "Incorrect voter count returned");
             assert.equal(answerCount[2].toNumber(), 0, "Incorrect voter count returned");
             assert.equal(answerCount[3].toNumber(), 1, "Incorrect voter count returned");
