@@ -22,4 +22,5 @@ public class AppConstants {
     public static final byte CHAIN_ID = ChainId.ROPSTEN;
     private static final String ETHEUR = "ETHEUR";
     public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = "https://coinfinity.co/price/" + ETHEUR;
+    public static final String PREFERENCE_FILENAME = "CoinfinonPrefs";
 }

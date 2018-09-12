@@ -2,6 +2,7 @@ package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
@@ -24,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static android.app.PendingIntent.getActivity;
+import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
 import static co.coinfinity.AppConstants.TAG;
 
 public class SendErc20TokensActivity extends AppCompatActivity {
@@ -37,13 +40,13 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private TextView gasLimitTxt;
     private TextView contractAddress;
     private TextView currentBalance;
+    private ProgressBar progressBar;
 
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
 
     private boolean isContractScan;
-
-    private Thread thread;
+    private volatile boolean activityStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +68,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         gasPriceTxt = findViewById(R.id.gasPrice);
         gasLimitTxt = findViewById(R.id.gasLimit);
         contractAddress = findViewById(R.id.contractAddress);
-
         currentBalance = findViewById(R.id.currentBalance);
+        progressBar = findViewById(R.id.progressBar);
 
         Bundle b = getIntent().getExtras();
         if (b != null) {
@@ -74,14 +77,19 @@ public class SendErc20TokensActivity extends AppCompatActivity {
             ethAddress = b.getString("ethAddress");
         }
 
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        contractAddress.setText(pref.getString("er20ContractAddress", "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
+        recipientAddressTxt.setText(pref.getString("er20RecipientAddress", "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+
         Handler mHandler = new Handler();
-        thread = new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try {
-                while (true) {
+                while (!activityStopped) {
                     BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
                     mHandler.post(() -> {
                         if (transactionPriceBean != null)
                             currentBalance.setText(String.format(getString(R.string.current_token_balance), transactionPriceBean));
+                        progressBar.setVisibility(View.INVISIBLE);
                     });
                     Thread.sleep(2000);
                 }
@@ -96,16 +104,14 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
+        activityStopped = true;
         if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
 
-        if (thread != null) {
-            thread.interrupt();
-            try {
-                thread.join(500);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "exception while wait for thread end: ", e);
-            }
-        }
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("er20ContractAddress", contractAddress.getText().toString())
+                .putString("er20RecipientAddress", recipientAddressTxt.getText().toString())
+                .apply();
     }
 
     @Override
@@ -117,6 +123,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, R.string.hold_card_for_while,
+                Toast.LENGTH_LONG).show());
         resolveIntent(intent);
     }
 

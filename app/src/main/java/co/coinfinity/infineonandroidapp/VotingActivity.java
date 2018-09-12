@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
+import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
 import static co.coinfinity.AppConstants.TAG;
 
 public class VotingActivity extends AppCompatActivity {
@@ -78,7 +79,7 @@ public class VotingActivity extends AppCompatActivity {
             ethAddress = b.getString("ethAddress");
         }
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         String savedContractAddress = mPrefs.getString("contractAddress", "0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5");
         contractAddress.setText(savedContractAddress);
 
@@ -91,6 +92,8 @@ public class VotingActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.hold_card_for_while,
+                Toast.LENGTH_LONG).show());
         resolveIntent(intent);
     }
 
@@ -165,7 +168,7 @@ public class VotingActivity extends AppCompatActivity {
         super.onPause();
         if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString("contractAddress", contractAddress.getText().toString()).apply();
     }

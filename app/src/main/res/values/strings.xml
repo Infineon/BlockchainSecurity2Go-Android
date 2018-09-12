@@ -21,7 +21,6 @@
     <string name="voting">Voting</string>
     <string name="token_amount">Token Amount</string>
     <string name="contract_address">Contract Address</string>
-    <string name="current_token_balance_default">Current Token Balance: -</string>
     <string name="voting_name">Voting Name</string>
     <string name="hold_a_card_to_the_back_of_the_device_to_start_voting">Hold a card to the back of the device to start
         voting
@@ -32,4 +31,5 @@
     <string name="logo" translatable="false">Logo</string>
     <string name="qr_code" translatable="false">QR Code</string>
     <string name="visit_website">Visit our Website</string>
+    <string name="hold_card_for_while">Hold card for some seconds!</string>
 </resources>

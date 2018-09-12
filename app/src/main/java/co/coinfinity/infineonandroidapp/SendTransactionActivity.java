@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
@@ -27,6 +28,7 @@ import org.web3j.utils.Convert;
 import java.math.BigDecimal;
 
 import static android.app.PendingIntent.getActivity;
+import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
 import static co.coinfinity.AppConstants.TAG;
 
 public class SendTransactionActivity extends AppCompatActivity {
@@ -35,8 +37,8 @@ public class SendTransactionActivity extends AppCompatActivity {
     private TextView amountTxt;
     private TextView gasPriceTxt;
     private TextView gasLimitTxt;
-
     private TextView priceInEuroTxt;
+    private ProgressBar progressBar;
 
     private String pubKeyString;
     private String ethAddress;
@@ -45,6 +47,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     private PendingIntent mPendingIntent;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
+    private volatile boolean activityStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,19 +68,22 @@ public class SendTransactionActivity extends AppCompatActivity {
         gasPriceTxt = findViewById(R.id.gasPrice);
         gasLimitTxt = findViewById(R.id.gasLimit);
         priceInEuroTxt = findViewById(R.id.priceInEuro);
+        progressBar = findViewById(R.id.progressBar);
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         String savedRecipientAddressTxt = mPrefs.getString("recipientAddressTxt", "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
 
         Handler mHandler = new Handler();
         Thread thread = new Thread(() -> {
             try {
-                while (true) {
+                while (!activityStopped) {
                     mHandler.post(() -> {
                         TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
-                        if (transactionPriceBean != null)
+                        if (transactionPriceBean != null) {
                             priceInEuroTxt.setText(transactionPriceBean.toString());
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
                     });
                     Thread.sleep(1000);
                 }
@@ -85,16 +91,16 @@ public class SendTransactionActivity extends AppCompatActivity {
                 Log.e(TAG, "exception while reading price info from API in thread: ", e);
             }
         });
-
         thread.start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        activityStopped = true;
         if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString("recipientAddressTxt", recipientAddressTxt.getText().toString()).apply();
     }
@@ -107,6 +113,8 @@ public class SendTransactionActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.hold_card_for_while,
+                Toast.LENGTH_LONG).show());
         resolveIntent(intent);
     }
 
