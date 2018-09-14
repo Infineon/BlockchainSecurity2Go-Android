@@ -15,6 +15,12 @@ contract Voting {
         bool exists;
     }
 
+    event VoteHappened(
+        address indexed voter,
+        uint8 indexed answer,
+        uint8 newAnswersCount
+    );
+
     /* -------------------------------------------------------------------
     constructor
     ------------------------------------------------------------------- */
@@ -52,6 +58,8 @@ contract Voting {
         voters[msg.sender] = Voter(voterName, answer, true);
         voterCount++;
         answersCount[answer]++;
+
+        emit VoteHappened(msg.sender, answer, answersCount[answer]);
 
         return true;
     }
