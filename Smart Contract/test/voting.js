@@ -29,22 +29,22 @@ contract('Vote: init checks', function (accounts) {
         it('should have 4 possible choices', async function () {
             let v = await Voting.deployed();
             // 4 is provided as constructor argument in the migration script ("2_deploy_contracts.js")
-            (await v.numberOfPossibleChoices()).should.eq.BN(4);
+            (await v.numberOfChoices()).should.eq.BN(4);
         });
 
         it('should have 0 votes after deployment', async function () {
             let v = await Voting.deployed();
-            (await v.voteCount()).should.be.eq.BN(0);
+            (await v.voteCountTotal()).should.be.eq.BN(0);
         });
 
-        it('should return 4 entries in getCurrentResult', async function () {
+        it('should return 4 entries in currentResult', async function () {
             let v = await Voting.deployed();
-            (await v.getCurrentResult()).length.should.be.eq.BN(4);
+            (await v.currentResult()).length.should.be.eq.BN(4);
         });
 
-        it('should have 0 in all 4 entries in getCurrentResult', async function () {
+        it('should have 0 in all 4 entries in currentResult', async function () {
             let v = await Voting.deployed();
-            let currentResultArray = await v.getCurrentResult();
+            let currentResultArray = await v.currentResult();
             currentResultArray[0].should.be.eq.BN(0);
             currentResultArray[1].should.be.eq.BN(0);
             currentResultArray[2].should.be.eq.BN(0);
@@ -53,26 +53,26 @@ contract('Vote: init checks', function (accounts) {
 
         it('should have 0 in all 4 choice counters (queried separaately)', async function () {
             let v = await Voting.deployed();
-            let singleVoteCount = await v.getVoteCountForOption(0);
+            let singleVoteCount = await v.votesPerChoice(0);
             singleVoteCount.should.be.eq.BN(0);
-            singleVoteCount = await v.getVoteCountForOption(1);
+            singleVoteCount = await v.votesPerChoice(1);
             singleVoteCount.should.be.eq.BN(0);
-            singleVoteCount = await v.getVoteCountForOption(2);
+            singleVoteCount = await v.votesPerChoice(2);
             singleVoteCount.should.be.eq.BN(0);
-            singleVoteCount = await v.getVoteCountForOption(3);
+            singleVoteCount = await v.votesPerChoice(3);
             singleVoteCount.should.be.eq.BN(0);
         });
 
         it('should return error if asking for vote counter of non-existing choice', async function () {
             let v = await Voting.deployed();
-            await expectFailWithoutMsg(v.getVoteCountForOption(4));
+            await expectFailWithoutMsg(v.votesPerChoice(4));
         });
 
         it('should have no vote for a specific voter yet', async function () {
             let v = await Voting.deployed();
-            let vote = await v.voters(voter1);
+            let vote = await v.votersInfo(voter1);
             vote.exists.should.be.equal(false);
-            vote = await v.voters(voter2);
+            vote = await v.votersInfo(voter2);
             vote.exists.should.be.equal(false);
         });
 
@@ -193,19 +193,19 @@ contract('Vote: voting tests', function (accounts) {
          * Small helper that checks if all counters in tghe contract have the values we expect
          */
         const checkResultsInContract = async function (voteContract, a, b, c, d) {
-            let currentResultArray = await voteContract.getCurrentResult();
+            let currentResultArray = await voteContract.currentResult();
             compareResult(currentResultArray, a, b, c, d);
             // check results one by one
-            let singleVoteCount = await voteContract.getVoteCountForOption(0);
+            let singleVoteCount = await voteContract.votesPerChoice(0);
             singleVoteCount.should.be.eq.BN(a);
-            singleVoteCount = await voteContract.getVoteCountForOption(1);
+            singleVoteCount = await voteContract.votesPerChoice(1);
             singleVoteCount.should.be.eq.BN(b);
-            singleVoteCount = await voteContract.getVoteCountForOption(2);
+            singleVoteCount = await voteContract.votesPerChoice(2);
             singleVoteCount.should.be.eq.BN(c);
-            singleVoteCount = await voteContract.getVoteCountForOption(3);
+            singleVoteCount = await voteContract.votesPerChoice(3);
             singleVoteCount.should.be.eq.BN(d);
             // check total counter
-            let totalCount = await voteContract.voteCount();
+            let totalCount = await voteContract.voteCountTotal();
             totalCount.should.be.eq.BN(a + b + c + d);
         };
 
@@ -286,24 +286,24 @@ contract('Vote: voting tests', function (accounts) {
 
         it('should return correct voter names', async function () {
             let v = await Voting.deployed();
-            let name = await v.getVotersName({from: voter1});
+            let name = await v.thisVotersName({from: voter1});
             name.should.be.equal('voter1');
-            name = await v.getVotersName({from: voter2});
+            name = await v.thisVotersName({from: voter2});
             name.should.be.equal('voter2');
-            name = await v.getVotersName({from: voter3});
+            name = await v.thisVotersName({from: voter3});
             name.should.be.equal('voter3');
-            await expectFailWithoutMsg(v.getVotersName({from: voter4}));
+            await expectFailWithoutMsg(v.thisVotersName({from: voter4}));
         });
 
         it('should return correct choice per voter', async function () {
             let v = await Voting.deployed();
-            let choice = await v.getVotersChoice({from: voter1});
+            let choice = await v.thisVotersChoice({from: voter1});
             choice.should.be.eq.BN(0);
-            choice = await v.getVotersChoice({from: voter2});
+            choice = await v.thisVotersChoice({from: voter2});
             choice.should.be.eq.BN(3);
-            choice = await v.getVotersChoice({from: voter3});
+            choice = await v.thisVotersChoice({from: voter3});
             choice.should.be.eq.BN(3);
-            await expectFailWithoutMsg(v.getVotersName({from: voter4}));
+            await expectFailWithoutMsg(v.thisVotersName({from: voter4}));
         });
 
         it('should update counters after also after a few votes', async function () {

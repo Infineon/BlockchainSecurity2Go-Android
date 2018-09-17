@@ -16,12 +16,12 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      * @notice Number of total cast votes (uint40 is enough as at most
      *     we support 2**8 choices and 2**32 votes per choice).
      */
-    uint40 public voteCount;
+    uint40 public voteCountTotal;
 
     /**
      * @notice Number of possible choices. Fixed at contract deployment time.
      */
-    uint8 public numberOfPossibleChoices;
+    uint8 public numberOfChoices;
 
     /**
      * @notice Number of votes, summarized per choice.
@@ -29,12 +29,12 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      *     and still allows 8 entries to be packed in a single storage slot
      *     (EVM wordsize is 256 bit). And of course we check for overflows.
      */
-    uint32[] private currentVoteResults;
+    uint32[] internal currentVoteResults;
 
     /**
      * @notice Mapping of address to vote details
      */
-    mapping(address => Voter) public voters;
+    mapping(address => Voter) public votersInfo;
 
     /**
      * @notice Event gets emitted every time when a new vote is cast.
@@ -60,7 +60,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         require(initMaxChoices >= 2, "Minimum 2 choices allowed.");
         // to avoid uint8 overflow:
         require(initMaxChoices <= 255, "Maximum 255 choices allowed.");
-        numberOfPossibleChoices = initMaxChoices;
+        numberOfChoices = initMaxChoices;
         currentVoteResults = new uint32[](initMaxChoices);
     }
 
@@ -82,18 +82,18 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     function castVote(string voterName, uint8 givenVote)
     external {
         // answer must be given
-        require(givenVote < numberOfPossibleChoices, "Choice must be less than contract configured numberOfChoices.");
+        require(givenVote < numberOfChoices, "Choice must be less than contract configured numberOfChoices.");
 
         // check if already voted
-        require(!voters[msg.sender].exists, "This address has already voted. Vote denied.");
+        require(!votersInfo[msg.sender].exists, "This address has already voted. Vote denied.");
 
         //  voter name has to have at least 3 bytes (note: with utf8 some chars have
         // more than 1 byte, so this check is not fully accurate but ok here)
         require(bytes(voterName).length > 2, "Name of voter is too short.");
 
         // everything ok, add voter
-        voters[msg.sender] = Voter(true, givenVote, voterName);
-        voteCount = safeAdd40(voteCount, 1);
+        votersInfo[msg.sender] = Voter(true, givenVote, voterName);
+        voteCountTotal = safeAdd40(voteCountTotal, 1);
         currentVoteResults[givenVote] = safeAdd32(currentVoteResults[givenVote], 1);
 
         // emit a NewVote event at this point in time, so that a web3 Dapp
@@ -106,32 +106,32 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      * @notice Returns the vote details of calling address or throws
      *    if address has not voted yet.
      */
-    function getVotersChoice()
+    function thisVotersChoice()
     external
     view
     returns (uint8) {
         // check if msg sender exists in voter mapping
-        require(voters[msg.sender].exists, "No vote so far.");
-        return voters[msg.sender].choice;
+        require(votersInfo[msg.sender].exists, "No vote so far.");
+        return votersInfo[msg.sender].choice;
     }
 
     /**
      * @notice Returns the entered voter name of the calling address or throws
      *    if address has not voted yet.
      */
-    function getVotersName()
+    function thisVotersName()
     external
     view
     returns (string) {
         // check if msg sender exists in voter mapping
-        require(voters[msg.sender].exists, "No vote so far.");
-        return voters[msg.sender].name;
+        require(votersInfo[msg.sender].exists, "No vote so far.");
+        return votersInfo[msg.sender].name;
     }
 
     /**
      * @notice Return array with sums of votes per choice.
      */
-    function getCurrentResult()
+    function currentResult()
     external
     view
     returns (uint32[]) {
@@ -141,11 +141,11 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     /**
      * @notice Return number of votes for one of the options.
      */
-    function getVoteCountForOption(uint8 option)
+    function votesPerChoice(uint8 option)
     external
     view
     returns (uint32) {
-        require(option < numberOfPossibleChoices, "Choice must be less than contract configured numberOfChoices");
+        require(option < numberOfChoices, "Choice must be less than contract configured numberOfChoices.");
         return currentVoteResults[option];
     }
 
