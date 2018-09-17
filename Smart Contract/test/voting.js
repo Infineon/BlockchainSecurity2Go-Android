@@ -34,14 +34,12 @@ contract('Vote: init checks', function (accounts) {
 
         it('should have 0 votes after deployment', async function () {
             let v = await Voting.deployed();
-            let totalCount = await v.voteCount();
-            totalCount.should.be.eq.BN(0);
+            (await v.voteCount()).should.be.eq.BN(0);
         });
 
         it('should return 4 entries in getCurrentResult', async function () {
             let v = await Voting.deployed();
-            let currentResultArray = await v.getCurrentResult();
-            currentResultArray.length.should.be.eq.BN(4);
+            (await v.getCurrentResult()).length.should.be.eq.BN(4);
         });
 
         it('should have 0 in all 4 entries in getCurrentResult', async function () {
@@ -344,4 +342,51 @@ contract('Vote: voting tests', function (accounts) {
     }
 );
 
+
+contract('Vote: test rescuing ERC-20', function (accounts) {
+
+        const DummyERC20 = artifacts.require('./testutiles/DummyERC20.sol');
+
+        // define some accounts and give them readable names
+        const [owner, acc1, acc2] = accounts;
+
+        const totalNumOfTokens = 500000000;
+
+        it('should be possible to rescue ERC-20 tokens', async function () {
+            let v = await Voting.deployed();
+            let erc20 = await DummyERC20.deployed();
+            let voteContractAddr = await v.address;
+            let erc20ContractAddr = await erc20.address;
+
+            // initially ERC-20 balance of contract should be 0
+            (await erc20.balanceOf(voteContractAddr)).should.be.eq.BN(0);
+            // and also of the other addr
+            (await erc20.balanceOf(acc1)).should.be.eq.BN(0);
+            // and also of the owner
+            (await erc20.balanceOf(owner)).should.be.eq.BN(0);
+
+            // the owner can mint test-tokens out of thin air, so lets do this:
+            await erc20.mint(acc1, totalNumOfTokens);
+
+            // acc1 should have balance now:
+            (await erc20.balanceOf(acc1)).should.be.eq.BN(totalNumOfTokens);
+
+            // now send tokens into the Vote contract address
+            await erc20.transfer(voteContractAddr, totalNumOfTokens, {from: acc1});
+
+            // tokens should now have moved to the vote contract
+            (await erc20.balanceOf(acc1)).should.be.eq.BN(0);
+            (await erc20.balanceOf(voteContractAddr)).should.be.eq.BN(totalNumOfTokens);
+
+            // and now the Vote contract owner should be able to rescue
+            // the tokens out of the contract to himself
+            await v.recoverTokens(erc20ContractAddr);
+
+            // tokens in contract should now be 0 again and
+            // balance of owner should have increased
+            (await erc20.balanceOf(voteContractAddr)).should.be.eq.BN(0);
+            (await erc20.balanceOf(owner)).should.be.eq.BN(totalNumOfTokens);
+        });
+    }
+);
 

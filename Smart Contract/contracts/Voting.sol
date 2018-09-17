@@ -1,7 +1,6 @@
 pragma solidity 0.4.24;
 
 import "./ownership/Ownable.sol";
-
 import "./lifecycle/Destructible.sol";
 import "./tokenutils/CanRescueERC20.sol";
 
