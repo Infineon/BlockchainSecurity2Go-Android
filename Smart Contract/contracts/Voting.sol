@@ -86,13 +86,12 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         require(givenVote < numberOfPossibleChoices,
             "Choice must be less than contract configured numberOfChoices");
 
-        bytes memory voterNameBytes = bytes(voterName);
+        // check if already voted
+        require(!voters[msg.sender].exists, "This address has already voted. Vote denied.");
+
         //  voter name has to have at least 3 bytes (note: with utf8 some chars have
         // more than 1 byte, so this check is not fully accurate but ok here)
-        require(voterNameBytes.length > 2, "Name of voter is too short.");
-
-        // check if already voted
-        require(!voters[msg.sender].exists, "This adress has already voted. Vote denied.");
+        require(bytes(voterName).length > 2, "Name of voter is too short.");
 
         // everything ok, add voter
         voters[msg.sender] = Voter(true, givenVote, voterName);
