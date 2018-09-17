@@ -83,8 +83,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     function castVote(string voterName, uint8 givenVote)
     external {
         // answer must be given
-        require(givenVote < numberOfPossibleChoices,
-            "Choice must be less than contract configured numberOfChoices");
+        require(givenVote < numberOfPossibleChoices, "Choice must be less than contract configured numberOfChoices.");
 
         // check if already voted
         require(!voters[msg.sender].exists, "This address has already voted. Vote denied.");
@@ -138,6 +137,17 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     view
     returns (uint32[]) {
         return currentVoteResults;
+    }
+
+    /**
+     * @notice Return number of votes for one of the options.
+     */
+    function getVoteCountForOption(uint8 option)
+    external
+    view
+    returns (uint32) {
+        require(option < numberOfPossibleChoices, "Choice must be less than contract configured numberOfChoices");
+        return currentVoteResults[option];
     }
 
     /**

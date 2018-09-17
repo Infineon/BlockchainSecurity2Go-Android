@@ -1,3 +1,10 @@
+
+// These 2 consts are used to compare the revert message, with the expected one.
+// This can vary depending on the used ethereum client (ganache, geth, ..)
+const ERROR_REVERT_PREFIX = "Returned error: VM Exception while processing transaction: revert -- Reason given: ";
+const ERROR_REVERT_SUFFIX = ".";
+
+
 /**
  * Wraps old functions with callbacks into a Promise
  * to be able to use the nice await syntax.
@@ -49,8 +56,19 @@ const isTestRPC = async () => (await web3.eth.getNodeInfo()).includes("TestRPC/v
  * @param promise
  * @return {Promise<void>}
  */
-const expectFail = async (promise) => {
+const expectFailWithoutMsg = async (promise) => {
     await promise.should.be.rejectedWith('revert');
+};
+
+/**
+ * Expect promise to be rejected with a given message.
+ *
+ * @param promise
+ * @return {Promise<void>}
+ */
+const expectFail = async (promise, msg) => {
+    assert(msg, "Testsuite error: missing 'msg' argument for 'expectFail'");
+    await promise.should.be.rejectedWith(ERROR_REVERT_PREFIX + msg + ERROR_REVERT_SUFFIX);
 };
 
 /**
@@ -59,7 +77,7 @@ const expectFail = async (promise) => {
  * @param logs
  * @param template
  */
-function matchLogs(logs, template) {
+function checkEvents(logs, template) {
     if (logs.length != template.length) throw new Error('length does not match');
     for (let i = 0; i < logs.length; i++) {
         let log = logs[i];
@@ -121,8 +139,9 @@ const travelIntoTheFuture = function (secondsToTravel) {
 
 module.exports = {
     sign,
-    matchLogs,
+    checkEvents,
     expectFail,
+    expectFailWithoutMsg,
     getTime,
     calculateFees,
     getBalance,

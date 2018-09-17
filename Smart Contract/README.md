@@ -44,7 +44,15 @@ npm install --save chai bn-chai chai-as-promised
 truffle develop
 
 # Interact with contract interactively
-
 ...
+
+
+# Deploying to ropsten (with Migration.sol)
+truffle console --network ropsten
+
+truffle(ropsten)> migrate
+
+# or redeploy:
+migrate --reset
 
 ```
