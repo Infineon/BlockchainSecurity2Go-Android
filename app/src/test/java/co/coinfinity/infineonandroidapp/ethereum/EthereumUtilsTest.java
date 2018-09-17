@@ -61,7 +61,7 @@ public class EthereumUtilsTest {
         Voting contract = Voting.load(
                 "0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5", web3j, credentials, GAS_PRICE, GAS_LIMIT);
         System.out.println("TEST");
-        final TransactionReceipt voted = contract.giveVote(new Utf8String("daa"), new Uint8(1)).send();
+        final TransactionReceipt voted = contract.castVote(new Utf8String("daa"), new Uint8(1)).send();
         System.out.println(voted.getTransactionHash());
         final Uint8 send = contract.getVotersAnswer().send();
         System.out.println(send.getValue());

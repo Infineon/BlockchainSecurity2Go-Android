@@ -2,8 +2,8 @@ package co.coinfinity.infineonandroidapp.nfc;
 
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.support.constraint.Constraints;
 import android.util.Log;
+import co.coinfinity.AppConstants;
 import co.coinfinity.infineonandroidapp.common.ByteUtils;
 
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class NfcUtils {
             return Arrays.copyOfRange(response, 0, response.length - 2);
 
         } catch (Exception e) {
-            Log.e(Constraints.TAG, "exception while signing transaction via NFC ", e);
+            Log.e(AppConstants.TAG, "exception while signing transaction via NFC ", e);
         }
 
         return null;
@@ -141,32 +141,32 @@ public class NfcUtils {
     }
 
     //    byte[] SELECT = {
-//            (byte) 0x00, // CLA Class
-//            (byte) 0xA4, // INS Instruction
-//            (byte) 0x04, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x0D, // Length
-//            (byte) 0xD2,
-//            0x76,0x00,0x00,0x04,0x15,0x02,0x00,0x01,0x00,0x00,0x00,0x01 // AID
-//    };
-//
-//    //        reflector
-//    final byte[] REFLECTOR = {
-//            (byte) 0x80, // CLA Class
-//            (byte) 0xFF, // INS Instruction
-//            (byte) 0x00, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x01, // Length
-//            (byte) 0xFF,
-//            (byte) 0x00,
-//    };
-//
-//    //        get version
-//    final byte[] GET_VERSION = {
-//            (byte) 0x00, // CLA Class
-//            (byte) 0x88, // INS Instruction
-//            (byte) 0x00, // P1  Parameter 1
-//            (byte) 0x00, // P2  Parameter 2
-//            (byte) 0x00, // Length
-//    };
+    //            (byte) 0x00, // CLA Class
+    //            (byte) 0xA4, // INS Instruction
+    //            (byte) 0x04, // P1  Parameter 1
+    //            (byte) 0x00, // P2  Parameter 2
+    //            (byte) 0x0D, // Length
+    //            (byte) 0xD2,
+    //            0x76,0x00,0x00,0x04,0x15,0x02,0x00,0x01,0x00,0x00,0x00,0x01 // AID
+    //    };
+    //
+    //    //        reflector
+    //    final byte[] REFLECTOR = {
+    //            (byte) 0x80, // CLA Class
+    //            (byte) 0xFF, // INS Instruction
+    //            (byte) 0x00, // P1  Parameter 1
+    //            (byte) 0x00, // P2  Parameter 2
+    //            (byte) 0x01, // Length
+    //            (byte) 0xFF,
+    //            (byte) 0x00,
+    //    };
+    //
+    //    //        get version
+    //    final byte[] GET_VERSION = {
+    //            (byte) 0x00, // CLA Class
+    //            (byte) 0x88, // INS Instruction
+    //            (byte) 0x00, // P1  Parameter 1
+    //            (byte) 0x00, // P2  Parameter 2
+    //            (byte) 0x00, // Length
+    //    };
 }

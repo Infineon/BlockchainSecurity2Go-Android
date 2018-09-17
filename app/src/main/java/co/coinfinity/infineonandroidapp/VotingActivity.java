@@ -17,6 +17,7 @@ import android.widget.*;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import org.web3j.abi.datatypes.generated.Uint32;
 import org.web3j.abi.datatypes.generated.Uint8;
 
 import java.math.BigInteger;
@@ -146,7 +147,7 @@ public class VotingActivity extends AppCompatActivity {
             votingName.setText(votersName);
             votingName.setEnabled(false);
 
-            final List<Uint8> answerCounts = VotingUtils.getAnswerCounts(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+            final List<Uint32> answerCounts = VotingUtils.getAnswerCounts(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             mHandler.post(() -> {
                 answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
                 answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));

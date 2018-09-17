@@ -1,0 +1,63 @@
+/**
+ * Some notes how to interact with the contract
+ * in the truffle develop console..
+ *
+ */
+
+// start console
+
+truffle develop
+
+// get acoounts
+accounts = await web3.eth.getAccounts()
+
+// .. and assign them readable names using decomposition
+const [owner, voter1, voter2, voter3, voter4, voter5, voter6, voter7] = accounts
+
+
+// test if compiles
+compile
+
+// migrate onto the "chain"
+migrate --reset
+
+
+//
+// Interact with contract on console:
+//
+
+// get deployed contract as Javascript binding
+v = await Voting.deployed()
+
+// check owner
+v.owner()
+
+
+// vote (from account voter1)
+v.castVote("Johnny, Voter1", 2, {from: voter1})
+
+// check event logs, should contain single NewVote event..
+_.logs
+
+// check arguments of event
+_[0].args
+
+
+// vote again, should fail
+v.castVote("Totally not Johnny, Voter2", 2, {from: voter1})
+
+
+// vote as voter 2 should work
+v.castVote("really Voter2", 2, {from: voter2})
+
+// read voter name from storage
+v.getVotersName({from: voter1})
+
+// read voter name from storage
+v.getVotersName({from: voter2})
+
+// read voter name from storage, should fail as not voted yet
+v.getVotersName({from: voter3})
+
+
+

@@ -6,6 +6,7 @@ import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
 import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
 import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.generated.Uint32;
 import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -23,7 +24,7 @@ public class VotingUtils {
 
     public static void vote(String contractAddress, Tag tag, String publicKey, String from, String votingName, int vote, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit);
-        contract.giveVote(new Utf8String(votingName), new Uint8(vote)).send();
+        contract.castVote(new Utf8String(votingName), new Uint8(vote)).send();
     }
 
     public static int getVotersAnswer(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
@@ -48,10 +49,10 @@ public class VotingUtils {
         return null;
     }
 
-    public static List<Uint8> getAnswerCounts(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+    public static List<Uint32> getAnswerCounts(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
-            final DynamicArray<Uint8> votersName = contract.getAnswerCounts().send();
+            final DynamicArray<Uint32> votersName = contract.getCurrentResult().send();
             return votersName.getValue();
         } catch (Exception e) {
             Log.e(TAG, "exception while getting answer count: ", e);
