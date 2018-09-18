@@ -57,7 +57,18 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         require(initMaxChoices >= 2, "Minimum 2 choices allowed.");
         // to avoid uint8 overflow:
         require(initMaxChoices <= 255, "Maximum 255 choices allowed.");
-        currentVoteResults = new uint32[](initMaxChoices);
+
+        // Initialize array:
+        currentVoteResults.length = initMaxChoices;
+        // this has the same effect as:
+        // > currentVoteResults = new uint32[](initMaxChoices)"
+        // but saves an SSTORE. In both cases the variable is layouted
+        // as a "dynamically sized" array, as for constant sized array
+        // layout the size would have to be a literal or a constant
+        // (and solidity doesn't support yet constants to be set in
+        // the constructor) but with "new" operator solidity immediately
+        // writes 0 at position 0 (storage is always 0 before 1st write,
+        // so this is unnecessary).
     }
 
     /**
