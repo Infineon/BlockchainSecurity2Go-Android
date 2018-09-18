@@ -130,6 +130,12 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
 
     /**
      * @notice Return array with sums of votes per choice.
+     *
+     * @dev Note that this only will work for external callers, and not
+     *      for other contracts (as of solidity 0.4.25 returning of dynamically
+     *      sized data is still not in stable, it's only available with the
+     *      experimental "ABIEncoderV2" pragma). Also some block-explorers,
+     *      like etherscan, will have problems to display this correctly.
      */
     function currentResult()
     external
