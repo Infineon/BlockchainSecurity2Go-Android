@@ -30,7 +30,7 @@ public class VotingUtils {
     public static int getVotersAnswer(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
-            final Uint8 voted = contract.getVotersAnswer().send();
+            final Uint8 voted = contract.thisVotersChoice().send();
             return voted.getValue().intValue();
         } catch (Exception e) {
             Log.e(TAG, "exception while voting: ", e);
@@ -41,7 +41,7 @@ public class VotingUtils {
     public static String getVotersName(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
-            final Utf8String votersName = contract.getVotersName().send();
+            final Utf8String votersName = contract.thisVotersName().send();
             return votersName.getValue();
         } catch (Exception e) {
             Log.e(TAG, "exception while voting: ", e);
@@ -49,10 +49,10 @@ public class VotingUtils {
         return null;
     }
 
-    public static List<Uint32> getAnswerCounts(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+    public static List<Uint32> getCurrentResult(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
         try {
-            final DynamicArray<Uint32> votersName = contract.getCurrentResult().send();
+            final DynamicArray<Uint32> votersName = contract.currentResult().send();
             return votersName.getValue();
         } catch (Exception e) {
             Log.e(TAG, "exception while getting answer count: ", e);
