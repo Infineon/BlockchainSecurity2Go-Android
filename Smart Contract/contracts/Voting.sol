@@ -19,12 +19,8 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     uint40 public voteCountTotal;
 
     /**
-     * @notice Number of possible choices. Fixed at contract deployment time.
-     */
-    uint8 public numberOfChoices;
-
-    /**
      * @notice Number of votes, summarized per choice.
+     *
      * @dev uint32 allows 4,294,967,296 possible votes per choice, should be enough,
      *     and still allows 8 entries to be packed in a single storage slot
      *     (EVM wordsize is 256 bit). And of course we check for overflows.
@@ -38,6 +34,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
 
     /**
      * @notice Event gets emitted every time when a new vote is cast.
+     *
      * @param addedVote choice in the vote
      * @param allVotes array containing updated intermediate result
      */
@@ -60,7 +57,6 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         require(initMaxChoices >= 2, "Minimum 2 choices allowed.");
         // to avoid uint8 overflow:
         require(initMaxChoices <= 255, "Maximum 255 choices allowed.");
-        numberOfChoices = initMaxChoices;
         currentVoteResults = new uint32[](initMaxChoices);
     }
 
@@ -82,7 +78,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     function castVote(string voterName, uint8 givenVote)
     external {
         // answer must be given
-        require(givenVote < numberOfChoices, "Choice must be less than contract configured numberOfChoices.");
+        require(givenVote < numberOfChoices(), "Choice must be less than contract configured numberOfChoices.");
 
         // check if already voted
         require(!votersInfo[msg.sender].exists, "This address has already voted. Vote denied.");
@@ -151,8 +147,20 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     external
     view
     returns (uint32) {
-        require(option < numberOfChoices, "Choice must be less than contract configured numberOfChoices.");
+        require(option < numberOfChoices(), "Choice must be less than contract configured numberOfChoices.");
         return currentVoteResults[option];
+    }
+
+    /**
+     * @notice Returns the number of possible choices, which can be voted for.
+     */
+    function numberOfChoices()
+    public
+    view
+    returns (uint8) {
+        // save as we only initialize array length in constructor
+        // and there we check it's never larger than uint8.
+        return uint8(currentVoteResults.length);
     }
 
     /**
