@@ -60,4 +60,4 @@ migrate --reset
 
 ### Ropsten Testnet
 
-Deployed on Ropsten at: https://ropsten.etherscan.io/address/0xdfda7e563a28d9b6bd7a75fb43b3d86364caa44e
+Deployed on Ropsten at: https://ropsten.etherscan.io/address/0xe96398ece7be0b03b53f1ca01a23698db338cc5d
