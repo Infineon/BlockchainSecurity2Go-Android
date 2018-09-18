@@ -79,7 +79,7 @@ public class VotingActivity extends AppCompatActivity {
         }
 
         SharedPreferences mPrefs = getSharedPreferences("label", 0);
-        String savedContractAddress = mPrefs.getString("contractAddress", "0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5");
+        String savedContractAddress = mPrefs.getString("contractAddress", "0xe96398ece7be0b03b53f1ca01a23698db338cc5d");
         contractAddress.setText(savedContractAddress);
 
         Handler mHandler = new Handler();
