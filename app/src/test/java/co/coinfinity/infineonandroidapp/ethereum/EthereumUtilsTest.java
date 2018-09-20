@@ -59,11 +59,11 @@ public class EthereumUtilsTest {
     public void testContract() throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
         Voting contract = Voting.load(
-                "0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5", web3j, credentials, GAS_PRICE, GAS_LIMIT);
+                "0xe96398ece7be0b03b53f1ca01a23698db338cc5d", web3j, credentials, GAS_PRICE, GAS_LIMIT);
         System.out.println("TEST");
-        final TransactionReceipt voted = contract.giveVote(new Utf8String("daa"), new Uint8(1)).send();
+        final TransactionReceipt voted = contract.castVote(new Utf8String("daa"), new Uint8(1)).send();
         System.out.println(voted.getTransactionHash());
-        final Uint8 send = contract.getVotersAnswer().send();
+        final Uint8 send = contract.thisVotersChoice().send();
         System.out.println(send.getValue());
     }
 

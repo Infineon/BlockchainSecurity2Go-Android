@@ -17,13 +17,12 @@ import android.widget.*;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
-import org.web3j.abi.datatypes.generated.Uint8;
+import org.web3j.abi.datatypes.generated.Uint32;
 
 import java.math.BigInteger;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
 import static co.coinfinity.AppConstants.TAG;
 
 public class VotingActivity extends AppCompatActivity {
@@ -79,8 +78,8 @@ public class VotingActivity extends AppCompatActivity {
             ethAddress = b.getString("ethAddress");
         }
 
-        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
-        String savedContractAddress = mPrefs.getString("contractAddress", "0x00aEBec0Feb36EF84454b41ee5214B3A46A43AA5");
+        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        String savedContractAddress = mPrefs.getString("contractAddress", "0xe96398ece7be0b03b53f1ca01a23698db338cc5d");
         contractAddress.setText(savedContractAddress);
 
         Handler mHandler = new Handler();
@@ -92,8 +91,6 @@ public class VotingActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
-        this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.hold_card_for_while,
-                Toast.LENGTH_LONG).show());
         resolveIntent(intent);
     }
 
@@ -149,7 +146,7 @@ public class VotingActivity extends AppCompatActivity {
             votingName.setText(votersName);
             votingName.setEnabled(false);
 
-            final List<Uint8> answerCounts = VotingUtils.getAnswerCounts(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+            final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             mHandler.post(() -> {
                 answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
                 answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
@@ -168,7 +165,7 @@ public class VotingActivity extends AppCompatActivity {
         super.onPause();
         if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
 
-        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        SharedPreferences mPrefs = getSharedPreferences("label", 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString("contractAddress", contractAddress.getText().toString()).apply();
     }

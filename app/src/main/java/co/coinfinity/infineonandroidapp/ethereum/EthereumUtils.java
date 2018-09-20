@@ -1,7 +1,6 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.nfc.Tag;
-import android.support.constraint.Constraints;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.common.ByteUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
@@ -23,7 +22,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import static android.support.constraint.Constraints.TAG;
 import static co.coinfinity.AppConstants.*;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
@@ -76,7 +74,7 @@ public class EthereumUtils {
             final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
             final byte[] signedTransaction = nfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
 
-            Log.d(Constraints.TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
+            Log.d(TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
 
             byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction));
             byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction));

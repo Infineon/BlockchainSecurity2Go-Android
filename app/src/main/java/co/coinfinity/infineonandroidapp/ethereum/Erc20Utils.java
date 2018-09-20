@@ -1,7 +1,6 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.nfc.Tag;
-import android.support.constraint.Constraints;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
 import org.web3j.contracts.token.ERC20Contract;
@@ -42,7 +41,7 @@ public class Erc20Utils {
             Log.e(TAG, "exception while sending ERC20 tokens: ", e);
         }
         if (transactionReceipt != null)
-            Log.d(Constraints.TAG, "ERC20 Transaction Hash: " + transactionReceipt.getTransactionHash());
+            Log.d(TAG, "ERC20 Transaction Hash: " + transactionReceipt.getTransactionHash());
 
         return transactionReceipt;
     }
