@@ -33,8 +33,8 @@ contract DummyERC20 is Ownable, IERC20 {
     function transfer(address _to, uint256 _value)
     public
     returns (bool) {
-        require(_value <= balances[msg.sender]);
-        require(_to != address(0));
+        require(_value <= balances[msg.sender], "not enough balance");
+        require(_to != address(0), "unable to send ERC20 tokens to the void address 0x0");
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
