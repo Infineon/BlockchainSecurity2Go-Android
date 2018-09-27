@@ -101,16 +101,25 @@ public class VotingActivity extends AppCompatActivity {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         Handler mHandler = new Handler();
-        Thread thread = new Thread(() -> {
+        new Thread(() -> {
 
             final BigInteger gasLimit = getGasLimitFromString();
             final BigInteger gasPrice = getGasPriceFromString();
 
-            final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-            if (votersAnswer == 0) {
-                mHandler.post(() -> {
-                    progressBar.setVisibility(View.VISIBLE);
-                });
+            int votersAnswer = -1;
+            try {
+                votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+            } catch (Exception e) {
+                if (e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
+                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
+                            Toast.LENGTH_LONG).show());
+                    return;
+                }
+                Log.e(TAG, "exception on getVotersAnswer", e);
+            }
+
+            if (votersAnswer == -1) {
+                mHandler.post(() -> progressBar.setVisibility(View.VISIBLE));
                 try {
                     this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
                             Toast.LENGTH_LONG).show());
@@ -124,39 +133,45 @@ public class VotingActivity extends AppCompatActivity {
                 }
                 handleAfterVote(mHandler);
             }
-        });
-
-        thread.start();
+        }).start();
 
     }
 
     private void handleAfterVote(Handler mHandler) {
-        final BigInteger gasLimit = getGasLimitFromString();
-        final BigInteger gasPrice = getGasPriceFromString();
+        try {
+            final BigInteger gasLimit = getGasLimitFromString();
+            final BigInteger gasPrice = getGasPriceFromString();
 
-        final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-        if (votersAnswer != 0) {
-            ((RadioButton) radioGroup.getChildAt(votersAnswer - 1)).setChecked(true);
-            for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                radioGroup.getChildAt(i).setEnabled(false);
+            final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+            if (votersAnswer != 0) {
+                ((RadioButton) radioGroup.getChildAt(votersAnswer - 1)).setChecked(true);
+                for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                    radioGroup.getChildAt(i).setEnabled(false);
+                }
+
+                final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+                votingName.setText(votersName);
+                votingName.setEnabled(false);
+
+                final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+                mHandler.post(() -> {
+                    answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
+                    answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
+                    answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
+                    answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
+                    infoText.setText(R.string.already_voted);
+                });
             }
-
-            final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-            votingName.setText(votersName);
-            votingName.setEnabled(false);
-
-            final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             mHandler.post(() -> {
-                answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
-                answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
-                answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
-                answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
-                infoText.setText(R.string.already_voted);
+                progressBar.setVisibility(View.INVISIBLE);
             });
+        } catch (Exception e) {
+            if (e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
+                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
+                        Toast.LENGTH_LONG).show());
+            }
+            Log.e(TAG, "exception after vote handling", e);
         }
-        mHandler.post(() -> {
-            progressBar.setVisibility(View.INVISIBLE);
-        });
     }
 
     @Override
