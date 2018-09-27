@@ -79,14 +79,13 @@ public class VotingActivity extends AppCompatActivity {
         }
 
         SharedPreferences mPrefs = getSharedPreferences("label", 0);
-        String savedContractAddress = mPrefs.getString("contractAddress", "0xe96398ece7be0b03b53f1ca01a23698db338cc5d");
-        contractAddress.setText(savedContractAddress);
+        String savedContractAddress = mPrefs.getString("contractAddress", "");
 
-        Handler mHandler = new Handler();
-        Thread thread = new Thread(() -> {
-            handleAfterVote(mHandler);
-        });
-        thread.start();
+        if (!savedContractAddress.isEmpty()) {
+            contractAddress.setText(savedContractAddress);
+            Handler mHandler = new Handler();
+            new Thread(() -> handleAfterVote(mHandler)).start();
+        }
     }
 
     @Override
@@ -148,10 +147,10 @@ public class VotingActivity extends AppCompatActivity {
 
             final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             mHandler.post(() -> {
-                answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
-                answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
-                answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
-                answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(4).getValue().toString()));
+                answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
+                answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
+                answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
+                answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
                 infoText.setText(R.string.already_voted);
             });
         }
