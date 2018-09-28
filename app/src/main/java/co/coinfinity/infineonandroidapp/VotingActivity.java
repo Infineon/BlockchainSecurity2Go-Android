@@ -127,7 +127,7 @@ public class VotingActivity extends AppCompatActivity {
 
                 handleAfterVote(handler);
             } catch (Exception e) {
-                if (e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
+                if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
                     this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
                             Toast.LENGTH_SHORT).show());
                 }
@@ -171,7 +171,7 @@ public class VotingActivity extends AppCompatActivity {
                 handler.post(() -> progressBar.setVisibility(View.INVISIBLE));
             }
         } catch (Exception e) {
-            if (e.getCause() != null && e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
+            if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
                         Toast.LENGTH_SHORT).show());
             }
