@@ -21,13 +21,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import static co.coinfinity.AppConstants.*;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
 public class EthereumUtils {
 
-    public static EthBalanceBean getBalance(String ethAddress) {
+    public static EthBalanceBean getBalance(String ethAddress) throws ExecutionException, InterruptedException {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
@@ -46,87 +47,71 @@ public class EthereumUtils {
         return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
     }
 
-    private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) {
+    private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) throws ExecutionException, InterruptedException {
         BigInteger wei = null;
-        try {
-            EthGetBalance ethGetBalance = web3
-                    .ethGetBalance(ethAddress, defaultBlockParameterName)
-                    .sendAsync().get();
-            if (ethGetBalance != null) {
-                wei = ethGetBalance.getBalance();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "exception while reading balance from api", e);
+        EthGetBalance ethGetBalance = web3
+                .ethGetBalance(ethAddress, defaultBlockParameterName)
+                .sendAsync().get();
+        if (ethGetBalance != null) {
+            wei = ethGetBalance.getBalance();
         }
 
         return wei;
     }
 
-    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey, NfcUtils nfcUtils, String data) {
+    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey, NfcUtils nfcUtils, String data) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value, data);
 
         String hexValue = null;
-        try {
-            byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
-            final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-            final byte[] signedTransaction = nfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
+        byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
+        final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
+        final byte[] signedTransaction = nfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
 
-            Log.d(TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
+        Log.d(TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
 
-            byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction));
-            byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction));
-            Log.d(TAG, "r: " + ByteUtils.bytesToHex(r));
-            Log.d(TAG, "s: " + ByteUtils.bytesToHex(s));
+        byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction));
+        byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction));
+        Log.d(TAG, "r: " + ByteUtils.bytesToHex(r));
+        Log.d(TAG, "s: " + ByteUtils.bytesToHex(s));
 
-            s = getCanonicalisedS(r, s);
-            Log.d(TAG, "s canonicalised: " + ByteUtils.bytesToHex(s));
+        s = getCanonicalisedS(r, s);
+        Log.d(TAG, "s canonicalised: " + ByteUtils.bytesToHex(s));
 
-            byte v = getV(publicKey, hashedTransaction, r, s);
-            Log.d(TAG, "v: " + v);
+        byte v = getV(publicKey, hashedTransaction, r, s);
+        Log.d(TAG, "v: " + v);
 
-            Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
-            signatureData = TransactionEncoder.createEip155SignatureData(signatureData, CHAIN_ID);
+        Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
+        signatureData = TransactionEncoder.createEip155SignatureData(signatureData, CHAIN_ID);
 
-            //calls private method form web3j lib
-            hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
-            Log.d(TAG, "hexValue: " + hexValue);
+        //calls private method form web3j lib
+        hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
+        Log.d(TAG, "hexValue: " + hexValue);
 
-        } catch (Exception e) {
-            Log.e(TAG, "exception while signing", e);
+        EthSendTransaction ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
+
+        if (ethSendTransaction != null) {
+            String transactionHash = ethSendTransaction.getTransactionHash();
+
+            Log.d(TAG, "TransactionHash: " + transactionHash);
+            Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
+            if (ethSendTransaction.getError() != null) {
+                Log.d(TAG, "TransactionError: " + ethSendTransaction.getError().getMessage());
+            }
+
         }
-
-        EthSendTransaction ethSendTransaction = null;
-        try {
-            ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
-        } catch (IOException e) {
-            Log.e(TAG, "exception while sending transaction", e);
-        }
-        assert ethSendTransaction != null;
-        String transactionHash = ethSendTransaction.getTransactionHash();
-        Log.d(TAG, "TransactionHash: " + transactionHash);
-        Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
-        if (ethSendTransaction.getError() != null) {
-            Log.d(TAG, "TransactionError: " + ethSendTransaction.getError().getMessage());
-        }
-
         return ethSendTransaction;
     }
 
-    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) {
+    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) throws IOException {
         EthGetTransactionCount ethGetTransactionCount = null;
-        try {
-            ethGetTransactionCount = web3j.ethGetTransactionCount(
-                    etherAddress, DefaultBlockParameterName.PENDING).send();
+        ethGetTransactionCount = web3j.ethGetTransactionCount(
+                etherAddress, DefaultBlockParameterName.PENDING).send();
 
-            Log.d(TAG, "Nonce: " + ethGetTransactionCount.getTransactionCount());
-            return ethGetTransactionCount.getTransactionCount();
-        } catch (IOException e) {
-            Log.e(TAG, "exception while getting next nonce", e);
-        }
-        return null;
+        Log.d(TAG, "Nonce: " + ethGetTransactionCount.getTransactionCount());
+        return ethGetTransactionCount.getTransactionCount();
     }
 
     private static byte[] getCanonicalisedS(byte[] r, byte[] s) {
@@ -135,13 +120,13 @@ public class EthereumUtils {
         return ecdsaSignature.s.toByteArray();
     }
 
-    private static byte[] extractR(byte[] signature) throws Exception {
+    private static byte[] extractR(byte[] signature) {
         int startR = (signature[1] & 0x80) != 0 ? 3 : 2;
         int lengthR = signature[startR + 1];
         return Arrays.copyOfRange(signature, startR + 2, startR + 2 + lengthR);
     }
 
-    private static byte[] extractS(byte[] signature) throws Exception {
+    private static byte[] extractS(byte[] signature) {
         int startR = (signature[1] & 0x80) != 0 ? 3 : 2;
         int lengthR = signature[startR + 1];
         int startS = startR + 2 + lengthR;

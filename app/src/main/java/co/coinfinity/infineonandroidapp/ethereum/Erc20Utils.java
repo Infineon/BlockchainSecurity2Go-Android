@@ -20,53 +20,32 @@ import static co.coinfinity.AppConstants.TAG;
 
 public class Erc20Utils {
 
-    public static TransactionReceipt sendErc20Tokens(String ercContract, Tag tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) {
+    public static TransactionReceipt sendErc20Tokens(String ercContract, Tag tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey);
 
-        ERC20Contract erc = null;
-        try {
-            erc = ERC20Contract.load(ercContract, web3j, transactionManager, gasPrice, gasLimit);
-        } catch (RuntimeException e) {
-            Log.e(TAG, "exception while reading contract: ", e);
-            return null;
-        }
+        ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, gasPrice, gasLimit);
 
         final RemoteCall<TransactionReceipt> transfer = erc.transfer(to, amount);
-        TransactionReceipt transactionReceipt = null;
-        try {
-            transactionReceipt = transfer.send();
-        } catch (Exception e) {
-            Log.e(TAG, "exception while sending ERC20 tokens: ", e);
-        }
+        TransactionReceipt transactionReceipt = transfer.send();
+
         if (transactionReceipt != null)
             Log.d(TAG, "ERC20 Transaction Hash: " + transactionReceipt.getTransactionHash());
 
         return transactionReceipt;
     }
 
-    public static BigInteger getErc20Balance(String ercContract, String ethAddress) {
+    public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws ExecutionException, InterruptedException {
         if (ercContract != null && !ercContract.equals("") && ethAddress != null && !ethAddress.equals("")) {
             Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
             ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(web3j, ethAddress);
 
-            ERC20Contract erc = null;
-            try {
-                erc = ERC20Contract.load(ercContract, web3j, transactionManager, BigInteger.ZERO, BigInteger.ZERO);
-            } catch (RuntimeException e) {
-                Log.e(TAG, "exception while reading contract: ", e);
-                return new BigInteger("0");
-            }
+            ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, BigInteger.ZERO, BigInteger.ZERO);
 
-            try {
-                return erc.balanceOf(ethAddress).sendAsync().get();
-            } catch (InterruptedException | ExecutionException e) {
-                Log.e(TAG, "exception while reading ERC20 Balance: ", e);
-            }
+            return erc.balanceOf(ethAddress).sendAsync().get();
         }
+
         return null;
     }
-
-
 }

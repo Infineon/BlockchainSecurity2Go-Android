@@ -3,7 +3,6 @@ package co.coinfinity.infineonandroidapp.nfc;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
-import co.coinfinity.AppConstants;
 import co.coinfinity.infineonandroidapp.common.ByteUtils;
 
 import java.io.IOException;
@@ -14,7 +13,7 @@ import static co.coinfinity.infineonandroidapp.common.ByteUtils.combineByteArray
 
 public class NfcUtils {
 
-    public String getPublicKey(IsoDep isoDep, int parameter) {
+    public String getPublicKey(IsoDep isoDep, int parameter) throws IOException {
 
         final byte[] GET_PUB_KEY = {
                 (byte) 0x00, // CLA Class
@@ -24,17 +23,9 @@ public class NfcUtils {
                 (byte) 0x00, // Length
         };
 
-        byte[] response = new byte[0];
-        try {
-            isoDep.connect();
-
-            response = isoDep.transceive(GET_PUB_KEY);
-
-            isoDep.close();
-
-        } catch (IOException e) {
-            Log.e(TAG, "exception while reading pubkey via NFC ", e);
-        }
+        isoDep.connect();
+        byte[] response = isoDep.transceive(GET_PUB_KEY);
+        isoDep.close();
 
         if (!checkKeyPairAvailable(response)) {
             generateKeyPair(isoDep, 0x00);
@@ -46,7 +37,7 @@ public class NfcUtils {
         return hex.subSequence(2, hex.length() - 4).toString();
     }
 
-    public byte[] signTransaction(Tag tag, int parameter, byte[] data) {
+    public byte[] signTransaction(Tag tag, int parameter, byte[] data) throws IOException {
 
         final byte[] GEN_SIGN = {
                 (byte) 0x00, // CLA Class
@@ -61,28 +52,22 @@ public class NfcUtils {
         };
 
         IsoDep isoDep = IsoDep.get(tag);
-        try {
-            isoDep.connect();
 
-            final byte[] GEN_SIGN_WITH_DATA = combineByteArrays(GEN_SIGN, combineByteArrays(data, lastByte));
+        isoDep.connect();
 
-            Log.d(TAG, "GEN_SIGN_WITH_DATA: " + ByteUtils.bytesToHex(GEN_SIGN_WITH_DATA));
-            byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
+        final byte[] GEN_SIGN_WITH_DATA = combineByteArrays(GEN_SIGN, combineByteArrays(data, lastByte));
 
-            isoDep.close();
+        Log.d(TAG, "GEN_SIGN_WITH_DATA: " + ByteUtils.bytesToHex(GEN_SIGN_WITH_DATA));
+        byte[] response = isoDep.transceive(GEN_SIGN_WITH_DATA);
 
-            checkErrorCode(response);
+        isoDep.close();
 
-            return Arrays.copyOfRange(response, 0, response.length - 2);
+        checkErrorCode(response);
 
-        } catch (Exception e) {
-            Log.e(AppConstants.TAG, "exception while signing transaction via NFC ", e);
-        }
-
-        return null;
+        return Arrays.copyOfRange(response, 0, response.length - 2);
     }
 
-    public byte[] generateKeyPair(IsoDep isoDep, int parameter) {
+    public byte[] generateKeyPair(IsoDep isoDep, int parameter) throws IOException {
 
         final byte[] GEN_KEY_PAIR = {
                 (byte) 0x00, // CLA Class
@@ -93,17 +78,12 @@ public class NfcUtils {
         };
 
         byte[] response = new byte[0];
-        try {
-            isoDep.connect();
+        isoDep.connect();
 
-            Log.d(TAG, "generating new key pair via NFC");
-            response = isoDep.transceive(GEN_KEY_PAIR);
+        Log.d(TAG, "generating new key pair via NFC");
+        response = isoDep.transceive(GEN_KEY_PAIR);
 
-            isoDep.close();
-
-        } catch (IOException e) {
-            Log.e(TAG, "exception while generating key pair via NFC ", e);
-        }
+        isoDep.close();
 
         checkErrorCode(response);
 

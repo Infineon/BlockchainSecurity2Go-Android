@@ -16,6 +16,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
@@ -28,23 +31,32 @@ import org.web3j.utils.Convert;
 import java.math.BigDecimal;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class SendTransactionActivity extends AppCompatActivity {
 
-    private TextView recipientAddressTxt;
-    private TextView amountTxt;
-    private TextView gasPriceTxt;
-    private TextView gasLimitTxt;
-    private TextView priceInEuroTxt;
-    private ProgressBar progressBar;
+    @BindView(R.id.recipientAddress)
+    TextView recipientAddressTxt;
+    @BindView(R.id.amount)
+    TextView amountTxt;
+    @BindView(R.id.gasPrice)
+    TextView gasPriceTxt;
+    @BindView(R.id.gasLimit)
+    TextView gasLimitTxt;
+    @BindView(R.id.priceInEuro)
+    TextView priceInEuroTxt;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    private InputErrorUtils inputErrorUtils;
 
     private String pubKeyString;
     private String ethAddress;
 
-    private NfcAdapter mAdapter;
-    private PendingIntent mPendingIntent;
+    private NfcAdapter nfcAdapter;
+    private PendingIntent pendingIntent;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
     private volatile boolean activityStopped = false;
@@ -53,52 +65,46 @@ public class SendTransactionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_transaction);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        mAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        inputErrorUtils = new InputErrorUtils(recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
         // will fill in the intent with the details of the discovered tag before delivering to
         // this activity.
-        mPendingIntent = getActivity(this, 0,
+        pendingIntent = getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
-        recipientAddressTxt = findViewById(R.id.recipientAddress);
-        amountTxt = findViewById(R.id.amount);
-        gasPriceTxt = findViewById(R.id.gasPrice);
-        gasLimitTxt = findViewById(R.id.gasLimit);
-        priceInEuroTxt = findViewById(R.id.priceInEuro);
-        progressBar = findViewById(R.id.progressBar);
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         String savedRecipientAddressTxt = mPrefs.getString("recipientAddressTxt", "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
 
-        Handler mHandler = new Handler();
-        Thread thread = new Thread(() -> {
+        Handler handler = new Handler();
+        new Thread(() -> {
             try {
                 while (!activityStopped) {
-                    mHandler.post(() -> {
-                        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                    handler.post(() -> {
                         if (transactionPriceBean != null) {
                             priceInEuroTxt.setText(transactionPriceBean.toString());
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                     });
-                    Thread.sleep(1000);
+                    Thread.sleep(TIMEOUT);
                 }
             } catch (InterruptedException e) {
-                Log.e(TAG, "exception while reading price info from API in thread: ", e);
+                Log.e(TAG, "exception while reading price info from API in thread", e);
             }
-        });
-        thread.start();
+        }).start();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         activityStopped = true;
-        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
@@ -108,15 +114,19 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (mAdapter != null) mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
     }
 
     @Override
     public void onNewIntent(Intent intent) {
-        this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.hold_card_for_while,
-                Toast.LENGTH_LONG).show());
-        resolveIntent(intent);
+        if (inputErrorUtils.isNoInputError()) {
+            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.hold_card_for_while,
+                    Toast.LENGTH_SHORT).show());
+            resolveIntent(intent);
+        }
     }
+
+
 
     private void resolveIntent(Intent intent) {
         Bundle b = getIntent().getExtras();
@@ -127,24 +137,31 @@ public class SendTransactionActivity extends AppCompatActivity {
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        Thread thread = new Thread(() -> {
+        new Thread(() -> {
             final String valueStr = amountTxt.getText().toString();
             final BigDecimal value = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
             final String gasPriceStr = gasPriceTxt.getText().toString();
             final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
             final String gasLimitStr = gasLimitTxt.getText().toString();
             final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
-            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils(), "");
 
-            if (response.getError() != null) {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, response.getError().getMessage(),
-                        Toast.LENGTH_LONG).show());
-            } else {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_LONG).show());
+            EthSendTransaction response = null;
+            try {
+                response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils(), "");
+            } catch (Exception e) {
+                Log.e(TAG, "Exception while sending ether transaction", e);
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, "Could not send transaction!", Toast.LENGTH_SHORT).show());
+                return;
             }
-        });
 
-        thread.start();
+            if (response != null && response.getError() != null) {
+                EthSendTransaction finalResponse = response;
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, finalResponse.getError().getMessage(),
+                        Toast.LENGTH_SHORT).show());
+            } else {
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
+            }
+        }).start();
         finish();
     }
 

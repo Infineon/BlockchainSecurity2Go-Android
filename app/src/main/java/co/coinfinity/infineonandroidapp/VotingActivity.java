@@ -14,9 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.generated.Uint32;
 
 import java.math.BigInteger;
@@ -30,17 +33,30 @@ public class VotingActivity extends AppCompatActivity {
     private String pubKeyString;
     private String ethAddress;
 
-    private RadioGroup radioGroup;
-    private EditText votingName;
-    private EditText contractAddress;
-    private EditText gasPrice;
-    private EditText gasLimit;
-    private TextView answer1Votes;
-    private TextView answer2Votes;
-    private TextView answer3Votes;
-    private TextView answer4Votes;
-    private TextView infoText;
-    private ProgressBar progressBar;
+    @BindView(R.id.radioGroup)
+    RadioGroup radioGroup;
+    @BindView(R.id.votingName)
+    EditText votingName;
+    @BindView(R.id.contractAddress)
+    EditText contractAddress;
+    @BindView(R.id.gasPrice)
+    EditText gasPrice;
+    @BindView(R.id.gasLimit)
+    EditText gasLimit;
+    @BindView(R.id.answer1Votes)
+    TextView answer1Votes;
+    @BindView(R.id.answer2Votes)
+    TextView answer2Votes;
+    @BindView(R.id.answer3Votes)
+    TextView answer3Votes;
+    @BindView(R.id.answer4Votes)
+    TextView answer4Votes;
+    @BindView(R.id.infoText)
+    TextView infoText;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
@@ -49,21 +65,8 @@ public class VotingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voting);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
-        radioGroup = findViewById(R.id.radioGroup);
-        votingName = findViewById(R.id.votingName);
-        contractAddress = findViewById(R.id.contractAddress);
-        gasPrice = findViewById(R.id.gasPrice);
-        gasLimit = findViewById(R.id.gasLimit);
-        answer1Votes = findViewById(R.id.answer1Votes);
-        answer2Votes = findViewById(R.id.answer2Votes);
-        answer3Votes = findViewById(R.id.answer3Votes);
-        answer4Votes = findViewById(R.id.answer4Votes);
-        infoText = findViewById(R.id.infoText);
-        progressBar = findViewById(R.id.progressBar);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -72,10 +75,10 @@ public class VotingActivity extends AppCompatActivity {
         mPendingIntent = getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        Bundle b = getIntent().getExtras();
-        if (b != null) {
-            pubKeyString = b.getString("pubKey");
-            ethAddress = b.getString("ethAddress");
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            pubKeyString = bundle.getString("pubKey");
+            ethAddress = bundle.getString("ethAddress");
         }
 
         SharedPreferences mPrefs = getSharedPreferences("label", 0);
@@ -83,8 +86,8 @@ public class VotingActivity extends AppCompatActivity {
 
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
-            Handler mHandler = new Handler();
-            new Thread(() -> handleAfterVote(mHandler)).start();
+            Handler handler = new Handler();
+            new Thread(() -> handleAfterVote(handler)).start();
         }
     }
 
@@ -100,51 +103,45 @@ public class VotingActivity extends AppCompatActivity {
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        Handler mHandler = new Handler();
+        Handler handler = new Handler();
         new Thread(() -> {
 
             final BigInteger gasLimit = getGasLimitFromString();
             final BigInteger gasPrice = getGasPriceFromString();
 
-            int votersAnswer = -1;
             try {
-                votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+                handler.post(() -> progressBar.setVisibility(View.VISIBLE));
+
+                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
+                        Toast.LENGTH_SHORT).show());
+                VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit);
+                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
+                        Toast.LENGTH_SHORT).show());
+
+                handleAfterVote(handler);
             } catch (Exception e) {
                 if (e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
                     this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
-                            Toast.LENGTH_LONG).show());
-                    return;
+                            Toast.LENGTH_SHORT).show());
                 }
-                Log.e(TAG, "exception on getVotersAnswer", e);
+                Log.e(TAG, "exception while voting: ", e);
+                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Could not vote!", Toast.LENGTH_SHORT).show());
             }
 
-            if (votersAnswer == -1) {
-                mHandler.post(() -> progressBar.setVisibility(View.VISIBLE));
-                try {
-                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
-                            Toast.LENGTH_LONG).show());
-                    VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx + 1, gasPrice, gasLimit);
-                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
-                            Toast.LENGTH_LONG).show());
-                } catch (Exception e) {
-                    Log.e(TAG, "exception while voting: ", e);
-                    this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, e.getMessage(),
-                            Toast.LENGTH_LONG).show());
-                }
-                handleAfterVote(mHandler);
-            }
         }).start();
 
     }
 
-    private void handleAfterVote(Handler mHandler) {
+    private void handleAfterVote(Handler handler) {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
             final BigInteger gasPrice = getGasPriceFromString();
 
-            final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-            if (votersAnswer != 0) {
-                ((RadioButton) radioGroup.getChildAt(votersAnswer - 1)).setChecked(true);
+            final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+            if (voterExists.getValue()) {
+                final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit).intValue();
+
+                ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
                 for (int i = 0; i < radioGroup.getChildCount(); i++) {
                     radioGroup.getChildAt(i).setEnabled(false);
                 }
@@ -154,21 +151,22 @@ public class VotingActivity extends AppCompatActivity {
                 votingName.setEnabled(false);
 
                 final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-                mHandler.post(() -> {
-                    answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
-                    answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
-                    answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
-                    answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
+                handler.post(() -> {
+                    if (answerCounts != null) {
+                        answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
+                        answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
+                        answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
+                        answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
+                    }
                     infoText.setText(R.string.already_voted);
                 });
+
+                handler.post(() -> progressBar.setVisibility(View.INVISIBLE));
             }
-            mHandler.post(() -> {
-                progressBar.setVisibility(View.INVISIBLE);
-            });
         } catch (Exception e) {
-            if (e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
+            if (e.getCause() != null && e.getCause().getMessage().contains("Empty value (0x) returned from contract")) {
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
-                        Toast.LENGTH_LONG).show());
+                        Toast.LENGTH_SHORT).show());
             }
             Log.e(TAG, "exception after vote handling", e);
         }

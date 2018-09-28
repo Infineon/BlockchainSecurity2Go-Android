@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.common.ByteUtils;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
@@ -25,24 +27,35 @@ import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import org.web3j.crypto.Keys;
 
+import java.io.IOException;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
-import static co.coinfinity.AppConstants.CARD_ID;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class MainActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
 
-    private TextView ethAddressView;
-    private TextView balance;
-    private ImageView qrCodeView;
-    private TextView holdCard;
-    private Button sendBtn;
-    private Button sendErc20Btn;
-    private Button votingBtn;
-    private ProgressBar progressBar;
+    @BindView(R.id.ethAddress)
+    TextView ethAddressView;
+    @BindView(R.id.balance)
+    TextView balance;
+    @BindView(R.id.qrCode)
+    ImageView qrCodeView;
+    @BindView(R.id.holdCard)
+    TextView holdCard;
+    @BindView(R.id.send)
+    Button sendBtn;
+    @BindView(R.id.sendErc20)
+    Button sendErc20Btn;
+    @BindView(R.id.voting)
+    Button votingBtn;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private String pubKeyString;
     private String ethAddress;
@@ -53,18 +66,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
-        ethAddressView = findViewById(R.id.ethAddress);
-        balance = findViewById(R.id.balance);
-        qrCodeView = findViewById(R.id.qrCode);
-        sendBtn = findViewById(R.id.send);
-        sendErc20Btn = findViewById(R.id.sendErc20);
-        votingBtn = findViewById(R.id.voting);
-        progressBar = findViewById(R.id.progressBar);
-        holdCard = findViewById(R.id.holdCard);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
@@ -109,7 +112,11 @@ public class MainActivity extends AppCompatActivity {
 
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
-        pubKeyString = new NfcUtils().getPublicKey(isoDep, CARD_ID);
+        try {
+            pubKeyString = new NfcUtils().getPublicKey(isoDep, CARD_ID);
+        } catch (IOException e) {
+            Log.e(TAG, "exception while getting public key from card: ", e);
+        }
         Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
         // use web3j to format this public key as ETH address
         ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         holdCard.setText(R.string.card_found);
 
         Handler mHandler = new Handler();
-        Thread thread = new Thread(() -> {
+        new Thread(() -> {
             try {
                 while (true) {
                     EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
@@ -136,13 +143,12 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                     }
-                    Thread.sleep(1000);
+                    Thread.sleep(TIMEOUT);
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 Log.e(TAG, "exception while reading euro price from api: ", e);
             }
-        });
-        thread.start();
+        }).start();
     }
 
     private void logTagInfo(Tag tagFromIntent) {

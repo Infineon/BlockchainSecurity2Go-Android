@@ -1,9 +1,9 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.nfc.Tag;
-import android.util.Log;
 import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
 import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
+import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint32;
@@ -18,7 +18,6 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
-import static co.coinfinity.AppConstants.TAG;
 
 public class VotingUtils {
 
@@ -27,37 +26,27 @@ public class VotingUtils {
         contract.castVote(new Utf8String(votingName), new Uint8(vote)).send();
     }
 
-    public static int getVotersAnswer(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+    public static BigInteger getVotersAnswer(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
-        try {
-            final Uint8 voted = contract.thisVotersChoice().send();
-            return voted.getValue().intValue();
-        } catch (Exception e) {
-            Log.e(TAG, "exception while voting: ", e);
-        }
-        return -1;
+        final Uint8 voted = contract.thisVotersChoice().send();
+        return voted.getValue();
     }
 
-    public static String getVotersName(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+    public static Bool voterExists(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
-        try {
-            final Utf8String votersName = contract.thisVotersName().send();
-            return votersName.getValue();
-        } catch (Exception e) {
-            Log.e(TAG, "exception while voting: ", e);
-        }
-        return null;
+        return contract.thisVoterExists().send();
     }
 
-    public static List<Uint32> getCurrentResult(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) {
+    public static String getVotersName(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
-        try {
-            final DynamicArray<Uint32> votersName = contract.currentResult().send();
-            return votersName.getValue();
-        } catch (Exception e) {
-            Log.e(TAG, "exception while getting answer count: ", e);
-        }
-        return null;
+        final Utf8String votersName = contract.thisVotersName().send();
+        return votersName.getValue();
+    }
+
+    public static List<Uint32> getCurrentResult(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+        Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
+        final DynamicArray<Uint32> votersName = contract.currentResult().send();
+        return votersName.getValue();
     }
 
     private static Voting prepareWriteVotingContract(String contractAddress, Tag tag, String publicKey, String from, BigInteger gasPrice, BigInteger gasLimit) {

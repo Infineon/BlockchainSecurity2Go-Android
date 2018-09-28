@@ -23,4 +23,5 @@ public class AppConstants {
     private static final String ETHEUR = "ETHEUR";
     public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = "https://coinfinity.co/price/" + ETHEUR;
     public static final String PREFERENCE_FILENAME = "CoinfinonPrefs";
+    public static final int TIMEOUT = 2000;
 }
