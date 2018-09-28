@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
@@ -58,6 +59,8 @@ public class VotingActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    private InputErrorUtils inputErrorUtils;
+
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
 
@@ -67,6 +70,8 @@ public class VotingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_voting);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        inputErrorUtils = new InputErrorUtils(gasPrice, gasLimit, contractAddress);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -93,7 +98,9 @@ public class VotingActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
-        resolveIntent(intent);
+        if (inputErrorUtils.isNoInputError()) {
+            resolveIntent(intent);
+        }
     }
 
     private void resolveIntent(Intent intent) {
