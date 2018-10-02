@@ -29,4 +29,5 @@
     <string name="please_wait">Please wait...</string>
     <string name="visit_website">Unsere Homepage</string>
     <string name="hold_card_for_while">Halte die Karte für ein paar Sekunden!</string>
+    <string name="er20_contract_address">ERC20 Contract Adresse</string>
 </resources>

@@ -25,8 +25,8 @@
                 <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/contract_address"
-                        android:textSize="14sp" android:id="@+id/contractAddress"/>
+                        android:textSize="14sp" android:id="@+id/contractAddress"
+                        android:hint="@string/er20_contract_address"/>
             </android.support.design.widget.TextInputLayout>
             <ImageButton
                     android:layout_width="48dp"
