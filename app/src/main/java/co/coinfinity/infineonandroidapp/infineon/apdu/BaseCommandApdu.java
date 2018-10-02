@@ -29,14 +29,9 @@ public abstract class BaseCommandApdu {
     protected int p2 = 0x00;
 
     /**
-     * Lc byte
-     */
-    protected int lc = 0x00;
-
-    /**
      * Data part of APDU
      */
-    protected byte[] data = new byte[0];
+    private byte[] data = new byte[0];
 
     /**
      * Le byte
@@ -49,6 +44,20 @@ public abstract class BaseCommandApdu {
     protected boolean leIncluded = false;
 
     protected BaseCommandApdu() {
+    }
+
+    /**
+     * Set APDU data field
+     */
+    protected void setData(byte[] data) {
+        if (data == null) {
+            this.data = new byte[0];
+            return;
+        }
+        if (data.length > 0xFF) {
+            throw new IllegalArgumentException("Data cannot be larger than 0xFF bytes");
+        }
+        this.data = data;
     }
 
     /**
@@ -85,7 +94,7 @@ public abstract class BaseCommandApdu {
         apdu[index] = (byte) p2;
         index++;
         if (data.length != 0) {
-            apdu[index] = (byte) lc;
+            apdu[index] = (byte) data.length;
             index++;
             System.arraycopy(data, 0, apdu, index, data.length);
             index += data.length;

@@ -64,7 +64,7 @@ public class NfcUtils {
         GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
 
         // send apdu and check response status word
-        ResponseApdu resp = tranceive(card, apdu, "GET PUBLIC KEY");
+        ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
 
         //return signature data
         return resp.getData();
@@ -84,7 +84,7 @@ public class NfcUtils {
         GenerateKeyPairKeyApdu apdu = new GenerateKeyPairKeyApdu(CURVE_INDEX_SECP256K1);
 
         // send apdu and check response status word
-        ResponseApdu resp = tranceive(card, apdu, "GET PUBLIC KEY");
+        ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY PAIR");
 
         // should return exactly 1 byte, indicating index of new key
         if (resp.getData().length != 1) {

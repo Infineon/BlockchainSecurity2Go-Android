@@ -28,7 +28,7 @@ public class GenerateSignatureApdu extends BaseCommandApdu {
      */
     public GenerateSignatureApdu(int keyIndex, byte[] dataToSign) {
         this.ins = INS_GENERATE_SIGNATURE;
-        this.data = dataToSign;
+        this.setData(dataToSign);
         this.p1 = keyIndex;
         this.p2 = P2_DATA_ALREADY_PREHASHED;
         this.leIncluded = true;
