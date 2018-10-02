@@ -12,6 +12,13 @@ import static co.coinfinity.AppConstants.TAG;
 
 public class QrCodeGenerator {
 
+
+    /**
+     * Generate QR Code from given String
+     *
+     * @param text text to encode
+     * @return 200x200 px qrcode as bitmap or null if QR code cannot be generated.
+     */
     public static Bitmap generateQrCode(String text) {
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
@@ -21,7 +28,6 @@ public class QrCodeGenerator {
         } catch (WriterException e) {
             Log.e(TAG, "exception while generating QR Code: ", e);
         }
-
         return null;
     }
 }

@@ -1,7 +1,7 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.common.HttpUtils;
+import co.coinfinity.infineonandroidapp.utils.HttpUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 
 import static co.coinfinity.AppConstants.*;
 
+/**
+ * Simple HTTP client for fetching price data.
+ */
 public class CoinfinityClient extends JsonHttpResponseHandler {
 
     private TransactionPriceBean transactionPriceBean;

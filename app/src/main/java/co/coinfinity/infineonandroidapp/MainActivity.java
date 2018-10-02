@@ -17,22 +17,30 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.common.ByteUtils;
-import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
+import co.coinfinity.infineonandroidapp.utils.ByteUtils;
+import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.crypto.Keys;
 
 import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-import static co.coinfinity.AppConstants.*;
+import static co.coinfinity.AppConstants.SLEEP_BETWEEN_LOOPS_MILLIS;
+import static co.coinfinity.AppConstants.TAG;
 
+/**
+ * Main activity. Entry point of the application.
+ *
+ * @author Coinfinity.co, 2018
+ */
 public class MainActivity extends AppCompatActivity {
 
     private NfcAdapter nfcAdapter;
@@ -61,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private String ethAddress;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
+    private volatile boolean activityPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,38 +93,66 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         if (nfcAdapter != null) {
             if (!nfcAdapter.isEnabled())
-                showWirelessSettings();
+                openWirelessSettings();
             nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
         }
+        activityPaused = false;
     }
 
-    private void showWirelessSettings() {
+    @Override
+    protected void onPause() {
+        activityPaused = true;
+        nfcAdapter.disableForegroundDispatch(this);
+        super.onPause();
+    }
+
+
+    /**
+     * Opens system settings, wireless settings.
+     */
+    private void openWirelessSettings() {
         Toast.makeText(this, "You need to enable NFC", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         startActivity(intent);
     }
 
+    /**
+     * Called by Android systems whenever a new Intent is received. NFC tags are also
+     * delivered via an Intent.
+     *
+     * @param intent
+     */
     @Override
     protected void onNewIntent(Intent intent) {
+        activityPaused = false; // onPause() gets called when a Intent gets dispatched by Android
         setIntent(intent);
         resolveIntent(intent);
     }
 
 
+    /**
+     * Handle incoming intents (i.e. when a NFC tag was scanned)
+     *
+     * @param intent
+     */
     private void resolveIntent(Intent intent) {
+        // Only handle NFC intents
+        if (intent.getParcelableExtra(NfcAdapter.EXTRA_TAG) == null) {
+            return;
+        }
 
-        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        logTagInfo(tagFromIntent);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        logTagInfo(tag);
 
-        IsoDep isoDep = IsoDep.get(tagFromIntent);
+        IsoDep isoDep = IsoDep.get(tag);
 
         try {
-            pubKeyString = new NfcUtils().getPublicKey(isoDep, CARD_ID);
-        } catch (IOException e) {
-            Log.e(TAG, "exception while getting public key from card: ", e);
+            pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
+            isoDep.close();
+        } catch (IOException | NfcCardException e) {
+            Log.e(TAG, "Exception while reading public key from card: ", e);
         }
         Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
         // use web3j to format this public key as ETH address
@@ -125,10 +162,12 @@ public class MainActivity extends AppCompatActivity {
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
         holdCard.setText(R.string.card_found);
 
+
+
         Handler mHandler = new Handler();
         new Thread(() -> {
             try {
-                while (true) {
+                while (!activityPaused) {
                     EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi("0", "0", balance.getEther().toString());
                     if (transactionPriceBean != null) {
@@ -143,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                     }
-                    Thread.sleep(TIMEOUT);
+                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.e(TAG, "exception while reading euro price from api: ", e);
@@ -152,13 +191,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logTagInfo(Tag tagFromIntent) {
-        Log.d(TAG, "Tag found: " + tagFromIntent.toString());
-        Log.d(TAG, "Id: " + ByteUtils.bytesToHex(tagFromIntent.getId()));
-        for (String tech : tagFromIntent.getTechList()) {
-            Log.d(TAG, "Tech: " + tech);
-        }
+        Log.d(TAG, "NFC Tag detected: " + tagFromIntent.toString());
+        Log.d(TAG, "NFC Tag id: " + ByteUtils.bytesToHex(tagFromIntent.getId()));
     }
 
+    /**
+     * On button click SEND ETH
+     */
     public void onSend(View view) {
         Intent intent = new Intent(this, SendTransactionActivity.class);
         Bundle bundle = new Bundle();
@@ -168,6 +207,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * On button click SEND ERC-20
+     */
     public void onSendErc20(View view) {
         Intent intent = new Intent(this, SendErc20TokensActivity.class);
         Bundle bundle = new Bundle();
@@ -177,6 +219,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * On button click VOTING
+     */
     public void onVoting(View view) {
         Intent intent = new Intent(this, VotingActivity.class);
         Bundle bundle = new Bundle();

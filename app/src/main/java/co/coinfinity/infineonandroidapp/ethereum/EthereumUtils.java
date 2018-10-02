@@ -1,10 +1,10 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
-import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.common.ByteUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
+import co.coinfinity.infineonandroidapp.utils.ByteUtils;
+import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static co.coinfinity.AppConstants.*;
+import static co.coinfinity.infineonandroidapp.infineon.NfcUtils.generateSignature;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
 public class EthereumUtils {
@@ -59,7 +60,22 @@ public class EthereumUtils {
         return wei;
     }
 
-    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from, String to, BigInteger value, Tag tagFromIntent, String publicKey, NfcUtils nfcUtils, String data) throws Exception {
+    /**
+     * Send an Ethereum transaction.
+     * @param gasPrice
+     * @param gasLimit
+     * @param from
+     * @param to
+     * @param value
+     * @param isoTag
+     * @param publicKey
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
+                                                     String to, BigInteger value, IsoDep isoTag,
+                                                     String publicKey, String data) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
@@ -68,7 +84,9 @@ public class EthereumUtils {
         String hexValue = null;
         byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-        final byte[] signedTransaction = nfcUtils.signTransaction(tagFromIntent, CARD_ID, hashedTransaction);
+        //final byte[] signedTransaction = infineonNfcUtils.signTransaction(tagFromIntent, KEY_ID_ON_THE_CARD, hashedTransaction);
+        final byte[] signedTransaction = generateSignature(IsoTagWrapper.of(isoTag), KEY_ID_ON_THE_CARD, hashedTransaction);
+
 
         Log.d(TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
 
@@ -143,7 +161,7 @@ public class EthereumUtils {
             //calls private method form web3j lib
             BigInteger k = Sign.recoverFromSignature(i, sig, hashedTransaction);
 
-            if (k != null && k.equals(new BigInteger(1, ByteUtils.hexStringToByteArray(publicKey)))) {
+            if (k != null && k.equals(new BigInteger(1, ByteUtils.fromHexString(publicKey)))) {
                 recId = i;
                 break;
             }

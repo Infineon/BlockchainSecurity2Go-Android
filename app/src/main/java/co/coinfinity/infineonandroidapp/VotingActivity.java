@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +17,8 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.common.UiUtils;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.abi.datatypes.Bool;
@@ -71,7 +72,7 @@ public class VotingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        inputErrorUtils = new InputErrorUtils(gasPrice, gasLimit, contractAddress);
+        inputErrorUtils = new InputErrorUtils(this, gasPrice, gasLimit, contractAddress);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -109,6 +110,9 @@ public class VotingActivity extends AppCompatActivity {
         int idx = radioGroup.indexOfChild(radioButton);
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // TODO JZJZ check IsoDep
+        IsoDep isoDep = IsoDep.get(tagFromIntent);
+
 
         Handler handler = new Handler();
         new Thread(() -> {
@@ -121,7 +125,7 @@ public class VotingActivity extends AppCompatActivity {
 
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
                         Toast.LENGTH_SHORT).show());
-                VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit);
+                VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit);
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
                         Toast.LENGTH_SHORT).show());
 

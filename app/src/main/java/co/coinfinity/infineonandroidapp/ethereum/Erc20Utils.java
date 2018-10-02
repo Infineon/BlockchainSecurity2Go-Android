@@ -1,8 +1,7 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
-import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
 import org.web3j.contracts.token.ERC20Contract;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -20,7 +19,21 @@ import static co.coinfinity.AppConstants.TAG;
 
 public class Erc20Utils {
 
-    public static TransactionReceipt sendErc20Tokens(String ercContract, Tag tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    /**
+     * Send ERC-20 compatible tokens
+     *
+     * @param ercContract
+     * @param tag
+     * @param publicKey
+     * @param from
+     * @param to
+     * @param amount
+     * @param gasPrice
+     * @param gasLimit
+     * @return transaction receipt
+     * @throws Exception on errors
+     */
+    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey);

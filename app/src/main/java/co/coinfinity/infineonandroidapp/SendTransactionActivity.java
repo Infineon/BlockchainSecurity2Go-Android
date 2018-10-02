@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -18,12 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.common.UiUtils;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
@@ -59,7 +59,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
-    private volatile boolean activityStopped = false;
+    private volatile boolean activityPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        inputErrorUtils = new InputErrorUtils(recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
+        inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -84,7 +84,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         Handler handler = new Handler();
         new Thread(() -> {
             try {
-                while (!activityStopped) {
+                while (!activityPaused) {
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
                     handler.post(() -> {
                         if (transactionPriceBean != null) {
@@ -92,7 +92,7 @@ public class SendTransactionActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                     });
-                    Thread.sleep(TIMEOUT);
+                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "exception while reading price info from API in thread", e);
@@ -103,7 +103,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        activityStopped = true;
+        activityPaused = true;
         if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
@@ -115,6 +115,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        activityPaused = false;
     }
 
     @Override
@@ -136,6 +137,8 @@ public class SendTransactionActivity extends AppCompatActivity {
         }
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // TODO JZJZ check if IsoDeps
+        IsoDep isoDep = IsoDep.get(tagFromIntent);
 
         new Thread(() -> {
             final String valueStr = amountTxt.getText().toString();
@@ -147,7 +150,9 @@ public class SendTransactionActivity extends AppCompatActivity {
 
             EthSendTransaction response = null;
             try {
-                response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils(), "");
+                response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
+                        gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
+                        value.toBigInteger(), isoDep, pubKeyString, "");
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ether transaction", e);
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, "Could not send transaction!", Toast.LENGTH_SHORT).show());
