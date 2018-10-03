@@ -151,18 +151,19 @@ public class VotingActivity extends AppCompatActivity {
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
                 final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit).intValue();
-
-                ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
-                for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                    radioGroup.getChildAt(i).setEnabled(false);
-                }
-
                 final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-                votingName.setText(votersName);
-                votingName.setEnabled(false);
-
                 final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+
                 handler.post(() -> {
+                    // this has to be done in the the UI thread
+                    ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
+                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                        radioGroup.getChildAt(i).setEnabled(false);
+                    }
+
+                    votingName.setText(votersName);
+                    votingName.setEnabled(false);
+
                     if (answerCounts != null) {
                         answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
                         answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
@@ -200,7 +201,7 @@ public class VotingActivity extends AppCompatActivity {
     }
 
     public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(this);
+        QrCodeScanner.scanQrCode(this, 0);
     }
 
     @Override
