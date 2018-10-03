@@ -50,7 +50,7 @@ public class NfcUtils {
 
 
     /**
-     * Generate signature
+     * Generate an ECDSA signature
      *
      * @param card       nfc card
      * @param keyIndex   index of the key to use
@@ -72,7 +72,7 @@ public class NfcUtils {
 
 
     /**
-     * Generate a new Secp256k1 keypair on the card.
+     * Generate a new SECP-256k1 keypair on the card.
      *
      * @param card nfc tranceiver
      * @return index of the newly created key
@@ -146,6 +146,7 @@ public class NfcUtils {
                 // and ask for the pubkey of the newly created keypair
                 return readPublicKeyFromCard(card, newKeyIndex);
             } else {
+                // throw all other exceptions to our caller
                 throw e;
             }
         }

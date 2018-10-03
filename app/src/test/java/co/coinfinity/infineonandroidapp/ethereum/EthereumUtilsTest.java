@@ -1,12 +1,8 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
-import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
-import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
-import co.coinfinity.infineonandroidapp.infineon.OLDNfcUtils;
-import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import co.coinfinity.infineonandroidapp.utils.ByteWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,9 +35,6 @@ import static co.coinfinity.AppConstants.CHAIN_URL;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 import static org.web3j.tx.Contract.GAS_LIMIT;
 import static org.web3j.tx.ManagedTransaction.GAS_PRICE;
 
@@ -56,10 +49,6 @@ public class EthereumUtilsTest {
     static Credentials credentials = Credentials.create("0x8105dc1bcfac5c5be13da822c3cd7568ef55124ab45a2afac691f61d193cfd69");
     @Mock
     IsoDep tag;
-    @Mock
-    OLDNfcUtils infineonNfcUtils;
-    @Mock
-    NfcUtils nfcUtils;
 
     @Test
     public void testContract() throws Exception {
@@ -85,8 +74,12 @@ public class EthereumUtilsTest {
 
     @Test
     public void sendTransaction() throws Exception {
-        when(infineonNfcUtils.signTransaction(any(Tag.class), anyInt(), any(byte[].class))).thenReturn(
-                signTransaction(ByteUtils.fromHexString("6E190B28384A62507BA107C70AF66362054D0B14B24ADD2A43606B7530C4763B")));
+//        when(infineonNfcUtils.signTransaction(any(Tag.class), anyInt(), any(byte[].class))).thenReturn(
+//                signTransaction(ByteUtils.fromHexString("6E190B28384A62507BA107C70AF66362054D0B14B24ADD2A43606B7530C4763B")));
+//        Mock.
+//        when(nfcUtils.)
+
+        //when(tag.transceive())
 
         final EthSendTransaction ethSendTransaction = EthereumUtils.sendTransaction(
                 new BigInteger("50000000000"),

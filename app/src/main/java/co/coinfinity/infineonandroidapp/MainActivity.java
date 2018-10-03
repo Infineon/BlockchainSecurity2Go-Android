@@ -55,13 +55,15 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.holdCard)
     TextView holdCard;
     @BindView(R.id.send)
-    Button sendBtn;
+    Button sendEthBtn;
     @BindView(R.id.sendErc20)
     Button sendErc20Btn;
     @BindView(R.id.voting)
     Button votingBtn;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    @BindView(R.id.image_nfc_icon)
+    ImageView nfcIcon;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        displayOnUI(GuiState.NFC_ICON);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
@@ -89,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
+
+    private enum GuiState {NFC_ICON, PROGRESS_BAR, BALANCE_TEXT}
+
+    ;
+
 
     @Override
     protected void onResume() {
@@ -133,6 +141,34 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * If we have already a Public key, allow the user to reset by pressing back
+     */
+    @Override
+    public void onBackPressed() {
+        if (pubKeyString != null) {
+            resetGuiState();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * reset everything, like we never had seen a card
+     */
+    private void resetGuiState() {
+        displayOnUI(GuiState.NFC_ICON);
+        pubKeyString = null;
+        ethAddress = null;
+        ethAddressView.setText("");
+        qrCodeView.setImageBitmap(null);
+        holdCard.setText(R.string.hold_card);
+        sendEthBtn.setEnabled(false);
+        sendErc20Btn.setEnabled(false);
+        votingBtn.setEnabled(false);
+    }
+
+
+    /**
      * Handle incoming intents (i.e. when a NFC tag was scanned)
      *
      * @param intent
@@ -147,6 +183,10 @@ public class MainActivity extends AppCompatActivity {
         logTagInfo(tag);
 
         IsoDep isoDep = IsoDep.get(tag);
+        // now we have an IsoTag:
+
+        // update UI
+        displayOnUI(GuiState.PROGRESS_BAR);
 
         try {
             pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
@@ -162,24 +202,26 @@ public class MainActivity extends AppCompatActivity {
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
         holdCard.setText(R.string.card_found);
 
-
-
+        // Update balance and EUR price
         Handler mHandler = new Handler();
         new Thread(() -> {
+            Log.d(TAG, "Main activity, start reading price thread...");
             try {
-                while (!activityPaused) {
+                while (!activityPaused && ethAddress != null) {
                     EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
+                    Log.d(TAG, "reading EUR/ETH price..");
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi("0", "0", balance.getEther().toString());
-                    if (transactionPriceBean != null) {
+                    Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
+                    if (transactionPriceBean != null && pubKeyString != null) {
                         mHandler.post(() -> {
                             this.balance.setText(String.format("%s%s", balance.toString(),
                                     String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
-                            if (!sendBtn.isEnabled()) {
-                                sendBtn.setEnabled(true);
+                            if (!sendEthBtn.isEnabled()) {
+                                sendEthBtn.setEnabled(true);
                                 sendErc20Btn.setEnabled(true);
                                 votingBtn.setEnabled(true);
-                                progressBar.setVisibility(View.INVISIBLE);
                             }
+                            displayOnUI(GuiState.BALANCE_TEXT);
                         });
                     }
                     Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
@@ -187,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException | ExecutionException e) {
                 Log.e(TAG, "exception while reading euro price from api: ", e);
             }
+            Log.d(TAG, "Main activity, reading price thread exited.");
         }).start();
     }
 
@@ -242,4 +285,33 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
+
+    /**
+     * Display only GUI elements of 1 of 3 states:
+     * NFC Icon (when waiting for NFC), spinner (when waiting for network background tasks,
+     * Text (when displaying balance results)
+     *
+     * @param state NFC_ICON, PROGRESS_BAR, BALANCE_TEXT
+     */
+    private void displayOnUI(GuiState state) {
+        // only display NFC Icon
+        if (GuiState.NFC_ICON.equals(state)) {
+            progressBar.setVisibility(View.GONE);
+            balance.setVisibility(View.GONE);
+            nfcIcon.setVisibility(View.VISIBLE);
+        }
+        // only display progress bar
+        else if (GuiState.PROGRESS_BAR.equals(state)) {
+            nfcIcon.setVisibility(View.GONE);
+            balance.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        // only display balance text
+        else if (GuiState.BALANCE_TEXT.equals(state)) {
+            nfcIcon.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            balance.setVisibility(View.VISIBLE);
+        }
+    }
+
 }

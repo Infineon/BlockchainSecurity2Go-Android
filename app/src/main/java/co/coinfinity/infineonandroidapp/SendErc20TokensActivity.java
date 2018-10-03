@@ -19,10 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
 
@@ -31,9 +31,7 @@ import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
-import static co.coinfinity.AppConstants.SLEEP_BETWEEN_LOOPS_MILLIS;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class SendErc20TokensActivity extends AppCompatActivity {
 
@@ -88,8 +86,11 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
-        contractAddress.setText(pref.getString("er20ContractAddress", "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
-        recipientAddressTxt.setText(pref.getString("er20RecipientAddress", "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+        contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS, "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
+        recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS, "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+        gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
+        gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "60000"));
+        amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
 
         Handler handler = new Handler();
         new Thread(() -> {
@@ -117,8 +118,12 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("er20ContractAddress", contractAddress.getText().toString())
-                .putString("er20RecipientAddress", recipientAddressTxt.getText().toString())
+        editor
+                .putString(PREF_KEY_ERC20_CONTRACT_ADDRESS, contractAddress.getText().toString())
+                .putString(PREF_KEY_ERC20_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString())
+                .putString(PREF_KEY_ERC20_GASLIMIT, gasLimitTxt.getText().toString())
+                .putString(PREF_KEY_ERC20_AMOUNT, amountTxt.getText().toString())
+                .putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString())
                 .apply();
     }
 
@@ -144,7 +149,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
     private void resolveIntent(Intent intent) {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        // TODO JZJZ check IsoDep
+        // TODO check IsoDep
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
         new Thread(() -> {
@@ -156,7 +161,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
             TransactionReceipt response = null;
             try {
-                response = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
+                // Caution: This call blocks until the TX is mined in a block
+                response = Erc20Utils.sendErc20TokensBlocking(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
                         , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger());
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ERC20 tokens", e);
@@ -210,11 +216,13 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
     public void onScanContract(View view) {
         isContractScan = true;
-        QrCodeScanner.scanQrCode(this);
+        // TODO use request code instead of boolean field
+        QrCodeScanner.scanQrCode(this, 0);
     }
 
     public void onScanRecipient(View view) {
         isContractScan = false;
-        QrCodeScanner.scanQrCode(this);
+        // TODO use request code instead of boolean field
+        QrCodeScanner.scanQrCode(this, 0);
     }
 }

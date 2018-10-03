@@ -19,12 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
 
@@ -78,8 +78,13 @@ public class SendTransactionActivity extends AppCompatActivity {
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
-        String savedRecipientAddressTxt = mPrefs.getString("recipientAddressTxt", "");
+        String savedRecipientAddressTxt = mPrefs.getString(PREF_KEY_RECIPIENT_ADDRESS, "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
+        String savedGasPriceWei  = mPrefs.getString(PREF_KEY_GASPRICE_WEI, "21");
+        gasPriceTxt.setText(savedGasPriceWei);
+        String savedGasLimit  = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
+        gasLimitTxt.setText(savedGasLimit);
+
 
         Handler handler = new Handler();
         new Thread(() -> {
@@ -95,7 +100,7 @@ public class SendTransactionActivity extends AppCompatActivity {
                     Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException e) {
-                Log.e(TAG, "exception while reading price info from API in thread", e);
+                Log.e(TAG, "Exception while reading price info from API in thread", e);
             }
         }).start();
     }
@@ -108,7 +113,9 @@ public class SendTransactionActivity extends AppCompatActivity {
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
-        mEditor.putString("recipientAddressTxt", recipientAddressTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_GASLIMIT_SEND_ETH, gasLimitTxt.getText().toString()).apply();
     }
 
     @Override
@@ -121,12 +128,12 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent) {
         if (inputErrorUtils.isNoInputError()) {
-            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.hold_card_for_while,
-                    Toast.LENGTH_SHORT).show());
+            this.runOnUiThread(() -> Toast.makeText(
+                    SendTransactionActivity.this, R.string.hold_card_for_while,
+                    Toast.LENGTH_LONG).show());
             resolveIntent(intent);
         }
     }
-
 
 
     private void resolveIntent(Intent intent) {
@@ -137,7 +144,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         }
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        // TODO JZJZ check if IsoDeps
+        // TODO check if IsoDeps
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
         new Thread(() -> {
@@ -146,7 +153,7 @@ public class SendTransactionActivity extends AppCompatActivity {
             final String gasPriceStr = gasPriceTxt.getText().toString();
             final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
             final String gasLimitStr = gasLimitTxt.getText().toString();
-            final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
+            final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
 
             EthSendTransaction response = null;
             try {
@@ -155,14 +162,15 @@ public class SendTransactionActivity extends AppCompatActivity {
                         value.toBigInteger(), isoDep, pubKeyString, "");
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ether transaction", e);
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, "Could not send transaction!", Toast.LENGTH_SHORT).show());
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this,
+                        String.format("Could not send transaction: %s", e.getMessage()), Toast.LENGTH_LONG).show());
                 return;
             }
 
             if (response != null && response.getError() != null) {
                 EthSendTransaction finalResponse = response;
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, finalResponse.getError().getMessage(),
-                        Toast.LENGTH_SHORT).show());
+                        Toast.LENGTH_LONG).show());
             } else {
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
             }
@@ -171,7 +179,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     }
 
     public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(this);
+        QrCodeScanner.scanQrCode(this, 0);
     }
 
     @Override

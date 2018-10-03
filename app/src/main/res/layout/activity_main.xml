@@ -55,6 +55,10 @@
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textIsSelectable="true" android:textAlignment="center"/>
+        <ImageView
+                android:id="@+id/image_nfc_icon"
+                android:layout_width="117dp"
+                android:layout_height="68dp" app:srcCompat="@drawable/nfc_icon"/>
         <ProgressBar
                 style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"

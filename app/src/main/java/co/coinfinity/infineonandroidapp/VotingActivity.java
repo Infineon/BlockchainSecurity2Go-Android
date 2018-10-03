@@ -28,7 +28,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class VotingActivity extends AppCompatActivity {
 
@@ -87,13 +87,15 @@ public class VotingActivity extends AppCompatActivity {
             ethAddress = bundle.getString("ethAddress");
         }
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
-        String savedContractAddress = mPrefs.getString("contractAddress", "");
+        SharedPreferences pref = getSharedPreferences("label", 0);
+        String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, "");
+        gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
+        gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
 
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
             Handler handler = new Handler();
-            new Thread(() -> handleAfterVote(handler)).start();
+            new Thread(() -> updateVoteState(handler)).start();
         }
     }
 
@@ -110,7 +112,7 @@ public class VotingActivity extends AppCompatActivity {
         int idx = radioGroup.indexOfChild(radioButton);
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        // TODO JZJZ check IsoDep
+        // TODO check IsoDep
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
 
@@ -129,7 +131,7 @@ public class VotingActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
                         Toast.LENGTH_SHORT).show());
 
-                handleAfterVote(handler);
+                updateVoteState(handler);
             } catch (Exception e) {
                 if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
                     this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
@@ -143,7 +145,7 @@ public class VotingActivity extends AppCompatActivity {
 
     }
 
-    private void handleAfterVote(Handler handler) {
+    private void updateVoteState(Handler handler) {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
             final BigInteger gasPrice = getGasPriceFromString();
@@ -191,7 +193,11 @@ public class VotingActivity extends AppCompatActivity {
 
         SharedPreferences mPrefs = getSharedPreferences("label", 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
-        mEditor.putString("contractAddress", contractAddress.getText().toString()).apply();
+        mEditor
+                .putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString())
+                .putString(PREF_KEY_VOTING_GASLIMIT, gasLimit.getText().toString())
+                .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString())
+                .apply();
     }
 
     @Override

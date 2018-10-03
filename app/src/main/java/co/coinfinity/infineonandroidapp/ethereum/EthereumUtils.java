@@ -84,7 +84,6 @@ public class EthereumUtils {
         String hexValue = null;
         byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-        //final byte[] signedTransaction = infineonNfcUtils.signTransaction(tagFromIntent, KEY_ID_ON_THE_CARD, hashedTransaction);
         final byte[] signedTransaction = generateSignature(IsoTagWrapper.of(isoTag), KEY_ID_ON_THE_CARD, hashedTransaction);
 
 
@@ -116,7 +115,9 @@ public class EthereumUtils {
             Log.d(TAG, "TransactionHash: " + transactionHash);
             Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
             if (ethSendTransaction.getError() != null) {
-                Log.d(TAG, "TransactionError: " + ethSendTransaction.getError().getMessage());
+                Log.e(TAG, "TransactionError: " + ethSendTransaction.getError().getMessage());
+                throw new RuntimeException(String.format("TransactionError: %s",
+                        ethSendTransaction.getError().getMessage()));
             }
 
         }

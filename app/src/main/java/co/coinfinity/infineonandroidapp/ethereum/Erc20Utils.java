@@ -20,7 +20,7 @@ import static co.coinfinity.AppConstants.TAG;
 public class Erc20Utils {
 
     /**
-     * Send ERC-20 compatible tokens
+     * Send ERC-20 compatible tokens, blocks until the transaction is mined in a block!
      *
      * @param ercContract
      * @param tag
@@ -33,7 +33,7 @@ public class Erc20Utils {
      * @return transaction receipt
      * @throws Exception on errors
      */
-    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public static TransactionReceipt sendErc20TokensBlocking(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey);
@@ -41,6 +41,7 @@ public class Erc20Utils {
         ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, gasPrice, gasLimit);
 
         final RemoteCall<TransactionReceipt> transfer = erc.transfer(to, amount);
+        // This call is synchronously, it blocks until the tx is mined in a block!
         TransactionReceipt transactionReceipt = transfer.send();
 
         if (transactionReceipt != null)
@@ -49,6 +50,15 @@ public class Erc20Utils {
         return transactionReceipt;
     }
 
+    /**
+     * Get token balance for a contract
+     *
+     * @param ercContract
+     * @param ethAddress
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws ExecutionException, InterruptedException {
         if (ercContract != null && !ercContract.equals("") && ethAddress != null && !ethAddress.equals("")) {
             Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
