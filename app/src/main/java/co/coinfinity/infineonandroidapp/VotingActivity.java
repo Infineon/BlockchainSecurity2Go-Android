@@ -121,9 +121,7 @@ public class VotingActivity extends AppCompatActivity {
 
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
                         Toast.LENGTH_SHORT).show());
-                VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit);
-                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.voted_successfully,
-                        Toast.LENGTH_SHORT).show());
+                VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
 
                 handleAfterVote(handler);
             } catch (Exception e) {

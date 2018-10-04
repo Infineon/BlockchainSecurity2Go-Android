@@ -1,7 +1,7 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
+import android.app.Activity;
 import android.nfc.Tag;
-import android.util.Log;
 import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
 import org.web3j.contracts.token.ERC20Contract;
 import org.web3j.protocol.Web3j;
@@ -14,26 +14,22 @@ import org.web3j.tx.TransactionManager;
 
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
-import static co.coinfinity.AppConstants.TAG;
 
 public class Erc20Utils {
 
-    public static TransactionReceipt sendErc20Tokens(String ercContract, Tag tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public static Future<TransactionReceipt> sendErc20Tokens(String ercContract, Tag tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity) {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
 
-        TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey);
+        TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);
 
         ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, gasPrice, gasLimit);
 
         final RemoteCall<TransactionReceipt> transfer = erc.transfer(to, amount);
-        TransactionReceipt transactionReceipt = transfer.send();
 
-        if (transactionReceipt != null)
-            Log.d(TAG, "ERC20 Transaction Hash: " + transactionReceipt.getTransactionHash());
-
-        return transactionReceipt;
+        return transfer.sendAsync();
     }
 
     public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws ExecutionException, InterruptedException {

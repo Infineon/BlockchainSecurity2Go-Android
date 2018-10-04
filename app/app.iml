@@ -161,6 +161,7 @@
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:runtime-1.1.0" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:transition-27.1.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.UnknownEnergy.web3j:console:android_with_erc20_contract-SNAPSHOT@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.jakewharton:butterknife-8.8.1" level="project" />
     <orderEntry type="library" name="Gradle: com.github.UnknownEnergy.web3j:tuples:android_with_erc20_contract-SNAPSHOT@jar" level="project" />
     <orderEntry type="library" scope="TEST" name="Gradle: com.android.support.test:runner-1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-annotations:27.1.1@jar" level="project" />
@@ -172,6 +173,7 @@
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:viewmodel-1.1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.checkerframework:checker-qual:2.5.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.UnknownEnergy.web3j:abi:android_with_erc20_contract-SNAPSHOT@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.jakewharton:butterknife-annotations:8.8.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-vector-drawable-27.1.1" level="project" />
     <orderEntry type="library" name="Gradle: org.ow2.asm:asm-tree:5.0.3@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.jnr:jffi:1.2.14:native@jar" level="project" />

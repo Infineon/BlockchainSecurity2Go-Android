@@ -14,7 +14,6 @@
     <string name="title_activity_send_erc20_tokens">Send ERC 20 Tokens</string>
     <string name="title_activity_voting">Voting</string>
     <string name="already_voted">Already voted!</string>
-    <string name="voted_successfully">Voted successfully!</string>
     <string name="eth" translatable="false">ETH</string>
     <string name="address">Address</string>
     <string name="send_erc20">Send ERC20</string>

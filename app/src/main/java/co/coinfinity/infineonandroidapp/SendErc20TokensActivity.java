@@ -22,7 +22,6 @@ import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -140,34 +139,19 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private void resolveIntent(Intent intent) {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        new Thread(() -> {
-            final String valueStr = amountTxt.getText().toString();
-            final String gasPriceStr = gasPriceTxt.getText().toString();
-            final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
-            final String gasLimitStr = gasLimitTxt.getText().toString();
-            final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
+        final String valueStr = amountTxt.getText().toString();
+        final String gasPriceStr = gasPriceTxt.getText().toString();
+        final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
+        final String gasLimitStr = gasLimitTxt.getText().toString();
+        final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
 
-            TransactionReceipt response = null;
-            try {
-                response = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
-                        , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger());
-            } catch (Exception e) {
-                Log.e(TAG, "Exception while sending ERC20 tokens", e);
-                this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, "Could not send transaction!", Toast.LENGTH_SHORT).show());
-                return;
-            }
+        try {
+            Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
+                    , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger(), this);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while sending ERC20 tokens", e);
 
-            if (response != null) {
-                if (response.getStatus().equals("0x1")) {
-                    this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
-                } else {
-                    TransactionReceipt finalResponse = response;
-                    this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, finalResponse.getStatus(),
-                            Toast.LENGTH_SHORT).show());
-                }
-            }
-
-        }).start();
+        }
         finish();
     }
 
