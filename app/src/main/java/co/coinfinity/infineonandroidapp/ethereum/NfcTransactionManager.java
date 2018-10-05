@@ -5,7 +5,6 @@ import android.nfc.tech.IsoDep;
 import android.util.Log;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.R;
-import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.TransactionManager;
@@ -46,7 +45,7 @@ public class NfcTransactionManager extends TransactionManager {
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value) {
         try {
-            final EthSendTransaction ethSendTransaction = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, new NfcUtils(), data);
+            final EthSendTransaction ethSendTransaction = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data);
             activity.runOnUiThread(() -> Toast.makeText(activity, R.string.send_success, Toast.LENGTH_SHORT).show());
             return ethSendTransaction;
         } catch (Exception e) {

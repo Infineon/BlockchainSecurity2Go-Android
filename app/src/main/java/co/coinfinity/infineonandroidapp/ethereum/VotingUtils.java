@@ -1,7 +1,6 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.app.Activity;
-import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
 import org.web3j.abi.datatypes.Bool;
@@ -23,7 +22,7 @@ import static co.coinfinity.AppConstants.CHAIN_URL;
 public class VotingUtils {
 
     public static void vote(String contractAddress, IsoDep tag, String publicKey, String from, String votingName, int vote, BigInteger gasPrice, BigInteger gasLimit, Activity activity) throws Exception {
-        Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit);
+        Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit, activity);
         contract.castVote(new Utf8String(votingName), new Uint8(vote)).send();
     }
 
