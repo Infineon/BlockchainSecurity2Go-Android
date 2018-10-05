@@ -109,7 +109,6 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         emit NewVote(givenVote, currentVoteResults);
     }
 
-
     /**
     * @notice checks if this address has already cast a vote
     *  this is required to find out if it is safe to call the other "thisVoters..." views.
@@ -146,8 +145,6 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         require(votersInfo[msg.sender].exists, "No vote so far.");
         return votersInfo[msg.sender].name;
     }
-
-
 
     /**
      * @notice Return array with sums of votes per choice.

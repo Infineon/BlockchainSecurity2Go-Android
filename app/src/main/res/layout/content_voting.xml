@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/progressBar" android:visibility="visible"/>
         <TextView
-                android:text="@string/hold_a_card_to_the_back_of_the_device_to_start_voting"
+                android:text="@string/hold_card_voting"
                 android:layout_height="match_parent" android:id="@+id/infoText"
                 android:textSize="24sp" android:textAlignment="center"
                 android:layout_width="match_parent"/>

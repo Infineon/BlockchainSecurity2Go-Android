@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -18,13 +19,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
-import co.coinfinity.infineonandroidapp.nfc.NfcUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
 
@@ -59,7 +59,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
-    private volatile boolean activityStopped = false;
+    private volatile boolean activityPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        inputErrorUtils = new InputErrorUtils(recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
+        inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -78,13 +78,18 @@ public class SendTransactionActivity extends AppCompatActivity {
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
-        String savedRecipientAddressTxt = mPrefs.getString("recipientAddressTxt", "");
+        String savedRecipientAddressTxt = mPrefs.getString(PREF_KEY_RECIPIENT_ADDRESS, "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
+        String savedGasPriceWei  = mPrefs.getString(PREF_KEY_GASPRICE_WEI, "21");
+        gasPriceTxt.setText(savedGasPriceWei);
+        String savedGasLimit  = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
+        gasLimitTxt.setText(savedGasLimit);
+
 
         Handler handler = new Handler();
         new Thread(() -> {
             try {
-                while (!activityStopped) {
+                while (!activityPaused) {
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
                     handler.post(() -> {
                         if (transactionPriceBean != null) {
@@ -92,10 +97,10 @@ public class SendTransactionActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                     });
-                    Thread.sleep(TIMEOUT);
+                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException e) {
-                Log.e(TAG, "exception while reading price info from API in thread", e);
+                Log.e(TAG, "Exception while reading price info from API in thread", e);
             }
         }).start();
     }
@@ -103,29 +108,32 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        activityStopped = true;
+        activityPaused = true;
         if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
-        mEditor.putString("recipientAddressTxt", recipientAddressTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_GASLIMIT_SEND_ETH, gasLimitTxt.getText().toString()).apply();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        activityPaused = false;
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         if (inputErrorUtils.isNoInputError()) {
-            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.hold_card_for_while,
-                    Toast.LENGTH_SHORT).show());
+            this.runOnUiThread(() -> Toast.makeText(
+                    SendTransactionActivity.this, R.string.hold_card_for_while,
+                    Toast.LENGTH_LONG).show());
             resolveIntent(intent);
         }
     }
-
 
 
     private void resolveIntent(Intent intent) {
@@ -136,6 +144,8 @@ public class SendTransactionActivity extends AppCompatActivity {
         }
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // TODO check if IsoDeps
+        IsoDep isoDep = IsoDep.get(tagFromIntent);
 
         new Thread(() -> {
             final String valueStr = amountTxt.getText().toString();
@@ -143,21 +153,24 @@ public class SendTransactionActivity extends AppCompatActivity {
             final String gasPriceStr = gasPriceTxt.getText().toString();
             final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
             final String gasLimitStr = gasLimitTxt.getText().toString();
-            final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
+            final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
 
             EthSendTransaction response = null;
             try {
-                response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(), gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(), value.toBigInteger(), tagFromIntent, pubKeyString, new NfcUtils(), "");
+                response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
+                        gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
+                        value.toBigInteger(), isoDep, pubKeyString, "");
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ether transaction", e);
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, "Could not send transaction!", Toast.LENGTH_SHORT).show());
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this,
+                        String.format("Could not send transaction: %s", e.getMessage()), Toast.LENGTH_LONG).show());
                 return;
             }
 
             if (response != null && response.getError() != null) {
                 EthSendTransaction finalResponse = response;
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, finalResponse.getError().getMessage(),
-                        Toast.LENGTH_SHORT).show());
+                        Toast.LENGTH_LONG).show());
             } else {
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
             }
@@ -166,7 +179,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     }
 
     public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(this);
+        QrCodeScanner.scanQrCode(this, 0);
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +17,8 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.common.UiUtils;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import org.web3j.abi.datatypes.Bool;
@@ -27,7 +28,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class VotingActivity extends AppCompatActivity {
 
@@ -71,7 +72,7 @@ public class VotingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        inputErrorUtils = new InputErrorUtils(gasPrice, gasLimit, contractAddress);
+        inputErrorUtils = new InputErrorUtils(this, gasPrice, gasLimit, contractAddress);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -86,13 +87,15 @@ public class VotingActivity extends AppCompatActivity {
             ethAddress = bundle.getString("ethAddress");
         }
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
-        String savedContractAddress = mPrefs.getString("contractAddress", "");
+        SharedPreferences pref = getSharedPreferences("label", 0);
+        String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, "");
+        gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
+        gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
 
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
             Handler handler = new Handler();
-            new Thread(() -> handleAfterVote(handler)).start();
+            new Thread(() -> updateVoteState(handler)).start();
         }
     }
 
@@ -109,6 +112,9 @@ public class VotingActivity extends AppCompatActivity {
         int idx = radioGroup.indexOfChild(radioButton);
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // TODO check IsoDep
+        IsoDep isoDep = IsoDep.get(tagFromIntent);
+
 
         Handler handler = new Handler();
         new Thread(() -> {
@@ -121,9 +127,9 @@ public class VotingActivity extends AppCompatActivity {
 
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
                         Toast.LENGTH_SHORT).show());
-                VotingUtils.vote(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
+                VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
 
-                handleAfterVote(handler);
+                updateVoteState(handler);
             } catch (Exception e) {
                 if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
                     this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
@@ -137,7 +143,7 @@ public class VotingActivity extends AppCompatActivity {
 
     }
 
-    private void handleAfterVote(Handler handler) {
+    private void updateVoteState(Handler handler) {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
             final BigInteger gasPrice = getGasPriceFromString();
@@ -145,18 +151,19 @@ public class VotingActivity extends AppCompatActivity {
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
                 final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit).intValue();
-
-                ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
-                for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                    radioGroup.getChildAt(i).setEnabled(false);
-                }
-
                 final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
-                votingName.setText(votersName);
-                votingName.setEnabled(false);
-
                 final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+
                 handler.post(() -> {
+                    // this has to be done in the the UI thread
+                    ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
+                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                        radioGroup.getChildAt(i).setEnabled(false);
+                    }
+
+                    votingName.setText(votersName);
+                    votingName.setEnabled(false);
+
                     if (answerCounts != null) {
                         answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
                         answer2Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(1).getValue().toString()));
@@ -184,7 +191,11 @@ public class VotingActivity extends AppCompatActivity {
 
         SharedPreferences mPrefs = getSharedPreferences("label", 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
-        mEditor.putString("contractAddress", contractAddress.getText().toString()).apply();
+        mEditor
+                .putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString())
+                .putString(PREF_KEY_VOTING_GASLIMIT, gasLimit.getText().toString())
+                .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString())
+                .apply();
     }
 
     @Override
@@ -194,7 +205,7 @@ public class VotingActivity extends AppCompatActivity {
     }
 
     public void scanQrCode(View view) {
-        QrCodeScanner.scanQrCode(this);
+        QrCodeScanner.scanQrCode(this, 0);
     }
 
     @Override

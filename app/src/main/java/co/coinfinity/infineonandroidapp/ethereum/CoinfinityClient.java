@@ -1,7 +1,7 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.common.HttpUtils;
+import co.coinfinity.infineonandroidapp.utils.HttpUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 
 import static co.coinfinity.AppConstants.*;
 
+/**
+ * Simple HTTP client for fetching price data.
+ */
 public class CoinfinityClient extends JsonHttpResponseHandler {
 
     private TransactionPriceBean transactionPriceBean;
@@ -21,11 +24,15 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
     private String etherAmount;
 
 
+    // TODO: on the first call this always will return null and on all subsequent calls,
+    // it will return the result of the last call
     public TransactionPriceBean readEuroPriceFromApi(String gasPriceStr, String gasLimitStr, String etherAmount) {
         this.gasPriceStr = gasPriceStr;
         this.gasLimitStr = gasLimitStr;
         this.etherAmount = etherAmount;
 
+        // The "HttpUtils.get" call is async, so it will return immediately,
+        // therefore transactionPriceBean is still null after the first call
         HttpUtils.get(HTTPS_COINFINITY_CO_PRICE_XBTEUR, null, this);
 
         return transactionPriceBean;
@@ -34,6 +41,7 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
         try {
+            Log.d(TAG, "Response from ETH/EUR API request. HTTP: "+statusCode);
             JSONObject serverResp = new JSONObject(response.toString());
 
             if (!gasPriceStr.equals("") && !gasLimitStr.equals("") && !etherAmount.equals("")) {

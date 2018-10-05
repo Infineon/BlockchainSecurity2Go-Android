@@ -2,8 +2,8 @@ package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.app.Activity;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
-import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
 import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.Utf8String;
@@ -22,8 +22,8 @@ import static co.coinfinity.AppConstants.CHAIN_URL;
 
 public class VotingUtils {
 
-    public static void vote(String contractAddress, Tag tag, String publicKey, String from, String votingName, int vote, BigInteger gasPrice, BigInteger gasLimit, Activity activity) throws Exception {
-        Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit, activity);
+    public static void vote(String contractAddress, IsoDep tag, String publicKey, String from, String votingName, int vote, BigInteger gasPrice, BigInteger gasLimit, Activity activity) throws Exception {
+        Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit);
         contract.castVote(new Utf8String(votingName), new Uint8(vote)).send();
     }
 
@@ -50,7 +50,7 @@ public class VotingUtils {
         return votersName.getValue();
     }
 
-    private static Voting prepareWriteVotingContract(String contractAddress, Tag tag, String publicKey, String from, BigInteger gasPrice, BigInteger gasLimit, Activity activity) {
+    private static Voting prepareWriteVotingContract(String contractAddress, IsoDep tag, String publicKey, String from, BigInteger gasPrice, BigInteger gasLimit, Activity activity) {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);
 

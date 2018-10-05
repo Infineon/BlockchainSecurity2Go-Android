@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp.common;
+package co.coinfinity.infineonandroidapp.utils;
 
 /*
  * Copyright 2013, 2014 Megion Research & Development GmbH

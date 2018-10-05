@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -18,10 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.common.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.common.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -29,8 +31,7 @@ import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.PREFERENCE_FILENAME;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 
 public class SendErc20TokensActivity extends AppCompatActivity {
 
@@ -60,7 +61,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
 
     private boolean isContractScan;
-    private volatile boolean activityStopped = false;
+    private volatile boolean activityPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        inputErrorUtils = new InputErrorUtils(recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt, contractAddress);
+        inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt, contractAddress);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -85,20 +86,23 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
-        contractAddress.setText(pref.getString("er20ContractAddress", "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
-        recipientAddressTxt.setText(pref.getString("er20RecipientAddress", "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+        contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS, "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
+        recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS, "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+        gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
+        gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "60000"));
+        amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
 
         Handler handler = new Handler();
         new Thread(() -> {
             try {
-                while (!activityStopped) {
+                while (!activityPaused) {
                     BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
                     handler.post(() -> {
                         if (transactionPriceBean != null)
                             currentBalance.setText(String.format(getString(R.string.current_token_balance), transactionPriceBean));
                         progressBar.setVisibility(View.INVISIBLE);
                     });
-                    Thread.sleep(3000);
+                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 Log.e(TAG, "exception while reading ERC20 Balance", e);
@@ -109,20 +113,27 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        activityStopped = true;
+        activityPaused = true;
         if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("er20ContractAddress", contractAddress.getText().toString())
-                .putString("er20RecipientAddress", recipientAddressTxt.getText().toString())
+        editor
+                .putString(PREF_KEY_ERC20_CONTRACT_ADDRESS, contractAddress.getText().toString())
+                .putString(PREF_KEY_ERC20_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString())
+                .putString(PREF_KEY_ERC20_GASLIMIT, gasLimitTxt.getText().toString())
+                .putString(PREF_KEY_ERC20_AMOUNT, amountTxt.getText().toString())
+                .putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString())
                 .apply();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        }
+        activityPaused = false;
     }
 
 
@@ -138,6 +149,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
     private void resolveIntent(Intent intent) {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // TODO check IsoDep
+        IsoDep isoDep = IsoDep.get(tagFromIntent);
 
         final String valueStr = amountTxt.getText().toString();
         final String gasPriceStr = gasPriceTxt.getText().toString();
@@ -146,11 +159,10 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
 
         try {
-            Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), tagFromIntent, pubKeyString, ethAddress
+            Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
                     , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger(), this);
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ERC20 tokens", e);
-
         }
         finish();
     }
@@ -187,11 +199,13 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
     public void onScanContract(View view) {
         isContractScan = true;
-        QrCodeScanner.scanQrCode(this);
+        // TODO use request code instead of boolean field
+        QrCodeScanner.scanQrCode(this, 0);
     }
 
     public void onScanRecipient(View view) {
         isContractScan = false;
-        QrCodeScanner.scanQrCode(this);
+        // TODO use request code instead of boolean field
+        QrCodeScanner.scanQrCode(this, 0);
     }
 }

@@ -1,5 +1,6 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
+import android.nfc.tech.IsoDep;
 import android.app.Activity;
 import android.nfc.Tag;
 import co.coinfinity.infineonandroidapp.nfc.NfcTransactionManager;
@@ -20,7 +21,21 @@ import static co.coinfinity.AppConstants.CHAIN_URL;
 
 public class Erc20Utils {
 
-    public static Future<TransactionReceipt> sendErc20Tokens(String ercContract, Tag tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity) {
+    /**
+     * Send ERC-20 compatible tokens async
+     *
+     * @param ercContract
+     * @param tag
+     * @param publicKey
+     * @param from
+     * @param to
+     * @param amount
+     * @param gasPrice
+     * @param gasLimit
+     * @return transaction receipt
+     * @throws Exception on errors
+     */
+    public static Future<TransactionReceipt> sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity) {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);
@@ -32,6 +47,15 @@ public class Erc20Utils {
         return transfer.sendAsync();
     }
 
+    /**
+     * Get token balance for a contract
+     *
+     * @param ercContract
+     * @param ethAddress
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws ExecutionException, InterruptedException {
         if (ercContract != null && !ercContract.equals("") && ethAddress != null && !ethAddress.equals("")) {
             Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));

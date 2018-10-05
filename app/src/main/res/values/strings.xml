@@ -2,14 +2,14 @@
     <string name="app_name" translatable="false">Coinfineon</string>
     <string name="title_activity_nfc_read" translatable="false">NfcRead</string>
     <string name="title_activity_send_transaction">Send ETH Transaction</string>
-    <string name="hold_card">Hold a card against the back of your device</string>
+    <string name="hold_card">Tap a card against the back of your device</string>
     <string name="send_eth">Send ETH</string>
     <string name="recipient_address">Recipient Address</string>
     <string name="amount_eth">Amount ETH</string>
     <string name="gas_price">Gas Price</string>
     <string name="gas_limit">Gas Limit</string>
-    <string name="hold_card_payment">Hold a card against the back of your device to make payment</string>
-    <string name="card_found">Card found</string>
+    <string name="hold_card_payment">Tap a card against the back of your device to send a transaction.</string>
+    <string name="card_found">Card detected</string>
     <string name="send_success">Sent successful!</string>
     <string name="title_activity_send_erc20_tokens">Send ERC 20 Tokens</string>
     <string name="title_activity_voting">Voting</string>
@@ -21,7 +21,7 @@
     <string name="token_amount">Token Amount</string>
     <string name="contract_address">Contract Address</string>
     <string name="voting_name">Voting Name</string>
-    <string name="hold_a_card_to_the_back_of_the_device_to_start_voting">Hold a card to the back of the device to start
+    <string name="hold_card_voting">Tap a card to the back of the device to start
         voting
     </string>
     <string name="current_token_balance">Current Token Balance: %s</string>
@@ -32,4 +32,9 @@
     <string name="visit_website">Visit our Website</string>
     <string name="hold_card_for_while">Hold card for some seconds!</string>
     <string name="er20_contract_address">ERC20 Contract Address</string>
+    <string name="err_receipient_required">Recipient Address is required!</string>
+    <string name="err_amount_required">Amount is required!</string>
+    <string name="err_gasprice_required">Gas Price is required!</string>
+    <string name="err_gaslimit_required">Gas Limit is required!</string>
+    <string name="err_contract_address_missing">Contract Address is required!</string>
 </resources>

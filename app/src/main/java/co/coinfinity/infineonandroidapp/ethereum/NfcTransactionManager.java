@@ -1,7 +1,7 @@
-package co.coinfinity.infineonandroidapp.nfc;
+package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.app.Activity;
-import android.nfc.Tag;
+import android.nfc.tech.IsoDep;
 import android.util.Log;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.R;
@@ -14,14 +14,26 @@ import java.math.BigInteger;
 
 import static co.coinfinity.AppConstants.TAG;
 
+/**
+ * Extends web3j Transaction manager, to create ETH transactions using
+ * the Infineon card for signing.
+ */
 public class NfcTransactionManager extends TransactionManager {
 
-    private Tag tag;
+    private IsoDep tag;
     private String publicKey;
     private String fromAddress;
     private Activity activity;
 
-    public NfcTransactionManager(Web3j web3j, String fromAddress, Tag tag, String publicKey, Activity activity) {
+    /**
+     * Create Nfc Transaction manager.
+     *
+     * @param web3j
+     * @param fromAddress
+     * @param tag
+     * @param publicKey
+     */
+    public NfcTransactionManager(Web3j web3j, String fromAddress, IsoDep tag, String publicKey, Activity activity) {
         super(web3j, fromAddress);
         this.fromAddress = fromAddress;
         this.tag = tag;

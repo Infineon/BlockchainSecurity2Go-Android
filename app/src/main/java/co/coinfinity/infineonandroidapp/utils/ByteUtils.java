@@ -1,8 +1,20 @@
-package co.coinfinity.infineonandroidapp.common;
+package co.coinfinity.infineonandroidapp.utils;
 
+
+/**
+ * Some helper utils to work with byte arrays.
+ */
 public class ByteUtils {
+
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 
+
+    /**
+     * returns hexadecimal string representation of a byte array
+     *
+     * @param bytes byte array
+     * @return hex string
+     */
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -13,6 +25,13 @@ public class ByteUtils {
         return new String(hexChars);
     }
 
+    /**
+     * Combines two byte arrays into on
+     *
+     * @param one first byte array
+     * @param two second byte, array to be appended after the first one
+     * @return combined byte array
+     */
     public static byte[] combineByteArrays(byte[] one, byte[] two) {
         byte[] combined = new byte[one.length + two.length];
 
@@ -22,12 +41,18 @@ public class ByteUtils {
         return combined;
     }
 
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
+    /**
+     * Creates a byte array out of a Hex string
+     *
+     * @param hexString
+     * @return byte array
+     */
+    public static byte[] fromHexString(String hexString) {
+        int len = hexString.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
+            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i + 1), 16));
         }
         return data;
     }
