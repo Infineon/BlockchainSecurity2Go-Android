@@ -34,7 +34,7 @@
                     android:scaleType="fitCenter" android:layout_weight=".10" android:onClick="scanQrCode"/>
         </LinearLayout>
         <TextView
-                android:text="Gas Price"
+                android:text="@string/gas_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView2"
         />
@@ -43,9 +43,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/gasPrice" android:hint="Gas Price" android:text="22000000000"/>
+                android:id="@+id/gasPrice" android:hint="@string/gas_price" android:text="50"/>
         <TextView
-                android:text="Gas Limit"
+                android:text="@string/gas_limit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView3"
         />
@@ -54,9 +54,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/gasLimit" android:hint="Gas Limit" android:text="4300000"/>
+                android:id="@+id/gasLimit" android:hint="@string/gas_limit" android:text="21000"/>
         <TextView
-                android:text="Voting Name"
+                android:text="@string/voting_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView5"/>
         <EditText
@@ -66,7 +66,7 @@
                 android:ems="10"
                 android:id="@+id/votingName" android:hint="@string/voting_name"/>
         <TextView
-                android:text="Choose one of the following answers:"
+                android:text="@string/choose_answer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
                 android:textSize="18sp" android:textStyle="bold"/>

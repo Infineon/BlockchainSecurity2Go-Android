@@ -17,13 +17,15 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
-import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.generated.Uint32;
+import org.web3j.utils.Convert;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -120,7 +122,8 @@ public class VotingActivity extends AppCompatActivity {
         new Thread(() -> {
 
             final BigInteger gasLimit = getGasLimitFromString();
-            final BigInteger gasPrice = getGasPriceFromString();
+            final BigDecimal gasPriceInGwei = getGasPriceFromString();
+            final BigInteger gasPrice = Convert.toWei(gasPriceInGwei, Convert.Unit.GWEI).toBigInteger();
 
             try {
                 handler.post(() -> progressBar.setVisibility(View.VISIBLE));
@@ -146,7 +149,8 @@ public class VotingActivity extends AppCompatActivity {
     private void updateVoteState(Handler handler) {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
-            final BigInteger gasPrice = getGasPriceFromString();
+            final BigDecimal gasPriceInGwei = getGasPriceFromString();
+            final BigInteger gasPrice = Convert.toWei(gasPriceInGwei, Convert.Unit.GWEI).toBigInteger();
 
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
@@ -222,13 +226,13 @@ public class VotingActivity extends AppCompatActivity {
         }
     }
 
-    private BigInteger getGasPriceFromString() {
+    private BigDecimal getGasPriceFromString() {
         String gasPriceStr = gasPrice.getText().toString();
-        BigInteger gasPrice;
+        BigDecimal gasPrice;
         if (gasPriceStr.equals("")) {
-            gasPrice = new BigInteger("0");
+            gasPrice = new BigDecimal("0");
         } else {
-            gasPrice = new BigInteger(gasPriceStr);
+            gasPrice = new BigDecimal(gasPriceStr);
         }
 
         return gasPrice;
