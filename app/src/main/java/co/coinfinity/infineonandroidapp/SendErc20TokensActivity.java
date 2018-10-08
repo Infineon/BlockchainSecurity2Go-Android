@@ -65,7 +65,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private boolean isContractScan;
     private volatile boolean activityPaused = false;
 
-    private UnitSpinnerAdapter spinnerUtils = new UnitSpinnerAdapter();
+    private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        spinnerUtils.addSpinnerAdapter(this, spinner);
+        spinnerAdapter.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt, contractAddress);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -162,7 +162,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
         final String valueStr = amountTxt.getText().toString();
         BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
-        gasPrice = gasPrice.multiply(spinnerUtils.getMultiplier());
+        gasPrice = gasPrice.multiply(spinnerAdapter.getMultiplier());
         final String gasLimitStr = gasLimitTxt.getText().toString();
         final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
 

@@ -64,7 +64,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
     private volatile boolean activityPaused = false;
 
-    private UnitSpinnerAdapter spinnerUtils = new UnitSpinnerAdapter();
+    private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        spinnerUtils.addSpinnerAdapter(this, spinner);
+        spinnerAdapter.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -159,7 +159,7 @@ public class SendTransactionActivity extends AppCompatActivity {
             final String valueStr = amountTxt.getText().toString();
             final BigDecimal value = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
             BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
-            gasPrice = gasPrice.multiply(spinnerUtils.getMultiplier());
+            gasPrice = gasPrice.multiply(spinnerAdapter.getMultiplier());
             final String gasLimitStr = gasLimitTxt.getText().toString();
             final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
 

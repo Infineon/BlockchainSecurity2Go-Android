@@ -68,7 +68,7 @@ public class VotingActivity extends AppCompatActivity {
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
 
-    private UnitSpinnerAdapter spinnerUtils = new UnitSpinnerAdapter();
+    private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class VotingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        spinnerUtils.addSpinnerAdapter(this, spinner);
+        spinnerAdapter.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, gasPrice, gasLimit, contractAddress);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -128,7 +128,7 @@ public class VotingActivity extends AppCompatActivity {
         new Thread(() -> {
 
             final BigInteger gasLimit = getGasLimitFromString();
-            BigInteger gasPrice = getGasPriceFromString().multiply(spinnerUtils.getMultiplier()).toBigInteger();
+            BigInteger gasPrice = getGasPriceFromString().multiply(spinnerAdapter.getMultiplier()).toBigInteger();
 
             try {
                 this.runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
@@ -157,7 +157,7 @@ public class VotingActivity extends AppCompatActivity {
     private void updateVoteState() {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
-            BigInteger gasPrice = getGasPriceFromString().multiply(spinnerUtils.getMultiplier()).toBigInteger();
+            BigInteger gasPrice = getGasPriceFromString().multiply(spinnerAdapter.getMultiplier()).toBigInteger();
 
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
