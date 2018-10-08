@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,11 +16,11 @@ import android.view.View;
 import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
-import co.coinfinity.infineonandroidapp.utils.UnitSpinnerUtils;
 import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.generated.Uint32;
 
@@ -69,7 +68,7 @@ public class VotingActivity extends AppCompatActivity {
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
 
-    private UnitSpinnerUtils spinnerUtils = new UnitSpinnerUtils();
+    private UnitSpinnerAdapter spinnerUtils = new UnitSpinnerAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +100,7 @@ public class VotingActivity extends AppCompatActivity {
 
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
-            Handler handler = new Handler();
-            new Thread(() -> updateVoteState(handler)).start();
+            new Thread(this::updateVoteState).start();
         }
     }
 
@@ -113,6 +111,11 @@ public class VotingActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * will be called after card was hold to back of device
+     *
+     * @param intent includes nfc extras
+     */
     private void resolveIntent(Intent intent) {
         int radioButtonID = radioGroup.getCheckedRadioButtonId();
         View radioButton = radioGroup.findViewById(radioButtonID);
@@ -122,21 +125,19 @@ public class VotingActivity extends AppCompatActivity {
         // TODO check IsoDep
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
-
-        Handler handler = new Handler();
         new Thread(() -> {
 
             final BigInteger gasLimit = getGasLimitFromString();
             BigInteger gasPrice = getGasPriceFromString().multiply(spinnerUtils.getMultiplier()).toBigInteger();
 
             try {
-                handler.post(() -> progressBar.setVisibility(View.VISIBLE));
+                this.runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
 
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
                         Toast.LENGTH_SHORT).show());
                 VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
 
-                updateVoteState(handler);
+                updateVoteState();
             } catch (Exception e) {
                 if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
                     this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
@@ -150,7 +151,10 @@ public class VotingActivity extends AppCompatActivity {
 
     }
 
-    private void updateVoteState(Handler handler) {
+    /**
+     * checks if voter already voted and displays all voting results
+     */
+    private void updateVoteState() {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
             BigInteger gasPrice = getGasPriceFromString().multiply(spinnerUtils.getMultiplier()).toBigInteger();
@@ -161,7 +165,7 @@ public class VotingActivity extends AppCompatActivity {
                 final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
                 final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
 
-                handler.post(() -> {
+                this.runOnUiThread(() -> {
                     // this has to be done in the the UI thread
                     ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
                     for (int i = 0; i < radioGroup.getChildCount(); i++) {
@@ -180,7 +184,7 @@ public class VotingActivity extends AppCompatActivity {
                     infoText.setText(R.string.already_voted);
                 });
 
-                handler.post(() -> progressBar.setVisibility(View.INVISIBLE));
+                this.runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
             }
         } catch (Exception e) {
             if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {

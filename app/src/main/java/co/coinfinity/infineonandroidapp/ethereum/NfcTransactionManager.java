@@ -40,6 +40,16 @@ public class NfcTransactionManager extends TransactionManager {
         this.activity = activity;
     }
 
+    /**
+     * this method will be called on transaction sending
+     *
+     * @param gasPrice
+     * @param gasLimit
+     * @param to
+     * @param data
+     * @param value
+     * @return ether object with transaction hash
+     */
     @Override
     public EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,

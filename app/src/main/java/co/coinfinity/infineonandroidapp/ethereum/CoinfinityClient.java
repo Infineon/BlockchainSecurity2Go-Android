@@ -1,8 +1,8 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.util.Log;
-import co.coinfinity.infineonandroidapp.utils.HttpUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
+import co.coinfinity.infineonandroidapp.utils.HttpUtils;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
@@ -26,6 +26,15 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
 
     // TODO: on the first call this always will return null and on all subsequent calls,
     // it will return the result of the last call
+
+    /**
+     * this method reads the euro price from coinfinity api and calculates the corresponding euro amount of an ether amount, gas price and gas limit
+     *
+     * @param gasPriceStr gas price
+     * @param gasLimitStr gas limit
+     * @param etherAmount ether
+     * @return transaction bean
+     */
     public TransactionPriceBean readEuroPriceFromApi(String gasPriceStr, String gasLimitStr, String etherAmount) {
         this.gasPriceStr = gasPriceStr;
         this.gasLimitStr = gasLimitStr;

@@ -46,7 +46,7 @@ public class Erc20Utils {
     }
 
     /**
-     * Get token balance for a contract
+     * Get token balance for a contract async
      *
      * @param ercContract
      * @param ethAddress

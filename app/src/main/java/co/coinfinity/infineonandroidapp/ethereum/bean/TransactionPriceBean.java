@@ -2,6 +2,9 @@ package co.coinfinity.infineonandroidapp.ethereum.bean;
 
 import java.util.Locale;
 
+/**
+ * Beans class used to show price and fee of an ether transaction
+ */
 public class TransactionPriceBean {
     private Double priceInEuro;
     private Double txFeeInEuro;

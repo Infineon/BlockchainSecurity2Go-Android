@@ -30,7 +30,7 @@ public class IsoTagWrapper implements NfcTranceiver {
      * Sends a command APDU to the NFC card and returns the received response APDU
      *
      * @param commandApdu command APDU to send
-     * @return bytes reveived as response
+     * @return bytes received as response
      * @throws IOException in case of communication errors
      */
     @Override

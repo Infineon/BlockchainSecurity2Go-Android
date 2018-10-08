@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,13 +19,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
-import co.coinfinity.infineonandroidapp.utils.UnitSpinnerUtils;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
 
@@ -65,7 +64,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
     private volatile boolean activityPaused = false;
 
-    private UnitSpinnerUtils spinnerUtils = new UnitSpinnerUtils();
+    private UnitSpinnerAdapter spinnerUtils = new UnitSpinnerAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,13 +91,11 @@ public class SendTransactionActivity extends AppCompatActivity {
         String savedGasLimit  = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
         gasLimitTxt.setText(savedGasLimit);
 
-
-        Handler handler = new Handler();
         new Thread(() -> {
             try {
                 while (!activityPaused) {
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
-                    handler.post(() -> {
+                    this.runOnUiThread(() -> {
                         if (transactionPriceBean != null) {
                             priceInEuroTxt.setText(transactionPriceBean.toString());
                             progressBar.setVisibility(View.INVISIBLE);
@@ -142,7 +139,11 @@ public class SendTransactionActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * will be called after card was hold to back of device
+     *
+     * @param intent includes nfc extras
+     */
     private void resolveIntent(Intent intent) {
         Bundle b = getIntent().getExtras();
         if (b != null) {

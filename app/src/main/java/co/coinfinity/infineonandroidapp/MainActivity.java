@@ -6,7 +6,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -73,105 +72,10 @@ public class MainActivity extends AppCompatActivity {
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
     private volatile boolean activityPaused = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        displayOnUI(GuiState.NFC_ICON);
-
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (nfcAdapter == null) {
-            Toast.makeText(this, "No NFC", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        pendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, this.getClass())
-                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-    }
-
-    private enum GuiState {NFC_ICON, PROGRESS_BAR, BALANCE_TEXT}
-
-    ;
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (nfcAdapter != null) {
-            if (!nfcAdapter.isEnabled())
-                openWirelessSettings();
-            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
-        }
-        activityPaused = false;
-    }
-
-    @Override
-    protected void onPause() {
-        activityPaused = true;
-        nfcAdapter.disableForegroundDispatch(this);
-        super.onPause();
-    }
-
-
     /**
-     * Opens system settings, wireless settings.
-     */
-    private void openWirelessSettings() {
-        Toast.makeText(this, "You need to enable NFC", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-        startActivity(intent);
-    }
-
-    /**
-     * Called by Android systems whenever a new Intent is received. NFC tags are also
-     * delivered via an Intent.
+     * will be called after card was hold to back of device
      *
-     * @param intent
-     */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        activityPaused = false; // onPause() gets called when a Intent gets dispatched by Android
-        setIntent(intent);
-        resolveIntent(intent);
-    }
-
-
-    /**
-     * If we have already a Public key, allow the user to reset by pressing back
-     */
-    @Override
-    public void onBackPressed() {
-        if (pubKeyString != null) {
-            resetGuiState();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    /**
-     * reset everything, like we never had seen a card
-     */
-    private void resetGuiState() {
-        displayOnUI(GuiState.NFC_ICON);
-        pubKeyString = null;
-        ethAddress = null;
-        ethAddressView.setText("");
-        qrCodeView.setImageBitmap(null);
-        holdCard.setText(R.string.hold_card);
-        sendEthBtn.setEnabled(false);
-        sendErc20Btn.setEnabled(false);
-        votingBtn.setEnabled(false);
-    }
-
-
-    /**
-     * Handle incoming intents (i.e. when a NFC tag was scanned)
-     *
-     * @param intent
+     * @param intent includes nfc extras
      */
     private void resolveIntent(Intent intent) {
         // Only handle NFC intents
@@ -203,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
         holdCard.setText(R.string.card_found);
 
         // Update balance and EUR price
-        Handler mHandler = new Handler();
         new Thread(() -> {
             Log.d(TAG, "Main activity, start reading price thread...");
             try {
@@ -213,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi("0", "0", balance.getEther().toString());
                     Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
                     if (transactionPriceBean != null && pubKeyString != null) {
-                        mHandler.post(() -> {
+                        this.runOnUiThread(() -> {
                             this.balance.setText(String.format("%s%s", balance.toString(),
                                     String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
                             if (!sendEthBtn.isEnabled()) {
@@ -232,6 +135,95 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Main activity, reading price thread exited.");
         }).start();
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        displayOnUI(GuiState.NFC_ICON);
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter == null) {
+            Toast.makeText(this, "No NFC", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        pendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, this.getClass())
+                        .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (nfcAdapter != null) {
+            if (!nfcAdapter.isEnabled())
+                openWirelessSettings();
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        }
+        activityPaused = false;
+    }
+
+    @Override
+    protected void onPause() {
+        activityPaused = true;
+        nfcAdapter.disableForegroundDispatch(this);
+        super.onPause();
+    }
+
+    /**
+     * Opens system settings, wireless settings.
+     */
+    private void openWirelessSettings() {
+        Toast.makeText(this, "You need to enable NFC", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+        startActivity(intent);
+    }
+
+    /**
+     * Called by Android systems whenever a new Intent is received. NFC tags are also
+     * delivered via an Intent.
+     *
+     * @param intent
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        activityPaused = false; // onPause() gets called when a Intent gets dispatched by Android
+        setIntent(intent);
+        resolveIntent(intent);
+    }
+
+    /**
+     * If we have already a Public key, allow the user to reset by pressing back
+     */
+    @Override
+    public void onBackPressed() {
+        if (pubKeyString != null) {
+            resetGuiState();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    /**
+     * reset everything, like we never had seen a card
+     */
+    private void resetGuiState() {
+        displayOnUI(GuiState.NFC_ICON);
+        pubKeyString = null;
+        ethAddress = null;
+        ethAddressView.setText("");
+        qrCodeView.setImageBitmap(null);
+        holdCard.setText(R.string.hold_card);
+        sendEthBtn.setEnabled(false);
+        sendErc20Btn.setEnabled(false);
+        votingBtn.setEnabled(false);
+    }
+
+    private enum GuiState {NFC_ICON, PROGRESS_BAR, BALANCE_TEXT}
 
     private void logTagInfo(Tag tagFromIntent) {
         Log.d(TAG, "NFC Tag detected: " + tagFromIntent.toString());

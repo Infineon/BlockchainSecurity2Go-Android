@@ -5,6 +5,10 @@ import android.text.TextUtils;
 import android.widget.TextView;
 import co.coinfinity.infineonandroidapp.R;
 
+/**
+ * this class is used to display input errors of TextViews
+ * e.g.: if some input is missing but it is mandatory
+ */
 public class InputErrorUtils {
 
     private Context ctx;

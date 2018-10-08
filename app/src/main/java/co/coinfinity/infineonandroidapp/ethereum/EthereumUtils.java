@@ -29,6 +29,14 @@ import static org.web3j.crypto.TransactionEncoder.encode;
 
 public class EthereumUtils {
 
+    /**
+     * this method reads the balance by ether address and returns a balance object
+     *
+     * @param ethAddress
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public static EthBalanceBean getBalance(String ethAddress) throws ExecutionException, InterruptedException {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
@@ -48,6 +56,15 @@ public class EthereumUtils {
         return new EthBalanceBean(wei, ether, unconfirmedWei, unconfirmedEther);
     }
 
+    /**
+     * this method reads the ether balance from api via web3j
+     * @param web3 used web3j
+     * @param ethAddress ether address
+     * @param defaultBlockParameterName
+     * @return the ether balance itself
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) throws ExecutionException, InterruptedException {
         BigInteger wei = null;
         EthGetBalance ethGetBalance = web3
@@ -124,7 +141,15 @@ public class EthereumUtils {
         return ethSendTransaction;
     }
 
-    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) throws IOException {
+    /**
+     * this method checks the next nonce to use and returns it
+     *
+     * @param web3j        web3j to use
+     * @param etherAddress ether address
+     * @return the next nonce
+     * @throws IOException
+     */
+    static BigInteger getNextNonce(Web3j web3j, String etherAddress) throws IOException {
         EthGetTransactionCount ethGetTransactionCount = null;
         ethGetTransactionCount = web3j.ethGetTransactionCount(
                 etherAddress, DefaultBlockParameterName.PENDING).send();

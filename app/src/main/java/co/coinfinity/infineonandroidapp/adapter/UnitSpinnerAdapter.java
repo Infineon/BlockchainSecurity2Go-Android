@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp.utils;
+package co.coinfinity.infineonandroidapp.adapter;
 
 import android.app.Activity;
 import android.view.View;
@@ -9,11 +9,20 @@ import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 
-public class UnitSpinnerUtils implements AdapterView.OnItemSelectedListener {
+/**
+ * Utils class used to calculate gas price depending on selected ethereum unit
+ */
+public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
 
     private static final String[] units = {"wei", "kwei", "mwei", "gwei", "szabo", "finney", "ether", "kether", "mether", "gether"};
     private BigDecimal multiplier = new BigDecimal("1");
 
+    /**
+     * needs to be called at the beginning to add this adapter to the spinner
+     *
+     * @param activity
+     * @param spinner
+     */
     public void addSpinnerAdapter(Activity activity, Spinner spinner) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
                 android.R.layout.simple_spinner_item, units);
@@ -25,6 +34,13 @@ public class UnitSpinnerUtils implements AdapterView.OnItemSelectedListener {
         spinner.setSelection(3);
     }
 
+    /**
+     * will be called when an item of the spinner is selected
+     * @param parent
+     * @param view
+     * @param position
+     * @param id
+     */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
@@ -65,6 +81,10 @@ public class UnitSpinnerUtils implements AdapterView.OnItemSelectedListener {
 
     }
 
+    /**
+     * get the value that will be needed to calculate wei price
+     * @return multiplier for wei price calculation
+     */
     public BigDecimal getMultiplier() {
         return multiplier;
     }

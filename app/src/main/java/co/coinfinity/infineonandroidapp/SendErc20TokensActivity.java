@@ -7,7 +7,6 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,11 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
-import co.coinfinity.infineonandroidapp.utils.UnitSpinnerUtils;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -66,7 +65,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private boolean isContractScan;
     private volatile boolean activityPaused = false;
 
-    private UnitSpinnerUtils spinnerUtils = new UnitSpinnerUtils();
+    private UnitSpinnerAdapter spinnerUtils = new UnitSpinnerAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +97,11 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "60000"));
         amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
 
-        Handler handler = new Handler();
         new Thread(() -> {
             try {
                 while (!activityPaused) {
                     BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
-                    handler.post(() -> {
+                    this.runOnUiThread(() -> {
                         if (transactionPriceBean != null)
                             currentBalance.setText(String.format(getString(R.string.current_token_balance), transactionPriceBean));
                         progressBar.setVisibility(View.INVISIBLE);
@@ -152,7 +150,11 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * will be called after card was hold to back of device
+     *
+     * @param intent includes nfc extras
+     */
     private void resolveIntent(Intent intent) {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         // TODO check IsoDep
