@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -25,6 +26,7 @@ import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
+import co.coinfinity.infineonandroidapp.utils.UnitSpinnerUtils;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
 
@@ -49,6 +51,8 @@ public class SendTransactionActivity extends AppCompatActivity {
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.spinner)
+    Spinner spinner;
 
     private InputErrorUtils inputErrorUtils;
 
@@ -61,6 +65,8 @@ public class SendTransactionActivity extends AppCompatActivity {
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
     private volatile boolean activityPaused = false;
 
+    private UnitSpinnerUtils spinnerUtils = new UnitSpinnerUtils();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +74,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        spinnerUtils.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -150,8 +157,8 @@ public class SendTransactionActivity extends AppCompatActivity {
         new Thread(() -> {
             final String valueStr = amountTxt.getText().toString();
             final BigDecimal value = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
-            final String gasPriceStr = gasPriceTxt.getText().toString();
-            final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
+            BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
+            gasPrice = gasPrice.multiply(spinnerUtils.getMultiplier());
             final String gasLimitStr = gasLimitTxt.getText().toString();
             final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
 
@@ -198,7 +205,7 @@ public class SendTransactionActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return UiUtils.handleOptionITemSelected(this, item);
+        return UiUtils.handleOptionItemSelected(this, item);
     }
 
     @Override

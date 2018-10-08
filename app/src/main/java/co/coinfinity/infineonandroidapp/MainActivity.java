@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return UiUtils.handleOptionITemSelected(this, item);
+        return UiUtils.handleOptionItemSelected(this, item);
     }
 
     @Override

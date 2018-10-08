@@ -33,17 +33,26 @@
                     android:layout_height="match_parent" app:srcCompat="@drawable/qrcode" android:id="@+id/imageButton"
                     android:scaleType="fitCenter" android:layout_weight=".10" android:onClick="scanQrCode"/>
         </LinearLayout>
-        <TextView
-                android:text="@string/gas_price"
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView2"
-        />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/gasPrice" android:hint="@string/gas_price" android:text="50"/>
+                android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true" android:layout_alignParentTop="true"
+                    android:layout_weight=".40">
+
+                <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gasPrice" android:text="50" android:inputType="numberDecimal"
+                        android:hint="@string/gas_price"/>
+            </android.support.design.widget.TextInputLayout>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:id="@+id/spinner" android:layout_weight=".60"/>
+        </LinearLayout>
         <TextView
                 android:text="@string/gas_limit"
                 android:layout_width="match_parent"

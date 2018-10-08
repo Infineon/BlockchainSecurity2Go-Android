@@ -48,18 +48,26 @@
                     android:id="@+id/amount" android:text="0.00"
                     android:inputType="numberDecimal" android:hint="@string/amount_eth"/>
         </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true" android:layout_alignParentTop="true"
-        >
-
-            <android.support.design.widget.TextInputEditText
+                android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/gasPrice" android:text="50" android:inputType="numberDecimal"
-                    android:hint="@string/gas_price"/>
-        </android.support.design.widget.TextInputLayout>
+                    android:layout_alignParentStart="true" android:layout_alignParentTop="true"
+                    android:layout_weight=".40">
+
+                <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gasPrice" android:text="50" android:inputType="numberDecimal"
+                        android:hint="@string/gas_price"/>
+            </android.support.design.widget.TextInputLayout>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:id="@+id/spinner" android:layout_weight=".60"/>
+        </LinearLayout>
         <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

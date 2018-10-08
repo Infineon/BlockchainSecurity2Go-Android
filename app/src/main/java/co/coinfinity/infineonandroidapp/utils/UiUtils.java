@@ -18,7 +18,7 @@ public class UiUtils {
      * @param item selected menuitem
      * @return true if handled in here, false otherwise
      */
-    public static boolean handleOptionITemSelected(Activity act, MenuItem item) {
+    public static boolean handleOptionItemSelected(Activity act, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.visit_website:
                 String url = "http://www.coinfinity.co";

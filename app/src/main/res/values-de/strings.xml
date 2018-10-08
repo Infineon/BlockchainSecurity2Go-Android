@@ -5,7 +5,7 @@
     <string name="send_eth">Sende ETH</string>
     <string name="recipient_address">Empfänger Adresse</string>
     <string name="amount_eth">Anzahl ETH</string>
-    <string name="gas_price">Gas Preis in Gwei</string>
+    <string name="gas_price">Gas Preis</string>
     <string name="gas_limit">Gas Limit</string>
     <string name="hold_card_payment">Halte eine Karte an die Rückseite des Gerätes um eine Zahlung durchzuführen
     </string>

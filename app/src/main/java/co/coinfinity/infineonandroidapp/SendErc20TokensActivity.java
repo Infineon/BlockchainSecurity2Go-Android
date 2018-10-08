@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -23,7 +24,7 @@ import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import co.coinfinity.infineonandroidapp.utils.UnitSpinnerUtils;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -54,6 +55,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.spinner)
+    Spinner spinner;
 
     private InputErrorUtils inputErrorUtils;
 
@@ -63,6 +66,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private boolean isContractScan;
     private volatile boolean activityPaused = false;
 
+    private UnitSpinnerUtils spinnerUtils = new UnitSpinnerUtils();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +75,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        spinnerUtils.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt, contractAddress);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -153,8 +159,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         IsoDep isoDep = IsoDep.get(tagFromIntent);
 
         final String valueStr = amountTxt.getText().toString();
-        final String gasPriceStr = gasPriceTxt.getText().toString();
-        final BigDecimal gasPrice = Convert.toWei(gasPriceStr.equals("") ? "0" : gasPriceStr, Convert.Unit.GWEI);
+        BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
+        gasPrice = gasPrice.multiply(spinnerUtils.getMultiplier());
         final String gasLimitStr = gasLimitTxt.getText().toString();
         final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
 
@@ -187,7 +193,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return UiUtils.handleOptionITemSelected(this, item);
+        return UiUtils.handleOptionItemSelected(this, item);
     }
 
     @Override

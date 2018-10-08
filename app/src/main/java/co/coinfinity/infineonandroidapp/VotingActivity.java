@@ -21,9 +21,9 @@ import co.coinfinity.infineonandroidapp.ethereum.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
+import co.coinfinity.infineonandroidapp.utils.UnitSpinnerUtils;
 import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.generated.Uint32;
-import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -61,11 +61,15 @@ public class VotingActivity extends AppCompatActivity {
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.spinner)
+    Spinner spinner;
 
     private InputErrorUtils inputErrorUtils;
 
     private NfcAdapter mAdapter;
     private PendingIntent mPendingIntent;
+
+    private UnitSpinnerUtils spinnerUtils = new UnitSpinnerUtils();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,7 @@ public class VotingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        spinnerUtils.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, gasPrice, gasLimit, contractAddress);
 
         mAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -122,8 +127,7 @@ public class VotingActivity extends AppCompatActivity {
         new Thread(() -> {
 
             final BigInteger gasLimit = getGasLimitFromString();
-            final BigDecimal gasPriceInGwei = getGasPriceFromString();
-            final BigInteger gasPrice = Convert.toWei(gasPriceInGwei, Convert.Unit.GWEI).toBigInteger();
+            BigInteger gasPrice = getGasPriceFromString().multiply(spinnerUtils.getMultiplier()).toBigInteger();
 
             try {
                 handler.post(() -> progressBar.setVisibility(View.VISIBLE));
@@ -149,8 +153,7 @@ public class VotingActivity extends AppCompatActivity {
     private void updateVoteState(Handler handler) {
         try {
             final BigInteger gasLimit = getGasLimitFromString();
-            final BigDecimal gasPriceInGwei = getGasPriceFromString();
-            final BigInteger gasPrice = Convert.toWei(gasPriceInGwei, Convert.Unit.GWEI).toBigInteger();
+            BigInteger gasPrice = getGasPriceFromString().multiply(spinnerUtils.getMultiplier()).toBigInteger();
 
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
@@ -252,7 +255,7 @@ public class VotingActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return UiUtils.handleOptionITemSelected(this, item);
+        return UiUtils.handleOptionItemSelected(this, item);
     }
 
     @Override
