@@ -47,7 +47,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/gasPrice" android:text="50" android:inputType="numberDecimal"
-                        android:hint="@string/gas_price"/>
+                        android:hint="@string/gas_price" android:enabled="false"/>
             </android.support.design.widget.TextInputLayout>
             <Spinner
                     android:layout_width="match_parent"
@@ -63,7 +63,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/gasLimit" android:hint="@string/gas_limit" android:text="21000"/>
+                android:id="@+id/gasLimit" android:hint="@string/gas_limit" android:text="21000"
+                android:enabled="false"/>
         <TextView
                 android:text="@string/voting_name"
                 android:layout_width="match_parent"
@@ -73,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/votingName" android:hint="@string/voting_name"/>
+                android:id="@+id/votingName" android:hint="@string/voting_name" android:enabled="false"/>
         <TextView
                 android:text="@string/choose_answer"
                 android:layout_width="match_parent"
@@ -90,22 +91,22 @@
                         android:text="Answer 1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton4" android:layout_weight="1"
-                        android:textSize="30sp"/>
+                        android:textSize="30sp" android:enabled="false"/>
                 <RadioButton
                         android:text="Answer 2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton3" android:layout_weight="1"
-                        android:textSize="30sp"/>
+                        android:textSize="30sp" android:enabled="false"/>
                 <RadioButton
                         android:text="Answer 3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton" android:layout_weight="1"
-                        android:textSize="30sp"/>
+                        android:textSize="30sp" android:enabled="false"/>
                 <RadioButton
                         android:text="Answer 4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton2" android:layout_weight="1"
-                        android:textSize="30sp"/>
+                        android:textSize="30sp" android:enabled="false"/>
             </RadioGroup>
             <LinearLayout
                     android:orientation="vertical"

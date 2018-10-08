@@ -70,6 +70,8 @@ public class VotingActivity extends AppCompatActivity {
 
     private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
+    private boolean alreadyVoted;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,7 +108,7 @@ public class VotingActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
-        if (inputErrorUtils.isNoInputError()) {
+        if (inputErrorUtils.isNoInputError() && !alreadyVoted) {
             resolveIntent(intent);
         }
     }
@@ -161,6 +163,7 @@ public class VotingActivity extends AppCompatActivity {
 
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
+                alreadyVoted = true;
                 final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit).intValue();
                 final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
                 final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
@@ -168,10 +171,6 @@ public class VotingActivity extends AppCompatActivity {
                 this.runOnUiThread(() -> {
                     // this has to be done in the the UI thread
                     ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
-                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                        radioGroup.getChildAt(i).setEnabled(false);
-                    }
-
                     votingName.setText(votersName);
                     votingName.setEnabled(false);
 
@@ -185,6 +184,17 @@ public class VotingActivity extends AppCompatActivity {
                 });
 
                 this.runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
+            } else {
+                //enable radio buttons if not yet voted
+                this.runOnUiThread(() -> {
+                    this.gasPrice.setEnabled(true);
+                    this.gasLimit.setEnabled(true);
+                    votingName.setEnabled(true);
+                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                        radioGroup.getChildAt(i).setEnabled(true);
+                    }
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
             }
         } catch (Exception e) {
             if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {

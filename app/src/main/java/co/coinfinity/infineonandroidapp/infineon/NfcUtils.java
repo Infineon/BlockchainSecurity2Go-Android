@@ -1,6 +1,7 @@
 package co.coinfinity.infineonandroidapp.infineon;
 
 import android.util.Log;
+import co.coinfinity.AppConstants;
 import co.coinfinity.infineonandroidapp.infineon.apdu.*;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
@@ -132,12 +133,9 @@ public class NfcUtils {
      */
     public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card)
             throws IOException, NfcCardException {
-
-        int keyIdx = 0x00; // we use default key index
-
         try {
             // try to read public key
-            return readPublicKeyFromCard(card, keyIdx);
+            return readPublicKeyFromCard(card, AppConstants.KEY_ID_ON_THE_CARD);
         } catch (NfcCardException e) {
             // if Public key is not available yet (Status words: 0x6A88)
             if (e.getSw1Sw2() == SW_KEY_WITH_IDX_NOT_AVAILABLE) {
