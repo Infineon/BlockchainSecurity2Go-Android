@@ -58,8 +58,9 @@ public class EthereumUtils {
 
     /**
      * this method reads the ether balance from api via web3j
-     * @param web3 used web3j
-     * @param ethAddress ether address
+     *
+     * @param web3                      used web3j
+     * @param ethAddress                ether address
      * @param defaultBlockParameterName
      * @return the ether balance itself
      * @throws ExecutionException
@@ -79,6 +80,7 @@ public class EthereumUtils {
 
     /**
      * Send an Ethereum transaction.
+     *
      * @param gasPrice
      * @param gasLimit
      * @param from

@@ -13,10 +13,10 @@ public class AppConstants {
     public static final String TAG = "Coinfineon";
 
     public static final String ASK = "ask";
-    //WARNING: please make sure how much private/pub key pairs are already generated on the card and increase max +1
-    //         otherwise this index is wrong because the card will generate another lower index.
-    //         e.g.: card has index 0x00 not more, you set this value to 0x02, but the card will generate next free 0x01.
-    //               so generate pub key is actually 0x01 but you will use 0x02 as const for signing keys and so on.
+    /* WARNING: please make sure how much private/pub key pairs are already generated on the card and increase max +1
+                otherwise this index is wrong because the card will generate another lower index.
+                e.g.: card has index 0x00 not more, you set this value to 0x02, but the card will generate next free 0x01.
+                      so generate pub key is actually 0x01 but you will use 0x02 as const for signing keys and so on.*/
     public static final int KEY_ID_ON_THE_CARD = 0x00;
     private static final String HTTPS = "https://";
     private static final String BASEURL = ".infura.io/v3/7b40d72779e541a498cb0da69aa418a2";

@@ -186,8 +186,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
                 } else {
                     recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
                 }
-            }
-            if (resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {
                 //handle cancel
             }
         }

@@ -45,6 +45,7 @@ public class VotingUtils {
 
     /**
      * get answer of voter if already voted
+     *
      * @param contractAddress
      * @param from
      * @param gasPrice
@@ -60,6 +61,7 @@ public class VotingUtils {
 
     /**
      * checks if voter already voted or not
+     *
      * @param contractAddress
      * @param from
      * @param gasPrice
@@ -74,6 +76,7 @@ public class VotingUtils {
 
     /**
      * get the name of the voter
+     *
      * @param contractAddress
      * @param from
      * @param gasPrice
@@ -89,6 +92,7 @@ public class VotingUtils {
 
     /**
      * get current amount of votes per answer
+     *
      * @param contractAddress
      * @param from
      * @param gasPrice
@@ -104,6 +108,7 @@ public class VotingUtils {
 
     /**
      * loads a new voting contract
+     *
      * @param contractAddress
      * @param tag
      * @param publicKey
@@ -123,6 +128,7 @@ public class VotingUtils {
 
     /**
      * loads a new read only voting contract
+     *
      * @param contractAddress
      * @param from
      * @param gasPrice

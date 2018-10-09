@@ -65,7 +65,7 @@ public class VotingActivity extends AppCompatActivity {
 
     private InputErrorUtils inputErrorUtils;
 
-    private NfcAdapter mAdapter;
+    private NfcAdapter nfcAdapter;
     private PendingIntent mPendingIntent;
 
     private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
@@ -82,7 +82,7 @@ public class VotingActivity extends AppCompatActivity {
         spinnerAdapter.addSpinnerAdapter(this, spinner);
         inputErrorUtils = new InputErrorUtils(this, gasPrice, gasLimit, contractAddress);
 
-        mAdapter = NfcAdapter.getDefaultAdapter(this);
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
         // will fill in the intent with the details of the discovered tag before delivering to
         // this activity.
@@ -119,8 +119,8 @@ public class VotingActivity extends AppCompatActivity {
      * @param intent includes nfc extras
      */
     private void resolveIntent(Intent intent) {
-        int radioButtonID = radioGroup.getCheckedRadioButtonId();
-        View radioButton = radioGroup.findViewById(radioButtonID);
+        int radioButtonId = radioGroup.getCheckedRadioButtonId();
+        View radioButton = radioGroup.findViewById(radioButtonId);
         int idx = radioGroup.indexOfChild(radioButton);
 
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -133,10 +133,11 @@ public class VotingActivity extends AppCompatActivity {
             BigInteger gasPrice = getGasPriceFromString().multiply(spinnerAdapter.getMultiplier()).toBigInteger();
 
             try {
-                this.runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
-
-                this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, R.string.please_wait,
-                        Toast.LENGTH_SHORT).show());
+                this.runOnUiThread(() -> {
+                    progressBar.setVisibility(View.VISIBLE);
+                    Toast.makeText(VotingActivity.this, R.string.please_wait,
+                            Toast.LENGTH_SHORT).show();
+                });
                 VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
 
                 updateVoteState();
@@ -181,9 +182,8 @@ public class VotingActivity extends AppCompatActivity {
                         answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
                     }
                     infoText.setText(R.string.already_voted);
+                    progressBar.setVisibility(View.INVISIBLE);
                 });
-
-                this.runOnUiThread(() -> progressBar.setVisibility(View.INVISIBLE));
             } else {
                 //enable radio buttons if not yet voted
                 this.runOnUiThread(() -> {
@@ -208,7 +208,7 @@ public class VotingActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (mAdapter != null) mAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
         SharedPreferences mPrefs = getSharedPreferences("label", 0);
         SharedPreferences.Editor mEditor = mPrefs.edit();
@@ -222,7 +222,7 @@ public class VotingActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (mAdapter != null) mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
     }
 
     public void scanQrCode(View view) {
@@ -236,8 +236,7 @@ public class VotingActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
-            }
-            if (resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {
                 //handle cancel
             }
         }

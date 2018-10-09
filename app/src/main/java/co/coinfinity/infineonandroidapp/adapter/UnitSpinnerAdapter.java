@@ -1,6 +1,6 @@
 package co.coinfinity.infineonandroidapp.adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,11 +20,11 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
     /**
      * needs to be called at the beginning to add this adapter to the spinner
      *
-     * @param activity
+     * @param context
      * @param spinner
      */
-    public void addSpinnerAdapter(Activity activity, Spinner spinner) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(activity,
+    public void addSpinnerAdapter(Context context, Spinner spinner) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
                 android.R.layout.simple_spinner_item, units);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -36,6 +36,7 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
 
     /**
      * will be called when an item of the spinner is selected
+     *
      * @param parent
      * @param view
      * @param position
@@ -83,6 +84,7 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
 
     /**
      * get the value that will be needed to calculate wei price
+     *
      * @return multiplier for wei price calculation
      */
     public BigDecimal getMultiplier() {

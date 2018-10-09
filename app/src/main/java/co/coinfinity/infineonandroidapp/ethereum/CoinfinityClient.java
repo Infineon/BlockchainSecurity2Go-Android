@@ -50,7 +50,7 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
         try {
-            Log.d(TAG, "Response from ETH/EUR API request. HTTP: "+statusCode);
+            Log.d(TAG, "Response from ETH/EUR API request. HTTP: " + statusCode);
             JSONObject serverResp = new JSONObject(response.toString());
 
             if (!gasPriceStr.equals("") && !gasLimitStr.equals("") && !etherAmount.equals("")) {

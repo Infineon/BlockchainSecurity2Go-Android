@@ -23,7 +23,7 @@ public class NfcUtils {
      * @param card  nfc card
      * @param keyId key to get
      * @return public key as hexadecimal String
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     public static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
@@ -57,7 +57,7 @@ public class NfcUtils {
      * @param keyIndex   index of the key to use
      * @param dataToSign data to be signed (hash)
      * @return signature data as byte array
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign)
@@ -77,7 +77,7 @@ public class NfcUtils {
      *
      * @param card nfc tranceiver
      * @return index of the newly created key
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     public static int generateNewSecp256K1Keypair(NfcTranceiver card)
@@ -103,7 +103,7 @@ public class NfcUtils {
      * @param commandApdu command
      * @param commandName used for error message
      * @return response
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException if card reponse status words are != 0x9000
      */
     private static ResponseApdu tranceive(NfcTranceiver card, BaseCommandApdu commandApdu, String commandName)
@@ -128,7 +128,7 @@ public class NfcUtils {
      *
      * @param card nfc card
      * @return public key as hexadecimal String
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card)

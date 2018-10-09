@@ -197,8 +197,7 @@ public class SendTransactionActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
-            }
-            if (resultCode == RESULT_CANCELED) {
+            } else if (resultCode == RESULT_CANCELED) {
                 //handle cancel
             }
         }
