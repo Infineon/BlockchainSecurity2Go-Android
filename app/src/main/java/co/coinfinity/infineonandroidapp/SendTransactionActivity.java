@@ -34,6 +34,9 @@ import java.math.BigDecimal;
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
 
+/**
+ * Activity class used for Ethereum functionality.
+ */
 public class SendTransactionActivity extends AppCompatActivity {
 
     @BindView(R.id.recipientAddress)

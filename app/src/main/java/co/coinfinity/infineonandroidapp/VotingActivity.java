@@ -31,6 +31,9 @@ import java.util.List;
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
 
+/**
+ * Activity class used for voting via smart contracts.
+ */
 public class VotingActivity extends AppCompatActivity {
 
     private String pubKeyString;

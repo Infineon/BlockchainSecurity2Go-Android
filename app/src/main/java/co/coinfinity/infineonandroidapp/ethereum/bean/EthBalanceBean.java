@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Beans class used to show ether and wei balance of an ether address
+ * Beans class used to show ether and wei balance of an ether address.
  */
 public class EthBalanceBean {
     private BigInteger wei;

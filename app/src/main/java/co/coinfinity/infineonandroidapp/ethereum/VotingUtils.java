@@ -20,7 +20,7 @@ import java.util.List;
 import static co.coinfinity.AppConstants.CHAIN_URL;
 
 /**
- * this class is interacting with the Ethereum voting smart contract
+ * this class is interacting with the Ethereum voting smart contract.
  */
 public class VotingUtils {
 

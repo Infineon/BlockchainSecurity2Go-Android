@@ -17,6 +17,9 @@ import java.util.concurrent.Future;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
 
+/**
+ * Utils class used for interaction with ERC20 tokens.
+ */
 public class Erc20Utils {
 
     /**

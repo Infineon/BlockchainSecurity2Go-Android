@@ -33,6 +33,9 @@ import java.util.concurrent.ExecutionException;
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
 
+/**
+ * Activity class used for ER20 Token functionality.
+ */
 public class SendErc20TokensActivity extends AppCompatActivity {
 
     private String pubKeyString;

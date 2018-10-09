@@ -13,6 +13,8 @@ import static co.coinfinity.infineonandroidapp.infineon.apdu.ResponseApdu.SW_KEY
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 
 /**
+ * Utils class used to interact with the Infineon card via NFC.
+ *
  * @author Johannes Zweng on 02.10.18.
  */
 public class NfcUtils {

@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import co.coinfinity.infineonandroidapp.R;
 
 /**
- * Utility for Activities
+ * Utility for Activities.
  */
 public class UiUtils {
 

@@ -10,11 +10,14 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import static co.coinfinity.AppConstants.TAG;
 
+/**
+ * Class used for generating QR codes.
+ */
 public class QrCodeGenerator {
 
 
     /**
-     * Generate QR Code from given String
+     * Generate QR Code from given String.
      *
      * @param text text to encode
      * @return 200x200 px qrcode as bitmap or null if QR code cannot be generated.

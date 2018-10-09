@@ -10,7 +10,7 @@ import org.web3j.utils.Convert;
 import java.math.BigDecimal;
 
 /**
- * Utils class used to calculate gas price depending on selected ethereum unit
+ * Utils class used to calculate gas price depending on selected Ethereum unit.
  */
 public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
 

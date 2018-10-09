@@ -1,7 +1,7 @@
 package co.coinfinity.infineonandroidapp.infineon.exceptions;
 
 /**
- * Represents errors received from the NFC card
+ * Represents errors received from the NFC card.
  */
 public class NfcCardException extends Exception {
 

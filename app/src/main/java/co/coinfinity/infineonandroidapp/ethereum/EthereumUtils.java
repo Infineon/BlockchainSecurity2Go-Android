@@ -27,6 +27,9 @@ import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.infineon.NfcUtils.generateSignature;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
+/**
+ * Utils class used to interact with Ethereum Blockchain.
+ */
 public class EthereumUtils {
 
     /**

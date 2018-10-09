@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+/**
+ * Class used for scanning of QR code.
+ */
 public class QrCodeScanner {
 
     /**
-     * Open external QR Code scanner via Intent
+     * Open external QR Code scanner via Intent.
      *
      * @param activity calling activity
      */
