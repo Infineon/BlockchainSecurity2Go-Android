@@ -23,7 +23,6 @@ import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
-import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.crypto.Keys;
@@ -84,9 +83,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        logTagInfo(tag);
-
+        UiUtils.logTagInfo(tag);
         IsoDep isoDep = IsoDep.get(tag);
+        if (isoDep == null) {
+            Toast.makeText(MainActivity.this, R.string.wrong_card,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
         // now we have an IsoTag:
 
         // update UI
@@ -96,7 +99,10 @@ public class MainActivity extends AppCompatActivity {
             pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
             isoDep.close();
         } catch (IOException | NfcCardException e) {
+            Toast.makeText(MainActivity.this, R.string.operation_not_supported,
+                    Toast.LENGTH_SHORT).show();
             Log.e(TAG, "Exception while reading public key from card: ", e);
+            return;
         }
         Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
         // use web3j to format this public key as ETH address
@@ -224,11 +230,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private enum GuiState {NFC_ICON, PROGRESS_BAR, BALANCE_TEXT}
-
-    private void logTagInfo(Tag tagFromIntent) {
-        Log.d(TAG, "NFC Tag detected: " + tagFromIntent.toString());
-        Log.d(TAG, "NFC Tag id: " + ByteUtils.bytesToHex(tagFromIntent.getId()));
-    }
 
     /**
      * On button click SEND ETH

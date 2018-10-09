@@ -23,6 +23,7 @@ import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
+import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
@@ -89,9 +90,9 @@ public class SendTransactionActivity extends AppCompatActivity {
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
         String savedRecipientAddressTxt = mPrefs.getString(PREF_KEY_RECIPIENT_ADDRESS, "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
-        String savedGasPriceWei  = mPrefs.getString(PREF_KEY_GASPRICE_WEI, "21");
+        String savedGasPriceWei = mPrefs.getString(PREF_KEY_GASPRICE_WEI, "21");
         gasPriceTxt.setText(savedGasPriceWei);
-        String savedGasLimit  = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
+        String savedGasLimit = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
         gasLimitTxt.setText(savedGasLimit);
 
         new Thread(() -> {
@@ -154,9 +155,14 @@ public class SendTransactionActivity extends AppCompatActivity {
             ethAddress = b.getString("ethAddress");
         }
 
-        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        // TODO check if IsoDeps
-        IsoDep isoDep = IsoDep.get(tagFromIntent);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        UiUtils.logTagInfo(tag);
+        IsoDep isoDep = IsoDep.get(tag);
+        if (isoDep == null) {
+            Toast.makeText(SendTransactionActivity.this, R.string.wrong_card,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         new Thread(() -> {
             final String valueStr = amountTxt.getText().toString();
@@ -171,6 +177,9 @@ public class SendTransactionActivity extends AppCompatActivity {
                 response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                         gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
                         value.toBigInteger(), isoDep, pubKeyString, "");
+            } catch (NfcCardException e) {
+                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
+                return;
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ether transaction", e);
                 this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this,

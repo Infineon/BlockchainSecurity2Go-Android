@@ -3,6 +3,7 @@ package co.coinfinity.infineonandroidapp.ethereum;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
+import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import org.web3j.crypto.*;
@@ -24,7 +25,6 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static co.coinfinity.AppConstants.*;
-import static co.coinfinity.infineonandroidapp.infineon.NfcUtils.generateSignature;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
 /**
@@ -106,8 +106,7 @@ public class EthereumUtils {
         String hexValue = null;
         byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-        final byte[] signedTransaction = generateSignature(IsoTagWrapper.of(isoTag), KEY_ID_ON_THE_CARD, hashedTransaction);
-
+        final byte[] signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), KEY_ID_ON_THE_CARD, hashedTransaction);
 
         Log.d(TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
 

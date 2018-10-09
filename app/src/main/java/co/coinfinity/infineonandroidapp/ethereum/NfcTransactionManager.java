@@ -5,6 +5,7 @@ import android.nfc.tech.IsoDep;
 import android.util.Log;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.R;
+import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.TransactionManager;
@@ -58,6 +59,8 @@ public class NfcTransactionManager extends TransactionManager {
             final EthSendTransaction ethSendTransaction = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data);
             activity.runOnUiThread(() -> Toast.makeText(activity, R.string.send_success, Toast.LENGTH_SHORT).show());
             return ethSendTransaction;
+        } catch (NfcCardException e) {
+            activity.runOnUiThread(() -> Toast.makeText(activity, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
             activity.runOnUiThread(() -> Toast.makeText(activity, "Could not send transaction!", Toast.LENGTH_SHORT).show());

@@ -20,39 +20,6 @@ import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 public class NfcUtils {
 
     /**
-     * Read public key from card
-     *
-     * @param card  nfc card
-     * @param keyId key to get
-     * @return public key as hexadecimal String
-     * @throws IOException      on communication errors
-     * @throws NfcCardException when card returns something other than 0x9000
-     */
-    public static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
-            throws IOException, NfcCardException {
-        GetPubKeyApdu apdu = new GetPubKeyApdu(keyId);
-
-        // send apdu
-        ResponseApdu resp = tranceive(card, apdu, "GET PUBLIC KEY");
-
-
-        // at the moment we only support uncompressed keys
-        // (identified by prefix 0x04 followed by 2x 32 bytes, x- and y- coordinate)
-        if (resp.getData()[0] != (byte) 0x04 || resp.getData().length != 65) {
-            throw new NfcCardException(resp.getSW1SW2(), String.format("Cannot parse returned " +
-                    "PubKey from card. Expected uncompressed 64 byte long key data, prefixed with 0x04, " +
-                    "but got instead: %s", bytesToHex(resp.getData())));
-        }
-
-        // get DATA part of response and convert to hex string
-        String hex = bytesToHex(resp.getData());
-
-        // cut off the first byte (2 hex characters), which contain the 0x04 (prefix for uncompressed keys)
-        return hex.substring(2);
-    }
-
-
-    /**
      * Generate an ECDSA signature
      *
      * @param card       nfc card
@@ -73,30 +40,63 @@ public class NfcUtils {
         return resp.getData();
     }
 
-
     /**
-     * Generate a new SECP-256k1 keypair on the card.
+     * Read public key from card, or create a new one if it doesn't exist yet
      *
-     * @param card nfc tranceiver
-     * @return index of the newly created key
+     * @param card nfc card
+     * @return public key as hexadecimal String
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
-    public static int generateNewSecp256K1Keypair(NfcTranceiver card)
+    public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card)
             throws IOException, NfcCardException {
-        GenerateKeyPairKeyApdu apdu = new GenerateKeyPairKeyApdu(CURVE_INDEX_SECP256K1);
-
-        // send apdu and check response status word
-        ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY PAIR");
-
-        // should return exactly 1 byte, indicating index of new key
-        if (resp.getData().length != 1) {
-            throw new IllegalStateException(String.format("GENERATE KEYPAIR response was not " +
-                    "exactly 1 byte long: %s", resp.getDataAsHex()));
+        try {
+            // try to read public key
+            return readPublicKeyFromCard(card, AppConstants.KEY_ID_ON_THE_CARD);
+        } catch (NfcCardException e) {
+            // if Public key is not available yet (Status words: 0x6A88)
+            if (e.getSw1Sw2() == SW_KEY_WITH_IDX_NOT_AVAILABLE) {
+                // create a new keypair
+                int newKeyIndex = generateNewSecp256K1Keypair(card);
+                // and ask for the pubkey of the newly created keypair
+                return readPublicKeyFromCard(card, newKeyIndex);
+            } else {
+                // throw all other exceptions to our caller
+                throw e;
+            }
         }
-        return (int) resp.getData()[0];
     }
 
+    /**
+     * Read public key from card
+     *
+     * @param card  nfc card
+     * @param keyId key to get
+     * @return public key as hexadecimal String
+     * @throws IOException      on communication errors
+     * @throws NfcCardException when card returns something other than 0x9000
+     */
+    private static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
+            throws IOException, NfcCardException {
+        GetPubKeyApdu apdu = new GetPubKeyApdu(keyId);
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "GET PUBLIC KEY");
+
+        // at the moment we only support uncompressed keys
+        // (identified by prefix 0x04 followed by 2x 32 bytes, x- and y- coordinate)
+        if (resp.getData()[0] != (byte) 0x04 || resp.getData().length != 65) {
+            throw new NfcCardException(resp.getSW1SW2(), String.format("Cannot parse returned " +
+                    "PubKey from card. Expected uncompressed 64 byte long key data, prefixed with 0x04, " +
+                    "but got instead: %s", bytesToHex(resp.getData())));
+        }
+
+        // get DATA part of response and convert to hex string
+        String hex = bytesToHex(resp.getData());
+
+        // cut off the first byte (2 hex characters), which contain the 0x04 (prefix for uncompressed keys)
+        return hex.substring(2);
+    }
 
     /**
      * Send command APDU to card
@@ -126,30 +126,26 @@ public class NfcUtils {
     }
 
     /**
-     * Read public key from card, or create a new one if it doesn't exist yet
+     * Generate a new SECP-256k1 keypair on the card.
      *
-     * @param card nfc card
-     * @return public key as hexadecimal String
+     * @param card nfc tranceiver
+     * @return index of the newly created key
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
-    public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card)
+    private static int generateNewSecp256K1Keypair(NfcTranceiver card)
             throws IOException, NfcCardException {
-        try {
-            // try to read public key
-            return readPublicKeyFromCard(card, AppConstants.KEY_ID_ON_THE_CARD);
-        } catch (NfcCardException e) {
-            // if Public key is not available yet (Status words: 0x6A88)
-            if (e.getSw1Sw2() == SW_KEY_WITH_IDX_NOT_AVAILABLE) {
-                // create a new keypair
-                int newKeyIndex = generateNewSecp256K1Keypair(card);
-                // and ask for the pubkey of the newly created keypair
-                return readPublicKeyFromCard(card, newKeyIndex);
-            } else {
-                // throw all other exceptions to our caller
-                throw e;
-            }
+        GenerateKeyPairKeyApdu apdu = new GenerateKeyPairKeyApdu(CURVE_INDEX_SECP256K1);
+
+        // send apdu and check response status word
+        ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY PAIR");
+
+        // should return exactly 1 byte, indicating index of new key
+        if (resp.getData().length != 1) {
+            throw new IllegalStateException(String.format("GENERATE KEYPAIR response was not " +
+                    "exactly 1 byte long: %s", resp.getDataAsHex()));
         }
+        return (int) resp.getData()[0];
     }
 
 

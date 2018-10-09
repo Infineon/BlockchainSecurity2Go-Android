@@ -126,9 +126,14 @@ public class VotingActivity extends AppCompatActivity {
         View radioButton = radioGroup.findViewById(radioButtonId);
         int idx = radioGroup.indexOfChild(radioButton);
 
-        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        // TODO check IsoDep
-        IsoDep isoDep = IsoDep.get(tagFromIntent);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        UiUtils.logTagInfo(tag);
+        IsoDep isoDep = IsoDep.get(tag);
+        if (isoDep == null) {
+            Toast.makeText(VotingActivity.this, R.string.wrong_card,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         new Thread(() -> {
 

@@ -3,8 +3,12 @@ package co.coinfinity.infineonandroidapp.utils;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
+import android.util.Log;
 import android.view.MenuItem;
 import co.coinfinity.infineonandroidapp.R;
+
+import static co.coinfinity.AppConstants.TAG;
 
 /**
  * Utility for Activities.
@@ -31,5 +35,15 @@ public class UiUtils {
                 return false;
 
         }
+    }
+
+    /**
+     * Method used to log NFC tag info.
+     *
+     * @param tagFromIntent actual tag to use
+     */
+    public static void logTagInfo(Tag tagFromIntent) {
+        Log.d(TAG, "NFC Tag detected: " + tagFromIntent.toString());
+        Log.d(TAG, "NFC Tag id: " + ByteUtils.bytesToHex(tagFromIntent.getId()));
     }
 }

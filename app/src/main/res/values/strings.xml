@@ -38,4 +38,6 @@
     <string name="err_gaslimit_required">Gas Limit is required!</string>
     <string name="err_contract_address_missing">Contract Address is required!</string>
     <string name="choose_answer">Choose one of the following answers:</string>
+    <string name="wrong_card">This is no Infineon card!</string>
+    <string name="operation_not_supported">Card does not support this operation!</string>
 </resources>

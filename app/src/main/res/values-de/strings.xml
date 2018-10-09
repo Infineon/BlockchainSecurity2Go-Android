@@ -33,4 +33,6 @@
     <string name="err_gaslimit_required">Bitte geben Sie das gasLimit an!</string>
     <string name="err_contract_address_missing">Die Adresse des SmartContracts ist nicht gesetzt!</string>
     <string name="choose_answer">Wählen Sie eine der folgenden Antwortmöglichkeiten:</string>
+    <string name="wrong_card">Das ist keine Infineon Karte!</string>
+    <string name="operation_not_supported">Karte unterstützt diese Funktion nicht!</string>
 </resources>

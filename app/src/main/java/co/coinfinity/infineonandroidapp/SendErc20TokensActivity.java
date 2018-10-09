@@ -159,9 +159,14 @@ public class SendErc20TokensActivity extends AppCompatActivity {
      * @param intent includes nfc extras
      */
     private void resolveIntent(Intent intent) {
-        Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        // TODO check IsoDep
-        IsoDep isoDep = IsoDep.get(tagFromIntent);
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        UiUtils.logTagInfo(tag);
+        IsoDep isoDep = IsoDep.get(tag);
+        if (isoDep == null) {
+            Toast.makeText(SendErc20TokensActivity.this, R.string.wrong_card,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         final String valueStr = amountTxt.getText().toString();
         BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
