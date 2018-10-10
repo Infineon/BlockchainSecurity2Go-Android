@@ -167,6 +167,7 @@ public class VotingActivity extends AppCompatActivity {
      */
     private void updateVoteState() {
         try {
+            this.runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
             final BigInteger gasLimit = getGasLimitFromString();
             BigInteger gasPrice = getGasPriceFromString().multiply(spinnerAdapter.getMultiplier()).toBigInteger();
 
@@ -179,9 +180,8 @@ public class VotingActivity extends AppCompatActivity {
 
                 this.runOnUiThread(() -> {
                     // this has to be done in the the UI thread
-                    ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
-                    votingName.setText(votersName);
                     votingName.setEnabled(false);
+                    votingName.setText(votersName);
 
                     if (answerCounts != null) {
                         answer1Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(0).getValue().toString()));
@@ -189,10 +189,16 @@ public class VotingActivity extends AppCompatActivity {
                         answer3Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(2).getValue().toString()));
                         answer4Votes.setText(String.format(getString(R.string.votes_count), answerCounts.get(3).getValue().toString()));
                     }
+
+                    for (int i = 0; i < radioGroup.getChildCount(); i++) {
+                        radioGroup.getChildAt(i).setEnabled(false);
+                    }
+                    ((RadioButton) radioGroup.getChildAt(votersAnswer)).setChecked(true);
+
                     infoText.setText(R.string.already_voted);
-                    progressBar.setVisibility(View.INVISIBLE);
                 });
             } else {
+                alreadyVoted = false;
                 //enable radio buttons if not yet voted
                 this.runOnUiThread(() -> {
                     this.gasPrice.setEnabled(true);
@@ -201,9 +207,15 @@ public class VotingActivity extends AppCompatActivity {
                     for (int i = 0; i < radioGroup.getChildCount(); i++) {
                         radioGroup.getChildAt(i).setEnabled(true);
                     }
-                    progressBar.setVisibility(View.INVISIBLE);
+
+                    answer1Votes.setText("");
+                    answer2Votes.setText("");
+                    answer3Votes.setText("");
+                    answer4Votes.setText("");
+                    infoText.setText(R.string.hold_card_voting);
                 });
             }
+            progressBar.setVisibility(View.INVISIBLE);
         } catch (Exception e) {
             if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
                 this.runOnUiThread(() -> Toast.makeText(VotingActivity.this, "Wrong contract address!",
@@ -244,6 +256,7 @@ public class VotingActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
+                new Thread(this::updateVoteState).start();
             } else if (resultCode == RESULT_CANCELED) {
                 //handle cancel
             }
