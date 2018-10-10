@@ -1,8 +1,8 @@
 package co.coinfinity.infineonandroidapp.utils;
 
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 
 /**
@@ -10,7 +10,7 @@ import com.loopj.android.http.RequestParams;
  */
 public class HttpUtils {
 
-    private static AsyncHttpClient client = new AsyncHttpClient();
+    private static SyncHttpClient client = new SyncHttpClient();
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.get(url, params, responseHandler);

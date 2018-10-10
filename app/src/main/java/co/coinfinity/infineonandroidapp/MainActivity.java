@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 while (!activityPaused && ethAddress != null) {
                     EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
                     Log.d(TAG, "reading EUR/ETH price..");
-                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi("0", "0", balance.getEther().toString());
+                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0", balance.getEther().toString());
                     Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
                     if (transactionPriceBean != null && pubKeyString != null) {
                         this.runOnUiThread(() -> {

@@ -98,7 +98,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 while (!activityPaused) {
-                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApi(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
                     this.runOnUiThread(() -> {
                         if (transactionPriceBean != null) {
                             priceInEuroTxt.setText(transactionPriceBean.toString());
