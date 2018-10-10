@@ -28,7 +28,6 @@ import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
@@ -103,16 +102,21 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 while (!activityPaused) {
-                    BigInteger transactionPriceBean = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
+                    BigInteger erc20Balance = new BigInteger("0");
+                    try {
+                        erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
+                    } catch (Exception e) {
+                        Log.e(TAG, "exception while reading ERC20 Balance", e);
+                    }
+                    BigInteger finalErc20Balance = erc20Balance;
                     this.runOnUiThread(() -> {
-                        if (transactionPriceBean != null)
-                            currentBalance.setText(String.format(getString(R.string.current_token_balance), transactionPriceBean));
+                        currentBalance.setText(String.format(getString(R.string.current_token_balance), finalErc20Balance));
                         progressBar.setVisibility(View.INVISIBLE);
                     });
                     Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                Log.e(TAG, "exception while reading ERC20 Balance", e);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "interrupted exception while reading ERC20 Balance", e);
             }
         }).start();
     }
