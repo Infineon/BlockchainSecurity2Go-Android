@@ -54,9 +54,9 @@ public class EthBalanceBean {
     @Override
     public String toString() {
         if (ether != null && unconfirmedEther != null && unconfirmedEther.equals(new BigDecimal("0"))) {
-            return ether + " ETH\n" + wei + " WEI";
+            return String.format("%s ETH\n%s WEI", ether, wei);
         }
 
-        return ether + " ETH\n(" + unconfirmedEther + " unconfirmed)\n" + wei + " WEI \n(" + unconfirmedWei + " unconfirmed)";
+        return String.format("%s ETH\n(%s unconfirmed)\n%s WEI \n(%s unconfirmed)", ether, unconfirmedEther, wei, unconfirmedWei);
     }
 }

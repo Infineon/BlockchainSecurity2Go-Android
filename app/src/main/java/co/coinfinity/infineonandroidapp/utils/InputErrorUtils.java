@@ -42,6 +42,11 @@ public class InputErrorUtils {
         this.contractAddress = contractAddress;
     }
 
+    /**
+     * this method is checking if there is an input error and if there is it will set the causing TextView to state error.
+     *
+     * @return if input error or not
+     */
     public boolean isNoInputError() {
         boolean isNoError = true;
 

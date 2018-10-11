@@ -23,6 +23,7 @@ import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.generated.Uint32;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -146,7 +147,9 @@ public class VotingActivity extends AppCompatActivity {
                     Toast.makeText(VotingActivity.this, R.string.please_wait,
                             Toast.LENGTH_SHORT).show();
                 });
-                VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
+                Log.d(TAG, "sending vote.. ");
+                final TransactionReceipt response = VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, votingName.getText().toString(), idx, gasPrice, gasLimit, this);
+                Log.d(TAG, String.format("sending vote finished with Hash: %s", response.getTransactionHash()));
 
                 updateVoteState();
             } catch (Exception e) {
@@ -174,9 +177,11 @@ public class VotingActivity extends AppCompatActivity {
             final Bool voterExists = VotingUtils.voterExists(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
             if (voterExists.getValue()) {
                 alreadyVoted = true;
+                Log.d(TAG, "reading voters info..");
                 final int votersAnswer = VotingUtils.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit).intValue();
                 final String votersName = VotingUtils.getVotersName(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
                 final List<Uint32> answerCounts = VotingUtils.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+                Log.d(TAG, String.format("reading voters info finished. Answer: %d Name: %s", votersAnswer, votersName));
 
                 this.runOnUiThread(() -> {
                     // this has to be done in the the UI thread

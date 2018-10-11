@@ -13,7 +13,6 @@ import org.web3j.tx.TransactionManager;
 
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
 
@@ -36,7 +35,7 @@ public class Erc20Utils {
      * @return transaction receipt
      * @throws Exception on errors
      */
-    public static Future<TransactionReceipt> sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity) {
+    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity) throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);
@@ -45,7 +44,7 @@ public class Erc20Utils {
 
         final RemoteCall<TransactionReceipt> transfer = erc.transfer(to, amount);
 
-        return transfer.sendAsync();
+        return transfer.send();
     }
 
     /**
@@ -57,14 +56,14 @@ public class Erc20Utils {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws ExecutionException, InterruptedException {
+    public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws Exception {
         if (ercContract != null && !ercContract.equals("") && ethAddress != null && !ethAddress.equals("")) {
             Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
             ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(web3j, ethAddress);
 
             ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, BigInteger.ZERO, BigInteger.ZERO);
 
-            return erc.balanceOf(ethAddress).sendAsync().get();
+            return erc.balanceOf(ethAddress).send();
         }
 
         return null;

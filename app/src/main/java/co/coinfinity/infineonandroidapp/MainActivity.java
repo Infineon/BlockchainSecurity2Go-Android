@@ -104,11 +104,11 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Exception while reading public key from card: ", e);
             return;
         }
-        Log.d(TAG, "pubkey read from card: '" + pubKeyString + "'");
+        Log.d(TAG, String.format("pubkey read from card: '%s'", pubKeyString));
         // use web3j to format this public key as ETH address
         ethAddress = Keys.toChecksumAddress(Keys.getAddress(pubKeyString));
         ethAddressView.setText(ethAddress);
-        Log.d(TAG, "ETH address: " + ethAddress);
+        Log.d(TAG, String.format("ETH address: %s", ethAddress));
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
         holdCard.setText(R.string.card_found);
 
@@ -117,22 +117,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Main activity, start reading price thread...");
             try {
                 while (!activityPaused && ethAddress != null) {
-                    EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
-                    Log.d(TAG, "reading EUR/ETH price..");
-                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0", balance.getEther().toString());
-                    Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
-                    if (transactionPriceBean != null && pubKeyString != null) {
-                        this.runOnUiThread(() -> {
-                            this.balance.setText(String.format("%s%s", balance.toString(),
-                                    String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
-                            if (!sendEthBtn.isEnabled()) {
-                                sendEthBtn.setEnabled(true);
-                                sendErc20Btn.setEnabled(true);
-                                votingBtn.setEnabled(true);
-                            }
-                            displayOnUI(GuiState.BALANCE_TEXT);
-                        });
-                    }
+                    updateBalanceAndEuroPrice();
                     Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -140,6 +125,33 @@ public class MainActivity extends AppCompatActivity {
             }
             Log.d(TAG, "Main activity, reading price thread exited.");
         }).start();
+    }
+
+    /**
+     * this method is updating the balance and euro price on UI.
+     *
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    private void updateBalanceAndEuroPrice() throws ExecutionException, InterruptedException {
+        Log.d(TAG, "reading ETH balance..");
+        EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
+        Log.d(TAG, String.format("reading ETH balance finished: %s", balance.toString()));
+        Log.d(TAG, "reading EUR/ETH price..");
+        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0", balance.getEther().toString());
+        Log.d(TAG, String.format("reading EUR/ETH price finished: %s", transactionPriceBean));
+        if (transactionPriceBean != null && pubKeyString != null) {
+            this.runOnUiThread(() -> {
+                this.balance.setText(String.format("%s%s", balance.toString(),
+                        String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
+                if (!sendEthBtn.isEnabled()) {
+                    sendEthBtn.setEnabled(true);
+                    sendErc20Btn.setEnabled(true);
+                    votingBtn.setEnabled(true);
+                }
+                displayOnUI(GuiState.BALANCE_TEXT);
+            });
+        }
     }
 
     @Override

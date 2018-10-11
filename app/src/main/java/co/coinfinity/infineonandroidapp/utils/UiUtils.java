@@ -43,7 +43,7 @@ public class UiUtils {
      * @param tagFromIntent actual tag to use
      */
     public static void logTagInfo(Tag tagFromIntent) {
-        Log.d(TAG, "NFC Tag detected: " + tagFromIntent.toString());
-        Log.d(TAG, "NFC Tag id: " + ByteUtils.bytesToHex(tagFromIntent.getId()));
+        Log.d(TAG, String.format("NFC Tag detected: %s", tagFromIntent.toString()));
+        Log.d(TAG, String.format("NFC Tag id: %s", ByteUtils.bytesToHex(tagFromIntent.getId())));
     }
 }

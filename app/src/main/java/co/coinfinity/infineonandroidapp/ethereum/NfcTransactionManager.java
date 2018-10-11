@@ -56,9 +56,11 @@ public class NfcTransactionManager extends TransactionManager {
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value) {
         try {
-            final EthSendTransaction ethSendTransaction = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data);
+            Log.d(TAG, "sending ETH transaction..");
+            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data);
+            Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
             activity.runOnUiThread(() -> Toast.makeText(activity, R.string.send_success, Toast.LENGTH_SHORT).show());
-            return ethSendTransaction;
+            return response;
         } catch (NfcCardException e) {
             activity.runOnUiThread(() -> Toast.makeText(activity, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
         } catch (Exception e) {

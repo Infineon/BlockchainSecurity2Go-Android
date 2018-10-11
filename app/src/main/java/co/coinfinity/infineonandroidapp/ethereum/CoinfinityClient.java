@@ -23,10 +23,6 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
     private String gasLimitStr;
     private String etherAmount;
 
-
-    // TODO: on the first call this always will return null and on all subsequent calls,
-    // it will return the result of the last call
-
     /**
      * this method reads the euro price from coinfinity api and calculates the corresponding euro amount of an ether amount, gas price and gas limit
      *
@@ -40,8 +36,6 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
         this.gasLimitStr = gasLimitStr;
         this.etherAmount = etherAmount;
 
-        // The "HttpUtils.get" call is async, so it will return immediately,
-        // therefore transactionPriceBean is still null after the first call
         HttpUtils.get(HTTPS_COINFINITY_CO_PRICE_XBTEUR, null, this);
 
         return transactionPriceBean;
@@ -50,7 +44,7 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
         try {
-            Log.d(TAG, "Response from ETH/EUR API request. HTTP: " + statusCode);
+            Log.d(TAG, String.format("Response from ETH/EUR API request. HTTP: %d", statusCode));
             JSONObject serverResp = new JSONObject(response.toString());
 
             if (!gasPriceStr.equals("") && !gasLimitStr.equals("") && !etherAmount.equals("")) {

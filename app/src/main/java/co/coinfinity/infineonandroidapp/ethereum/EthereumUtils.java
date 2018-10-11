@@ -108,35 +108,35 @@ public class EthereumUtils {
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
         final byte[] signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), KEY_ID_ON_THE_CARD, hashedTransaction);
 
-        Log.d(TAG, "signed transaction: " + ByteUtils.bytesToHex(signedTransaction));
+        Log.d(TAG, String.format("signed transaction: %s", ByteUtils.bytesToHex(signedTransaction)));
 
         byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction));
         byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction));
-        Log.d(TAG, "r: " + ByteUtils.bytesToHex(r));
-        Log.d(TAG, "s: " + ByteUtils.bytesToHex(s));
+        Log.d(TAG, String.format("r: %s", ByteUtils.bytesToHex(r)));
+        Log.d(TAG, String.format("s: %s", ByteUtils.bytesToHex(s)));
 
         s = getCanonicalisedS(r, s);
-        Log.d(TAG, "s canonicalised: " + ByteUtils.bytesToHex(s));
+        Log.d(TAG, String.format("s canonicalised: %s", ByteUtils.bytesToHex(s)));
 
         byte v = getV(publicKey, hashedTransaction, r, s);
-        Log.d(TAG, "v: " + v);
+        Log.d(TAG, String.format("v: %s", v));
 
         Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
         signatureData = TransactionEncoder.createEip155SignatureData(signatureData, CHAIN_ID);
 
         //calls private method form web3j lib
         hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
-        Log.d(TAG, "hexValue: " + hexValue);
+        Log.d(TAG, String.format("hexValue: %s", hexValue));
 
         EthSendTransaction ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
 
         if (ethSendTransaction != null) {
             String transactionHash = ethSendTransaction.getTransactionHash();
 
-            Log.d(TAG, "TransactionHash: " + transactionHash);
-            Log.d(TAG, "TransactionResult: " + ethSendTransaction.getResult());
+            Log.d(TAG, String.format("TransactionHash: %s", transactionHash));
+            Log.d(TAG, String.format("TransactionResult: %s", ethSendTransaction.getResult()));
             if (ethSendTransaction.getError() != null) {
-                Log.e(TAG, "TransactionError: " + ethSendTransaction.getError().getMessage());
+                Log.e(TAG, String.format("TransactionError: %s", ethSendTransaction.getError().getMessage()));
                 throw new RuntimeException(String.format("TransactionError: %s",
                         ethSendTransaction.getError().getMessage()));
             }
@@ -158,7 +158,7 @@ public class EthereumUtils {
         ethGetTransactionCount = web3j.ethGetTransactionCount(
                 etherAddress, DefaultBlockParameterName.PENDING).send();
 
-        Log.d(TAG, "Nonce: " + ethGetTransactionCount.getTransactionCount());
+        Log.d(TAG, String.format("Nonce: %s", ethGetTransactionCount.getTransactionCount()));
         return ethGetTransactionCount.getTransactionCount();
     }
 

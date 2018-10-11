@@ -24,6 +24,7 @@ import co.coinfinity.infineonandroidapp.ethereum.Erc20Utils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -102,23 +103,32 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 while (!activityPaused) {
-                    BigInteger erc20Balance = new BigInteger("0");
-                    try {
-                        erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
-                    } catch (Exception e) {
-                        Log.e(TAG, "exception while reading ERC20 Balance", e);
-                    }
-                    BigInteger finalErc20Balance = erc20Balance;
-                    this.runOnUiThread(() -> {
-                        currentBalance.setText(String.format(getString(R.string.current_token_balance), finalErc20Balance));
-                        progressBar.setVisibility(View.INVISIBLE);
-                    });
+                    readAndDisplayErc20Balance();
                     Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "interrupted exception while reading ERC20 Balance", e);
             }
         }).start();
+    }
+
+    /**
+     * this method read ERC20 balance via Api request and displays it.
+     */
+    private void readAndDisplayErc20Balance() {
+        BigInteger erc20Balance = new BigInteger("0");
+        try {
+            Log.d(TAG, "reading ERC20 Balance..");
+            erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
+            Log.d(TAG, String.format("got ERC20 Balance: %s", erc20Balance));
+        } catch (Exception e) {
+            Log.e(TAG, "exception while reading ERC20 Balance", e);
+        }
+        BigInteger finalErc20Balance = erc20Balance;
+        this.runOnUiThread(() -> {
+            currentBalance.setText(String.format(getString(R.string.current_token_balance), finalErc20Balance));
+            progressBar.setVisibility(View.INVISIBLE);
+        });
     }
 
     @Override
@@ -178,12 +188,18 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         final String gasLimitStr = gasLimitTxt.getText().toString();
         final BigDecimal gasLimit = Convert.toWei(gasLimitStr.equals("") ? "0" : gasLimitStr, Convert.Unit.WEI);
 
-        try {
-            Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
-                    , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), gasPrice.toBigInteger(), gasLimit.toBigInteger(), this);
-        } catch (Exception e) {
-            Log.e(TAG, "Exception while sending ERC20 tokens", e);
-        }
+        BigDecimal finalGasPrice = gasPrice;
+        new Thread(() -> {
+            try {
+                Log.d(TAG, "Sending ERC20 tokens " + ethAddress);
+                final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
+                        , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(), gasLimit.toBigInteger(), this);
+                Log.d(TAG, String.format("ERC20 tokens sent with Hash: %s", receipt.getTransactionHash()));
+            } catch (Exception e) {
+                Log.e(TAG, "Exception while sending ERC20 tokens", e);
+            }
+        }).start();
+
         finish();
     }
 

@@ -98,7 +98,9 @@ public class SendTransactionActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 while (!activityPaused) {
+                    Log.d(TAG, "reading EUR/ETH price..");
                     TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+                    Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
                     this.runOnUiThread(() -> {
                         if (transactionPriceBean != null) {
                             priceInEuroTxt.setText(transactionPriceBean.toString());
@@ -164,38 +166,47 @@ public class SendTransactionActivity extends AppCompatActivity {
             return;
         }
 
-        new Thread(() -> {
-            final String valueStr = amountTxt.getText().toString();
-            final BigDecimal value = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
-            BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
-            gasPrice = gasPrice.multiply(spinnerAdapter.getMultiplier());
-            final String gasLimitStr = gasLimitTxt.getText().toString();
-            final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
-
-            EthSendTransaction response = null;
-            try {
-                response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
-                        gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                        value.toBigInteger(), isoDep, pubKeyString, "");
-            } catch (NfcCardException e) {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
-                return;
-            } catch (Exception e) {
-                Log.e(TAG, "Exception while sending ether transaction", e);
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this,
-                        String.format("Could not send transaction: %s", e.getMessage()), Toast.LENGTH_LONG).show());
-                return;
-            }
-
-            if (response != null && response.getError() != null) {
-                EthSendTransaction finalResponse = response;
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, finalResponse.getError().getMessage(),
-                        Toast.LENGTH_LONG).show());
-            } else {
-                this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
-            }
-        }).start();
+        new Thread(() -> sendTransactionAndShowFeedback(isoDep)).start();
         finish();
+    }
+
+    /**
+     * reads data needed for transaction, sends an Ethereum transaction and shows feedback on UI.
+     *
+     * @param isoDep
+     */
+    private void sendTransactionAndShowFeedback(IsoDep isoDep) {
+        final String valueStr = amountTxt.getText().toString();
+        final BigDecimal value = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
+        BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
+        gasPrice = gasPrice.multiply(spinnerAdapter.getMultiplier());
+        final String gasLimitStr = gasLimitTxt.getText().toString();
+        final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
+
+        EthSendTransaction response = null;
+        try {
+            Log.d(TAG, "sending ETH transaction..");
+            response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
+                    gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
+                    value.toBigInteger(), isoDep, pubKeyString, "");
+            Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
+        } catch (NfcCardException e) {
+            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
+            return;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while sending ether transaction", e);
+            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this,
+                    String.format("Could not send transaction: %s", e.getMessage()), Toast.LENGTH_LONG).show());
+            return;
+        }
+
+        if (response.getError() != null) {
+            EthSendTransaction finalResponse = response;
+            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, finalResponse.getError().getMessage(),
+                    Toast.LENGTH_LONG).show());
+        } else {
+            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
+        }
     }
 
     public void scanQrCode(View view) {
