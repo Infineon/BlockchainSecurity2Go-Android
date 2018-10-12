@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp.ethereum;
+package co.coinfinity.infineonandroidapp.ethereum.utils;
 
 import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
@@ -29,7 +29,6 @@ import org.web3j.utils.Numeric;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.concurrent.ExecutionException;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -63,7 +62,7 @@ public class EthereumUtilsTest {
     }
 
     @Test
-    public void getBalanceTest() throws ExecutionException, InterruptedException {
+    public void testGetBalanceTest() throws Exception {
         final EthBalanceBean balance = EthereumUtils.getBalance("0xfd37944e59fB227043F1F53Ca6Aef1C953684f46");
 
         assertTrue(balance.getEther().doubleValue() > 0);
@@ -73,7 +72,7 @@ public class EthereumUtilsTest {
     }
 
     @Test
-    public void sendTransaction() throws Exception {
+    public void testSendTransaction() throws Exception {
 //        when(infineonNfcUtils.signTransaction(any(Tag.class), anyInt(), any(byte[].class))).thenReturn(
 //                signTransaction(ByteUtils.fromHexString("6E190B28384A62507BA107C70AF66362054D0B14B24ADD2A43606B7530C4763B")));
 //        Mock.
@@ -97,7 +96,7 @@ public class EthereumUtilsTest {
     }
 
     @Test
-    public void getNextNonce() throws IOException {
+    public void testGetNextNonce() throws IOException {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         final BigInteger nextNonce = EthereumUtils.getNextNonce(web3, "0xfd37944e59fB227043F1F53Ca6Aef1C953684f46");

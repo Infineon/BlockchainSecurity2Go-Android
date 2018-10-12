@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp.ethereum;
+package co.coinfinity.infineonandroidapp.ethereum.utils;
 
 import android.nfc.tech.IsoDep;
 import android.util.Log;
@@ -40,7 +40,7 @@ public class EthereumUtils {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static EthBalanceBean getBalance(String ethAddress) throws ExecutionException, InterruptedException {
+    public static EthBalanceBean getBalance(String ethAddress) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
@@ -69,7 +69,7 @@ public class EthereumUtils {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) throws ExecutionException, InterruptedException {
+    private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) throws Exception {
         BigInteger wei = null;
         EthGetBalance ethGetBalance = web3
                 .ethGetBalance(ethAddress, defaultBlockParameterName)
@@ -124,23 +124,13 @@ public class EthereumUtils {
         Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
         signatureData = TransactionEncoder.createEip155SignatureData(signatureData, CHAIN_ID);
 
-        //calls private method form web3j lib
         hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
-        Log.d(TAG, String.format("hexValue: %s", hexValue));
-
         EthSendTransaction ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
 
-        if (ethSendTransaction != null) {
-            String transactionHash = ethSendTransaction.getTransactionHash();
-
-            Log.d(TAG, String.format("TransactionHash: %s", transactionHash));
-            Log.d(TAG, String.format("TransactionResult: %s", ethSendTransaction.getResult()));
-            if (ethSendTransaction.getError() != null) {
-                Log.e(TAG, String.format("TransactionError: %s", ethSendTransaction.getError().getMessage()));
-                throw new RuntimeException(String.format("TransactionError: %s",
-                        ethSendTransaction.getError().getMessage()));
-            }
-
+        if (ethSendTransaction != null && ethSendTransaction.getError() != null) {
+            Log.e(TAG, String.format("TransactionError: %s", ethSendTransaction.getError().getMessage()));
+            throw new RuntimeException(String.format("TransactionError: %s",
+                    ethSendTransaction.getError().getMessage()));
         }
         return ethSendTransaction;
     }
@@ -153,7 +143,7 @@ public class EthereumUtils {
      * @return the next nonce
      * @throws IOException
      */
-    static BigInteger getNextNonce(Web3j web3j, String etherAddress) throws IOException {
+    public static BigInteger getNextNonce(Web3j web3j, String etherAddress) throws IOException {
         EthGetTransactionCount ethGetTransactionCount = null;
         ethGetTransactionCount = web3j.ethGetTransactionCount(
                 etherAddress, DefaultBlockParameterName.PENDING).send();

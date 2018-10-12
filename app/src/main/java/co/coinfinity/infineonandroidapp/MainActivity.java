@@ -17,9 +17,9 @@ import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
-import co.coinfinity.infineonandroidapp.ethereum.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
+import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
@@ -111,20 +111,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, String.format("ETH address: %s", ethAddress));
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
         holdCard.setText(R.string.card_found);
-
-        // Update balance and EUR price
-        new Thread(() -> {
-            Log.d(TAG, "Main activity, start reading price thread...");
-            try {
-                while (!activityPaused && ethAddress != null) {
-                    updateBalanceAndEuroPrice();
-                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                Log.e(TAG, "exception while reading euro price from api: ", e);
-            }
-            Log.d(TAG, "Main activity, reading price thread exited.");
-        }).start();
     }
 
     /**
@@ -133,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private void updateBalanceAndEuroPrice() throws ExecutionException, InterruptedException {
+    private void updateBalanceAndEuroPrice() throws Exception {
         Log.d(TAG, "reading ETH balance..");
         EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
         Log.d(TAG, String.format("reading ETH balance finished: %s", balance.toString()));
@@ -183,6 +169,19 @@ public class MainActivity extends AppCompatActivity {
             nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
         }
         activityPaused = false;
+
+        new Thread(() -> {
+            Log.d(TAG, "Main activity, start reading price thread...");
+            try {
+                while (!activityPaused && ethAddress != null) {
+                    updateBalanceAndEuroPrice();
+                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "exception while reading euro price from api: ", e);
+            }
+            Log.d(TAG, "Main activity, reading price thread exited.");
+        }).start();
     }
 
     @Override

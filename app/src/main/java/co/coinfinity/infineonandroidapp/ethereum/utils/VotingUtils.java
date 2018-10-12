@@ -1,7 +1,8 @@
-package co.coinfinity.infineonandroidapp.ethereum;
+package co.coinfinity.infineonandroidapp.ethereum.utils;
 
 import android.app.Activity;
 import android.nfc.tech.IsoDep;
+import co.coinfinity.infineonandroidapp.ethereum.NfcTransactionManager;
 import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
 import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.DynamicArray;

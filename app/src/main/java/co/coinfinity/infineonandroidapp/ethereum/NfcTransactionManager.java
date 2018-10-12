@@ -5,6 +5,7 @@ import android.nfc.tech.IsoDep;
 import android.util.Log;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.R;
+import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
