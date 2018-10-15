@@ -32,7 +32,11 @@
     <string name="err_gasprice_required">Bitte geben Sie den gasPrice an!</string>
     <string name="err_gaslimit_required">Bitte geben Sie das gasLimit an!</string>
     <string name="err_contract_address_missing">Die Adresse des SmartContracts ist nicht gesetzt!</string>
-    <string name="choose_answer">Wählen Sie eine der folgenden Antwortmöglichkeiten:</string>
+    <string name="choose_answer">Wählen Sie ihre Lieblings-Jahreszeit:</string>
     <string name="wrong_card">Das ist keine Infineon Karte!</string>
     <string name="operation_not_supported">Karte unterstützt diese Funktion nicht!</string>
+    <string name="answer_1">Frühling</string>
+    <string name="answer_2">Sommer</string>
+    <string name="answer_3">Herbst</string>
+    <string name="answer_4">Winter</string>
 </resources>

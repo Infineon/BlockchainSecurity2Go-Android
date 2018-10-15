@@ -86,26 +86,26 @@
                 android:layout_height="wrap_content">
             <RadioGroup
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent" android:gravity="center" android:id="@+id/radioGroup">
+                    android:layout_height="match_parent" android:gravity="left|center" android:id="@+id/radioGroup">
                 <RadioButton
-                        android:text="Answer 1"
+                        android:text="@string/answer_1"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton4" android:layout_weight="1"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton1" android:layout_weight="1"
                         android:textSize="30sp" android:enabled="false"/>
                 <RadioButton
-                        android:text="Answer 2"
+                        android:text="@string/answer_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton2" android:layout_weight="1"
+                        android:textSize="30sp" android:enabled="false"/>
+                <RadioButton
+                        android:text="@string/answer_3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton3" android:layout_weight="1"
                         android:textSize="30sp" android:enabled="false"/>
                 <RadioButton
-                        android:text="Answer 3"
+                        android:text="@string/answer_4"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton" android:layout_weight="1"
-                        android:textSize="30sp" android:enabled="false"/>
-                <RadioButton
-                        android:text="Answer 4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton2" android:layout_weight="1"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton4" android:layout_weight="1"
                         android:textSize="30sp" android:enabled="false"/>
             </RadioGroup>
             <LinearLayout
