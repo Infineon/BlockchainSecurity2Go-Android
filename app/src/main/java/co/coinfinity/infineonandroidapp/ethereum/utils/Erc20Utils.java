@@ -23,7 +23,7 @@ import static co.coinfinity.AppConstants.CHAIN_URL;
 public class Erc20Utils {
 
     /**
-     * Send ERC-20 compatible tokens async
+     * Send ERC-20 compatible tokens
      *
      * @param ercContract
      * @param tag
@@ -49,7 +49,7 @@ public class Erc20Utils {
     }
 
     /**
-     * Get token balance for a contract async
+     * Get token balance for a contract
      *
      * @param ercContract
      * @param ethAddress
