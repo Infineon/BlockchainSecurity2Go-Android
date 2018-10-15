@@ -65,7 +65,6 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
 
-    private boolean isContractScan;
     private volatile boolean activityPaused = false;
 
     private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
@@ -206,17 +205,15 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
 
-            if (resultCode == RESULT_OK) {
-                if (isContractScan) {
-                    contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
-                } else {
-                    recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
-                }
-            } else if (resultCode == RESULT_CANCELED) {
-                //handle cancel
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 0) {
+                contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
+            } else if (requestCode == 1) {
+                recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
             }
+        } else if (resultCode == RESULT_CANCELED) {
+            Log.d(TAG, "QR Code scanning canceled.");
         }
     }
 
@@ -233,14 +230,10 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     }
 
     public void onScanContract(View view) {
-        isContractScan = true;
-        // TODO use request code instead of boolean field
         QrCodeScanner.scanQrCode(this, 0);
     }
 
     public void onScanRecipient(View view) {
-        isContractScan = false;
-        // TODO use request code instead of boolean field
-        QrCodeScanner.scanQrCode(this, 0);
+        QrCodeScanner.scanQrCode(this, 1);
     }
 }
