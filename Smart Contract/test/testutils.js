@@ -1,7 +1,7 @@
-
 // These 2 consts are used to compare the revert message, with the expected one.
 // This can vary depending on the used ethereum client (ganache, geth, ..)
-const ERROR_REVERT_PREFIX = "Returned error: VM Exception while processing transaction: revert -- Reason given: ";
+const ERROR_REVERT_PREFIX = "Returned error: VM Exception while processing transaction: revert ";
+const ERROR_REVERT_MIDDLE = " -- Reason given: ";
 const ERROR_REVERT_SUFFIX = ".";
 
 
@@ -68,7 +68,7 @@ const expectFailWithoutMsg = async (promise) => {
  */
 const expectFail = async (promise, msg) => {
     assert(msg, "Testsuite error: missing 'msg' argument for 'expectFail'");
-    await promise.should.be.rejectedWith(ERROR_REVERT_PREFIX + msg + ERROR_REVERT_SUFFIX);
+    await promise.should.be.rejectedWith(ERROR_REVERT_PREFIX + msg + ERROR_REVERT_MIDDLE + msg + ERROR_REVERT_SUFFIX);
 };
 
 /**

@@ -9,7 +9,7 @@ at address: `TODO`
 
 ### Requirements
 
-This was developed using Node v10.10.0 and Truffle v5.0.0-beta.0.
+This was developed using Node v10.12.0 and Truffle v5.0.0-next.11.
 
 (Since v5 truffle supports async/await syntax which makes life easier
 in writing tests and also uses web3 1.0. Be aware thet web3 1.0 uses
