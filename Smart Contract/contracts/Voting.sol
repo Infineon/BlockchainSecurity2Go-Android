@@ -88,6 +88,8 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     function setWhiteList(address[NUMBER_OF_CHOICES] whitelistedSenders)
     external
     onlyOwner {
+        // Assumption: we assume that owner takes care that list contains no duplicates.
+        // No duplicate check in here.
         whitelistedSenderAdresses = whitelistedSenders;
         emit WhitelistUpdated(whitelistedSenders);
     }
