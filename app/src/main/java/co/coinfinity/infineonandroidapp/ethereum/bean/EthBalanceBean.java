@@ -57,6 +57,6 @@ public class EthBalanceBean {
             return String.format("%s ETH", ether);
         }
 
-        return String.format("%s ETH\n(%s unconfirmed)\n%s WEI \n(%s unconfirmed)", ether, unconfirmedEther, wei, unconfirmedWei);
+        return String.format("%s ETH\n(%s unconfirmed)", ether, unconfirmedEther);
     }
 }
