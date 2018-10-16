@@ -114,13 +114,13 @@
                 android:id="@+id/progressBar" android:layout_centerHorizontal="true"
         />
         <TextView
-                android:id="@+id/text3"
+                android:id="@+id/textViewInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:gravity="center_horizontal"
                 android:layout_centerHorizontal="true"
-                android:text="@string/hold_card_payment" android:layout_above="@+id/progressBar"/>
+                android:text="@string/reading_balance" android:layout_above="@+id/progressBar"/>
     </LinearLayout>
 </RelativeLayout>

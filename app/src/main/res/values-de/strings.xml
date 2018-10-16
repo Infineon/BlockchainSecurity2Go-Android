@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_send_transaction">ETH Überweisung durchführen</string>
+    <string name="title_activity_nfc_read">Lese NFC</string>
+    <string name="title_activity_send_transaction">Sende ETH Transaktion</string>
+    <string name="title_activity_send_erc20_tokens">Sende ERC-20 Tokens</string>
+    <string name="title_activity_voting">Wählen</string>
     <string name="hold_card">Halte eine Karte an die Rückseite des Gerätes</string>
     <string name="send_eth">Sende ETH</string>
     <string name="recipient_address">Empfänger Adresse</string>
     <string name="amount_eth">Anzahl ETH</string>
     <string name="gas_price">Gas Preis</string>
     <string name="gas_limit">Gas Limit</string>
-    <string name="hold_card_payment">Halte eine Karte an die Rückseite des Gerätes um eine Zahlung durchzuführen
-    </string>
+    <string name="hold_card_payment">Halte eine Karte an die Rückseite des Gerätes um eine Zahlung durchzuführen</string>
     <string name="card_found">Karte erkannt</string>
     <string name="send_success">Erfolgreich gesendet!</string>
+    <string name="reading_vote_status">Lese Contract Status…</string>
+    <string name="reading_balance">Lese ERC-20 Guthaben…</string>
     <string name="already_voted">Bereits gewählt!</string>
     <string name="address">Adresse</string>
-    <string name="send_erc20">Sende ERC20</string>
+    <string name="send_erc20">Sende ERC-20</string>
     <string name="voting">Wahl</string>
     <string name="token_amount">Anzahl Token</string>
     <string name="contract_address">Contract Adresse</string>
     <string name="voting_name">Voting Name</string>
     <string name="hold_card_voting">Bitte halten Sie die Karte an die Rückseite des Gerätes, um Ihre Stimme abzugeben</string>
-    <string name="current_token_balance">Momentaner Token Stand: %s</string>
+    <string name="current_token_balance">Momentanes ERC-20 Guthaben: %s</string>
     <string name="votes_count">Wähler: %s</string>
-    <string name="title_activity_send_erc20_tokens">Sende ERC 20 Tokens</string>
-    <string name="title_activity_voting">Wählen</string>
     <string name="please_wait">Bitte warten…</string>
     <string name="visit_website">Unsere Homepage</string>
     <string name="hold_card_for_while">Halte die Karte für ein paar Sekunden!</string>
-    <string name="er20_contract_address">ERC20 Contract Adresse</string>
+    <string name="er20_contract_address">ERC-20 Contract Adresse</string>
     <string name="err_receipient_required">Empfänger Adresse fehlt!</string>
     <string name="err_amount_required">Betrag fehlt!</string>
     <string name="err_gasprice_required">Bitte geben Sie den gasPrice an!</string>

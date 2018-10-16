@@ -53,6 +53,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     TextView contractAddress;
     @BindView(R.id.currentBalance)
     TextView currentBalance;
+    @BindView(R.id.textViewInfo)
+    TextView infoTxt;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
@@ -125,6 +127,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
         BigInteger finalErc20Balance = erc20Balance;
         this.runOnUiThread(() -> {
+            infoTxt.setText(R.string.hold_card_payment);
             currentBalance.setText(String.format(getString(R.string.current_token_balance), finalErc20Balance));
             progressBar.setVisibility(View.INVISIBLE);
         });

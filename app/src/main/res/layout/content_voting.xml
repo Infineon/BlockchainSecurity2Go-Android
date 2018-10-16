@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/progressBar" android:visibility="visible"/>
         <TextView
-                android:text="@string/hold_card_voting"
+                android:text="@string/reading_vote_status"
                 android:layout_height="match_parent" android:id="@+id/infoText"
                 android:textSize="24sp" android:textAlignment="center"
                 android:layout_width="match_parent"/>
