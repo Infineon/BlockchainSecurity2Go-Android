@@ -3,9 +3,7 @@
     <string name="app_name" translatable="false">Coinfineon</string>
     <string name="logo" translatable="false">Logo</string>
     <string name="qr_code" translatable="false">QR Code</string>
-    <string name="eth" translatable="false">ETH</string>
 
-    <string name="title_activity_nfc_read">NfcRead</string>
     <string name="title_activity_send_transaction">Send ETH Transaction</string>
     <string name="title_activity_send_erc20_tokens">Send ERC 20 Tokens</string>
     <string name="title_activity_voting">Voting</string>
@@ -18,19 +16,12 @@
     <string name="hold_card_payment">Tap a card against the back of your device to send a transaction</string>
     <string name="card_found">Card detected</string>
     <string name="send_success">Sent successful!</string>
-    <string name="reading_vote_status">Reading current contract state…</string>
     <string name="reading_balance">Reading balance…</string>
-    <string name="already_voted">Already voted!</string>
-    <string name="address">Address</string>
     <string name="send_erc20">Send ERC-20</string>
     <string name="voting">Voting</string>
     <string name="token_amount">Token Amount</string>
     <string name="contract_address">Contract Address</string>
-    <string name="voting_name">Voting Name</string>
-    <string name="hold_card_voting">Tap a card to the back of the device to start voting</string>
     <string name="current_token_balance">Current Token Balance: %s</string>
-    <string name="votes_count">Votes: %s</string>
-    <string name="please_wait">Please wait…</string>
     <string name="visit_website">Visit our Website</string>
     <string name="hold_card_for_while">Hold card for some seconds!</string>
     <string name="er20_contract_address">ERC20 Contract Address</string>
@@ -39,11 +30,13 @@
     <string name="err_gasprice_required">Gas Price is required!</string>
     <string name="err_gaslimit_required">Gas Limit is required!</string>
     <string name="err_contract_address_missing">Contract Address is required!</string>
-    <string name="choose_answer">Choose your favorite season:</string>
     <string name="wrong_card">This is no Infineon card!</string>
     <string name="operation_not_supported">Card does not support this operation!</string>
-    <string name="answer_1">Spring</string>
-    <string name="answer_2">Summer</string>
-    <string name="answer_3">Autumn</string>
-    <string name="answer_4">Winter</string>
+    <string name="answer_1">1 billion</string>
+    <string name="answer_2">2 billion</string>
+    <string name="answer_3">3 billion</string>
+    <string name="answer_4">4 billion</string>
+    <string name="question">How many security controllers have been sold by IFX DSS?</string>
+    <string name="voted_successful">Voted successful!</string>
+    <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
 </resources>

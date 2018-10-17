@@ -13,7 +13,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
@@ -33,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 
 import static co.coinfinity.AppConstants.SLEEP_BETWEEN_LOOPS_MILLIS;
 import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
  * Main activity. Entry point of the application.
@@ -86,8 +90,7 @@ public class MainActivity extends AppCompatActivity {
         UiUtils.logTagInfo(tag);
         IsoDep isoDep = IsoDep.get(tag);
         if (isoDep == null) {
-            Toast.makeText(MainActivity.this, R.string.wrong_card,
-                    Toast.LENGTH_SHORT).show();
+            showToast(getString(R.string.wrong_card), this);
             return;
         }
         // now we have an IsoTag:
@@ -99,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
             pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
             isoDep.close();
         } catch (IOException | NfcCardException e) {
-            Toast.makeText(MainActivity.this, R.string.operation_not_supported,
-                    Toast.LENGTH_SHORT).show();
+            showToast(getString(R.string.operation_not_supported), this);
             Log.e(TAG, "Exception while reading public key from card: ", e);
             return;
         }
@@ -150,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
-            Toast.makeText(this, "No NFC", Toast.LENGTH_SHORT).show();
+            showToast("No NFC", this);
             finish();
             return;
         }
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
      * Opens system settings, wireless settings.
      */
     private void openWirelessSettings() {
-        Toast.makeText(this, "You need to enable NFC", Toast.LENGTH_SHORT).show();
+        showToast("You need to enable NFC", this);
         Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         startActivity(intent);
     }

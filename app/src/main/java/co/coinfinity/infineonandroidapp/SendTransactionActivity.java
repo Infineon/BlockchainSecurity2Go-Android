@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
@@ -34,6 +33,7 @@ import java.math.BigDecimal;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
+import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
  * Activity class used for Ethereum functionality.
@@ -138,9 +138,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent) {
         if (inputErrorUtils.isNoInputError()) {
-            this.runOnUiThread(() -> Toast.makeText(
-                    SendTransactionActivity.this, R.string.hold_card_for_while,
-                    Toast.LENGTH_LONG).show());
+            showToast(getString(R.string.hold_card_for_while), this);
             resolveIntent(intent);
         }
     }
@@ -161,8 +159,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         UiUtils.logTagInfo(tag);
         IsoDep isoDep = IsoDep.get(tag);
         if (isoDep == null) {
-            Toast.makeText(SendTransactionActivity.this, R.string.wrong_card,
-                    Toast.LENGTH_SHORT).show();
+            showToast(getString(R.string.wrong_card), this);
             return;
         }
 
@@ -191,21 +188,18 @@ public class SendTransactionActivity extends AppCompatActivity {
                     value.toBigInteger(), isoDep, pubKeyString, "");
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
         } catch (NfcCardException e) {
-            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
+            showToast(getString(R.string.operation_not_supported), this);
             return;
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
-            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this,
-                    String.format("Could not send transaction: %s", e.getMessage()), Toast.LENGTH_LONG).show());
+            showToast(String.format("Could not send transaction: %s", e.getMessage()), this);
             return;
         }
 
         if (response.getError() != null) {
-            EthSendTransaction finalResponse = response;
-            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, finalResponse.getError().getMessage(),
-                    Toast.LENGTH_LONG).show());
+            showToast(response.getError().getMessage(), this);
         } else {
-            this.runOnUiThread(() -> Toast.makeText(SendTransactionActivity.this, R.string.send_success, Toast.LENGTH_SHORT).show());
+            showToast(getString(R.string.send_success), this);
         }
     }
 
@@ -221,7 +215,7 @@ public class SendTransactionActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
             } else if (resultCode == RESULT_CANCELED) {
-                //handle cancel
+                Log.d(TAG, "QR Code scanning canceled.");
             }
         }
     }

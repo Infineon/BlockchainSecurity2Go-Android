@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_nfc_read">Lese NFC</string>
     <string name="title_activity_send_transaction">Sende ETH Transaktion</string>
     <string name="title_activity_send_erc20_tokens">Sende ERC-20 Tokens</string>
     <string name="title_activity_voting">Wählen</string>
@@ -13,19 +12,12 @@
     <string name="hold_card_payment">Halte eine Karte an die Rückseite des Gerätes um eine Zahlung durchzuführen</string>
     <string name="card_found">Karte erkannt</string>
     <string name="send_success">Erfolgreich gesendet!</string>
-    <string name="reading_vote_status">Lese Contract Status…</string>
     <string name="reading_balance">Lese ERC-20 Guthaben…</string>
-    <string name="already_voted">Bereits gewählt!</string>
-    <string name="address">Adresse</string>
     <string name="send_erc20">Sende ERC-20</string>
     <string name="voting">Wahl</string>
     <string name="token_amount">Anzahl Token</string>
     <string name="contract_address">Contract Adresse</string>
-    <string name="voting_name">Voting Name</string>
-    <string name="hold_card_voting">Bitte halten Sie die Karte an die Rückseite des Gerätes, um Ihre Stimme abzugeben</string>
     <string name="current_token_balance">Momentanes ERC-20 Guthaben: %s</string>
-    <string name="votes_count">Wähler: %s</string>
-    <string name="please_wait">Bitte warten…</string>
     <string name="visit_website">Unsere Homepage</string>
     <string name="hold_card_for_while">Halte die Karte für ein paar Sekunden!</string>
     <string name="er20_contract_address">ERC-20 Contract Adresse</string>
@@ -34,11 +26,13 @@
     <string name="err_gasprice_required">Bitte geben Sie den gasPrice an!</string>
     <string name="err_gaslimit_required">Bitte geben Sie das gasLimit an!</string>
     <string name="err_contract_address_missing">Die Adresse des SmartContracts ist nicht gesetzt!</string>
-    <string name="choose_answer">Wählen Sie ihre Lieblings-Jahreszeit:</string>
     <string name="wrong_card">Das ist keine Infineon Karte!</string>
     <string name="operation_not_supported">Karte unterstützt diese Funktion nicht!</string>
-    <string name="answer_1">Frühling</string>
-    <string name="answer_2">Sommer</string>
-    <string name="answer_3">Herbst</string>
-    <string name="answer_4">Winter</string>
+    <string name="answer_1">1 Milliarde</string>
+    <string name="answer_2">2 Milliarde</string>
+    <string name="answer_3">3 Milliarde</string>
+    <string name="answer_4">4 Milliarde</string>
+    <string name="question">Wie viele Security Controllers wurden von IFX DSS verkauft?</string>
+    <string name="voted_successful">Erfolgreich gevoted!</string>
+    <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
 </resources>

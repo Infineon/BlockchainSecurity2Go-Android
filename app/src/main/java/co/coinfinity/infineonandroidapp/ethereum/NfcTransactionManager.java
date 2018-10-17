@@ -3,7 +3,6 @@ package co.coinfinity.infineonandroidapp.ethereum;
 import android.app.Activity;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
-import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.R;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
@@ -14,6 +13,7 @@ import org.web3j.tx.TransactionManager;
 import java.math.BigInteger;
 
 import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
  * Extends web3j Transaction manager, to create ETH transactions using
@@ -60,16 +60,21 @@ public class NfcTransactionManager extends TransactionManager {
             Log.d(TAG, "sending ETH transaction..");
             final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data);
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
-            if (activity != null)
-                activity.runOnUiThread(() -> Toast.makeText(activity, R.string.send_success, Toast.LENGTH_SHORT).show());
+            if (activity != null) {
+                if ("Voting".equals(activity.getTitle().toString())) {
+                    showToast(activity.getString(R.string.voted_successful), activity);
+                } else {
+                    showToast(activity.getString(R.string.send_success), activity);
+                }
+            }
             return response;
         } catch (NfcCardException e) {
             if (activity != null)
-                activity.runOnUiThread(() -> Toast.makeText(activity, R.string.operation_not_supported, Toast.LENGTH_SHORT).show());
+                showToast(activity.getString(R.string.operation_not_supported), activity);
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
-            if (activity != null)
-                activity.runOnUiThread(() -> Toast.makeText(activity, "Could not send transaction!", Toast.LENGTH_SHORT).show());
+            if (activity != null && !"Voting".equals(activity.getTitle().toString()))
+                showToast(String.format("Could not send transaction: %s", e.getMessage()), activity);
         }
         return null;
     }

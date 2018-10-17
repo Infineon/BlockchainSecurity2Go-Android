@@ -12,133 +12,85 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:layout_margin="30px">
-        <TextView
-                android:text="@string/contract_address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView4"/>
+            android:layout_height="match_parent" android:layout_margin="20dp" tools:layout_editor_absoluteY="20dp"
+            tools:layout_editor_absoluteX="20dp">
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <EditText
+            <android.support.design.widget.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:ems="10"
-                    android:id="@+id/contractAddress" android:textSize="14sp"
-                    android:layout_weight=".90"/>
+                    android:layout_weight=".80">
+
+                <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/contractAddress" android:inputType="textPersonName"
+                        android:hint="@string/contract_address" android:textSize="10sp"/>
+            </android.support.design.widget.TextInputLayout>
             <ImageButton
                     android:layout_width="0dp"
-                    android:layout_height="match_parent" app:srcCompat="@drawable/qrcode" android:id="@+id/imageButton"
-                    android:scaleType="fitCenter" android:layout_weight=".10" android:onClick="scanQrCode"/>
+                    android:layout_height="match_parent" app:srcCompat="@drawable/qrcode"
+                    android:scaleType="fitCenter" android:onClick="scanQrCode" android:layout_weight=".20"/>
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true" android:layout_alignParentTop="true"
-                    android:layout_weight=".30">
+                    android:layout_weight=".60">
 
                 <android.support.design.widget.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/gasPrice" android:text="50" android:inputType="numberDecimal"
-                        android:hint="@string/gas_price" android:enabled="false"/>
+                        android:hint="@string/gas_price"/>
             </android.support.design.widget.TextInputLayout>
             <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" android:id="@+id/spinner" android:layout_weight=".70"/>
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" android:id="@+id/spinner" android:layout_weight=".40"/>
         </LinearLayout>
-        <TextView
-                android:text="@string/gas_limit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView3"
-        />
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/gasLimit" android:hint="@string/gas_limit" android:text="21000"
-                android:enabled="false"/>
-        <TextView
-                android:text="@string/voting_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView5"/>
-        <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/votingName" android:hint="@string/voting_name" android:enabled="false"/>
-        <TextView
-                android:text="@string/choose_answer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
-                android:textSize="18sp" android:textStyle="bold"/>
-        <LinearLayout
-                android:orientation="horizontal"
+        <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <RadioGroup
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" android:gravity="left|center" android:id="@+id/radioGroup">
-                <RadioButton
-                        android:text="@string/answer_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton1" android:layout_weight="1"
-                        android:textSize="30sp" android:enabled="false"/>
-                <RadioButton
-                        android:text="@string/answer_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton2" android:layout_weight="1"
-                        android:textSize="30sp" android:enabled="false"/>
-                <RadioButton
-                        android:text="@string/answer_3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton3" android:layout_weight="1"
-                        android:textSize="30sp" android:enabled="false"/>
-                <RadioButton
-                        android:text="@string/answer_4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/radioButton4" android:layout_weight="1"
-                        android:textSize="30sp" android:enabled="false"/>
-            </RadioGroup>
-            <LinearLayout
-                    android:orientation="vertical"
+            <android.support.design.widget.TextInputEditText
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" android:layout_weight="1">
-                <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:id="@+id/answer1Votes" android:layout_weight="1"
-                        android:textSize="36sp" android:textAlignment="center"/>
-                <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:id="@+id/answer2Votes" android:layout_weight="1"
-                        android:textSize="36sp" android:textAlignment="center"/>
-                <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:id="@+id/answer3Votes" android:layout_weight="1"
-                        android:textSize="36sp" android:textAlignment="center"/>
-                <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:id="@+id/answer4Votes" android:layout_weight="1"
-                        android:textSize="36sp" android:textAlignment="center"/>
-            </LinearLayout>
-        </LinearLayout>
-        <ProgressBar
-                style="?android:attr/progressBarStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar" android:visibility="visible"/>
+                    android:layout_height="wrap_content"
+                    android:id="@+id/gasLimit" android:text="21000" android:inputType="numberDecimal"
+                    android:hint="@string/gas_limit"/>
+        </android.support.design.widget.TextInputLayout>
         <TextView
-                android:text="@string/reading_vote_status"
-                android:layout_height="match_parent" android:id="@+id/infoText"
-                android:textSize="24sp" android:textAlignment="center"
-                android:layout_width="match_parent"/>
+                android:text="@string/question"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:textSize="18sp" android:textStyle="bold" android:paddingTop="20dp"/>
+        <TextView
+                android:text="@string/answer_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:textSize="24sp" android:paddingTop="10dp"/>
+        <TextView
+                android:text="@string/answer_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textAlignment="textStart"
+                android:textSize="24sp" android:paddingTop="10dp"/>
+        <TextView
+                android:text="@string/answer_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:textSize="24sp" android:paddingTop="10dp"/>
+        <TextView
+                android:text="@string/answer_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:textSize="24sp" android:paddingTop="10dp"/>
+        <TextView
+                android:text="@string/hold_card_for_vote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
+                android:paddingTop="30dp" android:textSize="24sp" android:textStyle="bold"/>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

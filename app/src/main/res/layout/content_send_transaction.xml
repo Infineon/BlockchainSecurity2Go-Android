@@ -26,13 +26,13 @@
                 <android.support.design.widget.TextInputEditText
                         android:layout_height="match_parent"
                         android:id="@+id/recipientAddress"
-                        android:textSize="14sp" android:hint="@string/recipient_address"
+                        android:textSize="10sp" android:hint="@string/recipient_address"
                         android:layout_width="match_parent"/>
             </android.support.design.widget.TextInputLayout>
             <ImageButton
                     android:layout_width="48dp"
                     android:layout_height="47dp"
-                    android:id="@+id/scanQr" android:layout_alignParentEnd="true"
+                    android:layout_alignParentEnd="true"
                     android:src="@drawable/qrcode" android:scaleType="fitCenter" android:onClick="scanQrCode"
                     android:layout_alignParentTop="true" android:layout_weight=".10"/>
         </LinearLayout>
@@ -94,7 +94,6 @@
                 android:id="@+id/progressBar" android:layout_centerHorizontal="true"
         />
         <TextView
-                android:id="@+id/text3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"

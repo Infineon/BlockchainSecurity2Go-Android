@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
@@ -32,6 +31,7 @@ import java.math.BigInteger;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
+import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
  * Activity class used for ER20 Token functionality.
@@ -163,8 +163,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent) {
         if (inputErrorUtils.isNoInputError()) {
-            this.runOnUiThread(() -> Toast.makeText(SendErc20TokensActivity.this, R.string.hold_card_for_while,
-                    Toast.LENGTH_SHORT).show());
+            showToast(getString(R.string.hold_card_for_while), this);
             resolveIntent(intent);
         }
     }
@@ -179,8 +178,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         UiUtils.logTagInfo(tag);
         IsoDep isoDep = IsoDep.get(tag);
         if (isoDep == null) {
-            Toast.makeText(SendErc20TokensActivity.this, R.string.wrong_card,
-                    Toast.LENGTH_SHORT).show();
+            showToast(getString(R.string.wrong_card), this);
             return;
         }
 

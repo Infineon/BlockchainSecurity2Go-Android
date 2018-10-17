@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.nfc.Tag;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.R;
 
 import static co.coinfinity.AppConstants.TAG;
@@ -45,5 +46,9 @@ public class UiUtils {
     public static void logTagInfo(Tag tagFromIntent) {
         Log.d(TAG, String.format("NFC Tag detected: %s", tagFromIntent.toString()));
         Log.d(TAG, String.format("NFC Tag id: %s", ByteUtils.bytesToHex(tagFromIntent.getId())));
+    }
+
+    public static void showToast(String text, Activity activity) {
+        activity.runOnUiThread(() -> Toast.makeText(activity.getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }
 }
