@@ -31,7 +31,7 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
      * @param etherAmount ether
      * @return transaction bean
      */
-    public TransactionPriceBean readEuroPriceFromApiSync(String gasPriceStr, String gasLimitStr, String etherAmount) {
+    public TransactionPriceBean readEuroPriceFromApiSync(String gasPriceStr, String gasLimitStr, String etherAmount) throws Exception {
         this.gasPriceStr = gasPriceStr;
         this.gasLimitStr = gasLimitStr;
         this.etherAmount = etherAmount;

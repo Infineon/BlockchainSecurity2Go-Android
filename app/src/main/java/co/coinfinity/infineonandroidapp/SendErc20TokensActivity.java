@@ -28,6 +28,7 @@ import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
@@ -105,7 +106,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
             try {
                 while (!activityPaused) {
                     readAndDisplayErc20Balance();
-                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
+                    TimeUnit.SECONDS.sleep(THREE_SECONDS);
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "interrupted exception while reading ERC20 Balance", e);

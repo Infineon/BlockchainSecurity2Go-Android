@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.R;
+import co.coinfinity.infineonandroidapp.VotingActivity;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import org.web3j.protocol.Web3j;
@@ -73,7 +74,7 @@ public class NfcTransactionManager extends TransactionManager {
                 showToast(activity.getString(R.string.operation_not_supported), activity);
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
-            if (activity != null && !"Voting".equals(activity.getTitle().toString()))
+            if (!(activity instanceof VotingActivity))
                 showToast(String.format("Could not send transaction: %s", e.getMessage()), activity);
         }
         return null;

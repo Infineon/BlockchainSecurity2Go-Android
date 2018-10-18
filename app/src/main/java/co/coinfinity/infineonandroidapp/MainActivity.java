@@ -33,9 +33,9 @@ import org.web3j.crypto.Keys;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
-import static co.coinfinity.AppConstants.SLEEP_BETWEEN_LOOPS_MILLIS;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String pubKeyString;
     private String ethAddress;
+    private EthBalanceBean ethBalance;
 
     private CoinfinityClient coinfinityClient = new CoinfinityClient();
     private volatile boolean activityPaused = false;
@@ -121,16 +122,28 @@ public class MainActivity extends AppCompatActivity {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private void updateBalanceAndEuroPrice() throws Exception {
+    private void updateBalance() throws Exception {
         Log.d(TAG, "reading ETH balance..");
-        EthBalanceBean balance = EthereumUtils.getBalance(ethAddress);
+        ethBalance = EthereumUtils.getBalance(ethAddress);
         Log.d(TAG, String.format("reading ETH balance finished: %s", balance.toString()));
+    }
+
+    /**
+     * this method is updating the balance and euro price on UI.
+     *
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    private void updateEuroPrice() throws Exception {
+        if (ethBalance == null)
+            return;
+
         Log.d(TAG, "reading EUR/ETH price..");
-        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0", balance.getEther().toString());
+        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0", ethBalance.getEther().toString());
         Log.d(TAG, String.format("reading EUR/ETH price finished: %s", transactionPriceBean));
         if (transactionPriceBean != null && pubKeyString != null) {
             this.runOnUiThread(() -> {
-                this.balance.setText(String.format("%s%s", balance.toString(),
+                balance.setText(String.format("%s%s", ethBalance.toString(),
                         String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
                 if (!sendEthBtn.isEnabled()) {
                     sendEthBtn.setEnabled(true);
@@ -173,11 +186,25 @@ public class MainActivity extends AppCompatActivity {
         activityPaused = false;
 
         new Thread(() -> {
-            Log.d(TAG, "Main activity, start reading price thread...");
+            Log.d(TAG, "Main activity, start reading eth balance thread...");
             try {
                 while (!activityPaused && ethAddress != null) {
-                    updateBalanceAndEuroPrice();
-                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
+                    updateBalance();
+                    TimeUnit.SECONDS.sleep(THREE_SECONDS);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "exception while reading eth balance from api: ", e);
+            }
+            Log.d(TAG, "Main activity, reading eth balance thread exited.");
+        }).start();
+
+        new Thread(() -> {
+            Log.d(TAG, "Main activity, start reading price thread...");
+            try {
+                updateBalance();
+                while (!activityPaused && ethAddress != null) {
+                    updateEuroPrice();
+                    TimeUnit.SECONDS.sleep(TEN_SECONDS);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "exception while reading euro price from api: ", e);

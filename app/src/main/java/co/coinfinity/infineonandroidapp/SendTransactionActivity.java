@@ -30,6 +30,7 @@ import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
@@ -107,9 +108,9 @@ public class SendTransactionActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                         }
                     });
-                    Thread.sleep(SLEEP_BETWEEN_LOOPS_MILLIS);
+                    TimeUnit.SECONDS.sleep(TEN_SECONDS);
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Exception while reading price info from API in thread", e);
             }
         }).start();

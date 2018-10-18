@@ -14,7 +14,7 @@ public class CoinfinityClientTest {
     private CoinfinityClient coinfinityClient;
 
     @Test
-    public void testIfClientGetsEuroPriceFromApi() {
+    public void testIfClientGetsEuroPriceFromApi() throws Exception {
         coinfinityClient = new CoinfinityClient();
         final TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("10", "1000", "10");
 

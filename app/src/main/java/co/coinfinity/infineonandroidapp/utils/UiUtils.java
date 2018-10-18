@@ -48,6 +48,12 @@ public class UiUtils {
         Log.d(TAG, String.format("NFC Tag id: %s", ByteUtils.bytesToHex(tagFromIntent.getId())));
     }
 
+    /**
+     * Method used to show toast message on UI thread
+     *
+     * @param text     message to show
+     * @param activity needed for the context
+     */
     public static void showToast(String text, Activity activity) {
         activity.runOnUiThread(() -> Toast.makeText(activity.getApplicationContext(), text, Toast.LENGTH_SHORT).show());
     }

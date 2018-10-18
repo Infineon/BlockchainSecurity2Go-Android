@@ -28,9 +28,9 @@ import static org.mockito.Mockito.when;
 @PowerMockIgnore("javax.net.ssl.*")
 public class Erc20UtilsTest {
 
-    public static final String ERC_CONTRACT = "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e";
+    private static final String ERC_CONTRACT = "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e";
     @Mock
-    IsoDep isoDep;
+    private IsoDep isoDep;
 
     @Test
     public void testSendErc20Tokens() throws Exception {
