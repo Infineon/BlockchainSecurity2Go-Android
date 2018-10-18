@@ -21,6 +21,7 @@ import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.utils.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.InvalidContractException;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.generated.StaticArray4;
@@ -145,10 +146,10 @@ public class VotingActivity extends AppCompatActivity {
                 } else {
                     showToast("This card is not whitelisted!", this);
                 }
+            } catch (InvalidContractException ice) {
+                Log.e(TAG, "exception while voting: ", ice);
+                showToast("Incorrect contract address!", this);
             } catch (Exception e) {
-                if (e.getCause() != null && "Empty value (0x) returned from contract".contains(e.getCause().getMessage())) {
-                    showToast("Wrong contract address!", this);
-                }
                 Log.e(TAG, "exception while voting: ", e);
                 showToast("Could not vote!", this);
             }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.ethereum.NfcTransactionManager;
 import co.coinfinity.infineonandroidapp.ethereum.contract.Voting;
+import co.coinfinity.infineonandroidapp.utils.InvalidContractException;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.generated.StaticArray4;
 import org.web3j.protocol.Web3j;
@@ -13,6 +14,7 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.TransactionManager;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 import static co.coinfinity.AppConstants.CHAIN_URL;
@@ -40,8 +42,23 @@ public class VotingUtils {
     }
 
 
+    /**
+     * Assert that the given contract really is an instance of our contract
+     *
+     * @param contract
+     * @throws InvalidContractException
+     * @throws IOException
+     */
+    private static void assertContract(Voting contract) throws InvalidContractException, IOException {
+        if (!contract.isValid()) {
+            throw new InvalidContractException("The bytecode at this address does not match our voting contract! Are yu using the correct address?");
+        }
+    }
+
     public static StaticArray4<Address> whitelistedSenderAddresses(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit);
+        assertContract(contract);
+        // check if the contract deployed at this address is an instance of our Voting contract
         return contract.whitelistedSenderAddresses().send();
     }
 
