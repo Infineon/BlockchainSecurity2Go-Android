@@ -81,3 +81,26 @@ truffle(ropsten)> migrate --reset
 ```
 
 Deployed on Ropsten at: https://ropsten.etherscan.io/address/0x6e670c473A2AD5894aE354b832aD4BADF1d919bf
+
+
+Manual deployment using web3 (example using metamask):
+
+```
+var abi = ....  // copy abi in here
+var code = .... // copy deploy code (i.e. from Ropsten Tx)
+
+
+var contract = web3.eth.contract(abi);
+
+contract.new(
+   {
+      from: web3.eth.accounts[0],
+      data: code,
+      gas: '1100000'
+   }, function (e, contract){
+      console.log(e, contract);
+      if (typeof contract.address !== 'undefined') {
+         console.log('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+      }
+});
+```
