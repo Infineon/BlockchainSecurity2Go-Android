@@ -21,7 +21,9 @@ import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
+import co.coinfinity.infineonandroidapp.ethereum.exceptions.InvalidEthereumAddressException;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
+import co.coinfinity.infineonandroidapp.ethereum.utils.UriUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
@@ -211,13 +213,16 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
-
-            if (resultCode == RESULT_OK) {
-                recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
-            } else if (resultCode == RESULT_CANCELED) {
-                Log.d(TAG, "QR Code scanning canceled.");
+        if (resultCode == RESULT_OK) {
+            try {
+                if (requestCode == 0)
+                    recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+            } catch (InvalidEthereumAddressException e) {
+                Log.e(TAG, "Exception on reading ethereum address", e);
+                showToast("Invalid Ethereum address", this);
             }
+        } else if (resultCode == RESULT_CANCELED) {
+            Log.d(TAG, "QR Code scanning canceled.");
         }
     }
 

@@ -18,6 +18,8 @@ import android.widget.Spinner;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
+import co.coinfinity.infineonandroidapp.ethereum.exceptions.InvalidEthereumAddressException;
+import co.coinfinity.infineonandroidapp.ethereum.utils.UriUtils;
 import co.coinfinity.infineonandroidapp.ethereum.utils.VotingUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
@@ -184,12 +186,16 @@ public class VotingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0) {
-            if (resultCode == RESULT_OK) {
-                contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
-            } else if (resultCode == RESULT_CANCELED) {
-                Log.d(TAG, "QR Code scanning canceled.");
+        if (resultCode == RESULT_OK) {
+            try {
+                if (requestCode == 0)
+                    contractAddress.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+            } catch (InvalidEthereumAddressException e) {
+                Log.e(TAG, "Exception on reading ethereum address", e);
+                showToast("Invalid Ethereum address", this);
             }
+        } else if (resultCode == RESULT_CANCELED) {
+            Log.d(TAG, "QR Code scanning canceled.");
         }
     }
 

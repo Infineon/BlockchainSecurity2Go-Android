@@ -19,7 +19,9 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
+import co.coinfinity.infineonandroidapp.ethereum.exceptions.InvalidEthereumAddressException;
 import co.coinfinity.infineonandroidapp.ethereum.utils.Erc20Utils;
+import co.coinfinity.infineonandroidapp.ethereum.utils.UriUtils;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
@@ -207,12 +209,15 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == RESULT_OK) {
-            if (requestCode == 0) {
-                contractAddress.setText(data.getStringExtra("SCAN_RESULT"));
-            } else if (requestCode == 1) {
-                recipientAddressTxt.setText(data.getStringExtra("SCAN_RESULT"));
+            try {
+                if (requestCode == 0)
+                    contractAddress.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+                else if (requestCode == 1)
+                    recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+            } catch (InvalidEthereumAddressException e) {
+                Log.e(TAG, "Exception on reading ethereum address", e);
+                showToast("Invalid Ethereum address", this);
             }
         } else if (resultCode == RESULT_CANCELED) {
             Log.d(TAG, "QR Code scanning canceled.");
