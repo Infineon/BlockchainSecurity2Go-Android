@@ -71,12 +71,14 @@ public class NfcTransactionManager extends TransactionManager {
             }
             return response;
         } catch (NfcCardException e) {
-            if (activity != null)
+            if (activity != null) {
                 showToast(activity.getString(R.string.operation_not_supported), activity);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
-            if (!(activity instanceof VotingActivity))
+            if (!(activity instanceof VotingActivity)) {
                 showToast(String.format(activity.getString(R.string.could_not_send_transaction), e.getMessage()), activity);
+            }
         }
         return null;
     }

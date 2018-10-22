@@ -10,7 +10,7 @@ public class ByteUtils {
 
 
     /**
-     * returns hexadecimal string representation of a byte array
+     * returns hexadecimal string representation of a byte array.
      *
      * @param bytes byte array
      * @return hex string
@@ -26,7 +26,7 @@ public class ByteUtils {
     }
 
     /**
-     * Combines two byte arrays into on
+     * This method combines two byte arrays to one.
      *
      * @param one first byte array
      * @param two second byte, array to be appended after the first one
@@ -42,7 +42,7 @@ public class ByteUtils {
     }
 
     /**
-     * Creates a byte array out of a Hex string
+     * Creates a byte array out of a Hex string.
      *
      * @param hexString
      * @return byte array

@@ -20,7 +20,7 @@ import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 public class NfcUtils {
 
     /**
-     * Generate an ECDSA signature
+     * Generate an ECDSA signature.
      *
      * @param card       nfc card
      * @param keyIndex   index of the key to use
@@ -41,7 +41,7 @@ public class NfcUtils {
     }
 
     /**
-     * Read public key from card, or create a new one if it doesn't exist yet
+     * Read public key from card, or create a new one if it doesn't exist yet.
      *
      * @param card nfc card
      * @return public key as hexadecimal String
@@ -68,7 +68,7 @@ public class NfcUtils {
     }
 
     /**
-     * Read public key from card
+     * Read public key from card.
      *
      * @param card  nfc card
      * @param keyId key to get
@@ -99,7 +99,7 @@ public class NfcUtils {
     }
 
     /**
-     * Send command APDU to card
+     * Send command APDU to card.
      *
      * @param card        nfc card
      * @param commandApdu command

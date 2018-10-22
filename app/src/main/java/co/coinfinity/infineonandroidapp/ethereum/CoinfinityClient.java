@@ -24,7 +24,7 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
     private String etherAmount;
 
     /**
-     * this method reads the euro price from coinfinity api and calculates the corresponding euro amount of an ether amount, gas price and gas limit
+     * this method reads the euro price from coinfinity api and calculates the corresponding euro amount of an ether amount, gas price and gas limit.
      *
      * @param gasPriceStr gas price
      * @param gasLimitStr gas limit

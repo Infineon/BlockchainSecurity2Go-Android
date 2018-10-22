@@ -17,7 +17,7 @@ public class IsoTagWrapper implements NfcTranceiver {
     }
 
     /**
-     * Create wrapper of given IsoDep tag
+     * Create wrapper of given IsoDep tag.
      *
      * @param isoDep
      * @return wrapper instance
@@ -27,7 +27,7 @@ public class IsoTagWrapper implements NfcTranceiver {
     }
 
     /**
-     * Sends a command APDU to the NFC card and returns the received response APDU
+     * Sends a command APDU to the NFC card and returns the received response APDU.
      *
      * @param commandApdu command APDU to send
      * @return bytes received as response

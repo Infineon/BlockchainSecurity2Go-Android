@@ -33,10 +33,10 @@ import static org.web3j.crypto.TransactionEncoder.encode;
 public class EthereumUtils {
 
     /**
-     * this method reads the balance by ether address and returns a balance object
+     * this method reads the balance by ether address and returns a balance object.
      *
      * @param ethAddress
-     * @return
+     * @return EthBalanceBean containing information about the balance
      * @throws ExecutionException
      * @throws InterruptedException
      */
@@ -92,7 +92,7 @@ public class EthereumUtils {
      * @param isoTag
      * @param publicKey
      * @param data
-     * @return
+     * @return Status object of the sent transaction
      * @throws Exception
      */
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,

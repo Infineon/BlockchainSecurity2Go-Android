@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private volatile boolean activityPaused = false;
 
     /**
-     * will be called after card was hold to back of device
+     * Will be called after card was hold to back of device.
      *
      * @param intent includes nfc extras
      */
@@ -179,8 +179,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (nfcAdapter != null) {
-            if (!nfcAdapter.isEnabled())
+            if (!nfcAdapter.isEnabled()) {
                 openWirelessSettings();
+            }
             nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
         }
         activityPaused = false;
@@ -243,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * If we have already a Public key, allow the user to reset by pressing back
+     * If we have already a Public key, allow the user to reset by pressing back.
      */
     @Override
     public void onBackPressed() {
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * reset everything, like we never had seen a card
+     * reset everything, like we never had seen a card.
      */
     private void resetGuiState() {
         displayOnUI(GuiState.NFC_ICON);
@@ -272,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
     private enum GuiState {NFC_ICON, PROGRESS_BAR, BALANCE_TEXT}
 
     /**
-     * On button click SEND ETH
+     * On button click SEND ETH.
      */
     public void onSend(View view) {
         Intent intent = new Intent(this, SendTransactionActivity.class);
@@ -284,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * On button click SEND ERC-20
+     * On button click SEND ERC-20.
      */
     public void onSendErc20(View view) {
         Intent intent = new Intent(this, SendErc20TokensActivity.class);
@@ -296,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * On button click VOTING
+     * On button click VOTING.
      */
     public void onVoting(View view) {
         Intent intent = new Intent(this, VotingActivity.class);
@@ -320,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Display only GUI elements of 1 of 3 states:
+     * Display only GUI elements of 1 of 3 states.
      * NFC Icon (when waiting for NFC), spinner (when waiting for network background tasks,
      * Text (when displaying balance results)
      *

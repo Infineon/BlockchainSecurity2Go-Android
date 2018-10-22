@@ -141,7 +141,9 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         activityPaused = true;
-        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -173,7 +175,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     }
 
     /**
-     * will be called after card was hold to back of device
+     * will be called after card was hold to back of device.
      *
      * @param intent includes nfc extras
      */
@@ -196,8 +198,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 Log.d(TAG, "Sending ERC20 tokens " + ethAddress);
-                final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
-                        , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(), gasLimit.toBigInteger(), this, UiUtils.getFullNodeUrl(this));
+                final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress,
+                        recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(), gasLimit.toBigInteger(), this, UiUtils.getFullNodeUrl(this));
                 Log.d(TAG, String.format("ERC20 tokens sent with Hash: %s", receipt.getTransactionHash()));
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ERC20 tokens", e);
@@ -212,10 +214,11 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             try {
-                if (requestCode == 0)
+                if (requestCode == 0) {
                     contractAddress.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
-                else if (requestCode == 1)
+                } else if (requestCode == 1) {
                     recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+                }
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);
                 showToast(getString(R.string.invalid_ethereum_address), this);

@@ -6,7 +6,7 @@ package co.coinfinity.infineonandroidapp.infineon.apdu;
 public class GenerateKeyPairKeyApdu extends BaseCommandApdu {
 
     /**
-     * Instruction byte for GENERATE KEYPAIR operation
+     * Instruction byte for GENERATE KEYPAIR operation.
      */
     private static final int INS_GENERATE_KEYPAIR = 0x02;
 

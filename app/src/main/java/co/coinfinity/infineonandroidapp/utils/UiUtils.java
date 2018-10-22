@@ -23,7 +23,7 @@ import static co.coinfinity.AppConstants.*;
 public class UiUtils {
 
     /**
-     * Handle option menu click
+     * Handle option menu click.
      *
      * @param activity  activity
      * @param item selected menuitem
@@ -53,7 +53,9 @@ public class UiUtils {
                 boolean isMainNetwork = prefs.getBoolean(PREF_KEY_MAIN_NETWORK, true);
 
                 String strNetwork = "main network";
-                if (isMainNetwork) strNetwork = "test network";
+                if (isMainNetwork) {
+                    strNetwork = "test network";
+                }
                 String finalStrNetwork = strNetwork;
                 new AlertDialog.Builder(activity)
                         .setTitle(R.string.switch_network)
@@ -94,21 +96,22 @@ public class UiUtils {
     }
 
     /**
-     * Method to get url of the network to connect (Mainnet or Testnet)
+     * Method to get url of the network to connect (Mainnet or Testnet).
      *
      * @param activity read shared prefs from
      * @return mainnet or testnet url
      */
     public static String getFullNodeUrl(Activity activity) {
         SharedPreferences prefs = activity.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-        if (prefs.getBoolean(PREF_KEY_MAIN_NETWORK, true))
+        if (prefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
             return MAINNET_URI;
+        }
 
         return ROPSTEN_URI;
     }
 
     /**
-     * Method used to show toast message on UI thread
+     * Method used to show toast message on UI thread.
      *
      * @param text     message to show
      * @param activity needed for the context

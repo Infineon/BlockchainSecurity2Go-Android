@@ -111,6 +111,11 @@ public class SendTransactionActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * This method reads the euro price and updates UI accordingly.
+     *
+     * @throws Exception
+     */
     public void updateReadingEuroPrice() throws Exception {
         Log.d(TAG, "reading EUR/ETH price..");
         TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
@@ -152,15 +157,15 @@ public class SendTransactionActivity extends AppCompatActivity {
     }
 
     /**
-     * will be called after card was hold to back of device
+     * Will be called after card was hold to back of device.
      *
      * @param intent includes nfc extras
      */
     private void resolveIntent(Intent intent) {
-        Bundle b = getIntent().getExtras();
-        if (b != null) {
-            pubKeyString = b.getString("pubKey");
-            ethAddress = b.getString("ethAddress");
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            pubKeyString = bundle.getString("pubKey");
+            ethAddress = bundle.getString("ethAddress");
         }
 
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -176,7 +181,7 @@ public class SendTransactionActivity extends AppCompatActivity {
     }
 
     /**
-     * reads data needed for transaction, sends an Ethereum transaction and shows feedback on UI.
+     * Reads data needed for transaction, sends an Ethereum transaction and shows feedback on UI.
      *
      * @param isoDep
      */
@@ -220,8 +225,9 @@ public class SendTransactionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             try {
-                if (requestCode == 0)
+                if (requestCode == 0) {
                     recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+                }
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);
                 showToast(getString(R.string.invalid_ethereum_address), this);

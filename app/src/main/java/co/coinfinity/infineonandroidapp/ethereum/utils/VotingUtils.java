@@ -23,7 +23,7 @@ import java.math.BigInteger;
 public class VotingUtils {
 
     /**
-     * give a vote for defined ether address on contract
+     * Give a vote for defined ether address on contract.
      *
      * @param contractAddress
      * @param tag
@@ -41,7 +41,7 @@ public class VotingUtils {
 
 
     /**
-     * Assert that the given contract really is an instance of our contract
+     * Assert that the given contract really is an instance of our contract.
      *
      * @param contract
      * @throws InvalidContractException
@@ -61,7 +61,7 @@ public class VotingUtils {
     }
 
     /**
-     * loads a new voting contract
+     * Loads a new voting contract.
      *
      * @param contractAddress
      * @param tag
@@ -81,7 +81,7 @@ public class VotingUtils {
     }
 
     /**
-     * loads a new read only voting contract
+     * Loads a new read only voting contract.
      *
      * @param contractAddress
      * @param from

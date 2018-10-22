@@ -3,12 +3,12 @@ package co.coinfinity;
 import org.web3j.tx.ChainId;
 
 /**
- * Common app constants
+ * Class used for common app constants.
  */
 public class AppConstants {
 
     /**
-     * Log tag, used in logcat messages from this app
+     * Log tag, used in logcat messages from this app.
      */
     public static final String TAG = "Coinfineon";
 

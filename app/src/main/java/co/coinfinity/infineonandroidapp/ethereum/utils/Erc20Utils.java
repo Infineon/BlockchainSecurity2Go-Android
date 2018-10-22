@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 public class Erc20Utils {
 
     /**
-     * Send ERC-20 compatible tokens
+     * Send ERC-20 compatible tokens.
      *
      * @param ercContract
      * @param tag
@@ -51,7 +51,7 @@ public class Erc20Utils {
      *
      * @param ercContract
      * @param ethAddress
-     * @return
+     * @return token balance of eth address
      * @throws ExecutionException
      * @throws InterruptedException
      */

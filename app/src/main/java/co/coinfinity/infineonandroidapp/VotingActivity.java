@@ -163,7 +163,9 @@ public class VotingActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
@@ -177,7 +179,9 @@ public class VotingActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        }
     }
 
     public void scanQrCode(View view) {
@@ -189,8 +193,9 @@ public class VotingActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             try {
-                if (requestCode == 0)
+                if (requestCode == 0) {
                     contractAddress.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+                }
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);
                 showToast(getString(R.string.invalid_ethereum_address), this);

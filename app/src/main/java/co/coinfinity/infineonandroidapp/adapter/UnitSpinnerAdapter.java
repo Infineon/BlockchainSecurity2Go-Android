@@ -18,7 +18,7 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
     private BigDecimal multiplier = new BigDecimal("1");
 
     /**
-     * needs to be called at the beginning to add this adapter to the spinner
+     * Needs to be called at the beginning to add this adapter to the spinner.
      *
      * @param context
      * @param spinner
@@ -35,7 +35,7 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
     }
 
     /**
-     * will be called when an item of the spinner is selected
+     * Will be called when an item of the spinner is selected.
      *
      * @param parent
      * @param view
@@ -83,7 +83,7 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
     }
 
     /**
-     * get the value that will be needed to calculate wei price
+     * Get the value that will be needed to calculate wei price.
      *
      * @return multiplier for wei price calculation
      */
