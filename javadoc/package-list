@@ -4,6 +4,8 @@ co.coinfinity.infineonandroidapp.adapter
 co.coinfinity.infineonandroidapp.ethereum
 co.coinfinity.infineonandroidapp.ethereum.bean
 co.coinfinity.infineonandroidapp.ethereum.contract
+co.coinfinity.infineonandroidapp.ethereum.exceptions
+co.coinfinity.infineonandroidapp.ethereum.utils
 co.coinfinity.infineonandroidapp.infineon
 co.coinfinity.infineonandroidapp.infineon.apdu
 co.coinfinity.infineonandroidapp.infineon.exceptions
