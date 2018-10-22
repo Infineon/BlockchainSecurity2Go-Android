@@ -1,6 +1,7 @@
 package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
@@ -90,7 +91,7 @@ public class VotingActivity extends AppCompatActivity {
             ethAddress = bundle.getString("ethAddress");
         }
 
-        SharedPreferences pref = getSharedPreferences("label", 0);
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, "");
         gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
         gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
@@ -127,7 +128,7 @@ public class VotingActivity extends AppCompatActivity {
 
             try {
                 Log.d(TAG, "checking if address is whitelisted.. ");
-                StaticArray4<Address> whiteListResponse = VotingUtils.whitelistedSenderAddresses(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit);
+                StaticArray4<Address> whiteListResponse = VotingUtils.whitelistedSenderAddresses(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit, UiUtils.getFullNodeUrl(this));
                 Log.d(TAG, "finished checking if whitelisted.");
                 final List<String> addresses = whiteListResponse.getValue()
                         .stream()
@@ -140,20 +141,20 @@ public class VotingActivity extends AppCompatActivity {
 
                 if (whiteListed) {
                     final int indexOfAnswer = addresses.indexOf(ethAddress.toUpperCase());
-                    showToast(String.format("Voting for %s. Please wait...", votingAnswer[indexOfAnswer]), this);
+                    showToast(String.format(getString(R.string.voting_please_wait), votingAnswer[indexOfAnswer]), this);
 
                     Log.d(TAG, "sending vote.. ");
-                    final TransactionReceipt response = VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, gasPrice, gasLimit, this);
+                    final TransactionReceipt response = VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, gasPrice, gasLimit, this, UiUtils.getFullNodeUrl(this));
                     Log.d(TAG, String.format("sending vote finished with Hash: %s", response.getTransactionHash()));
                 } else {
-                    showToast("This card is not whitelisted!", this);
+                    showToast(getString(R.string.card_not_whitelisted), this);
                 }
             } catch (InvalidContractException ice) {
                 Log.e(TAG, "exception while voting: ", ice);
-                showToast("Incorrect contract address!", this);
+                showToast(getString(R.string.incorrect_contract), this);
             } catch (Exception e) {
                 Log.e(TAG, "exception while voting: ", e);
-                showToast("Could not vote!", this);
+                showToast(getString(R.string.could_not_vote), this);
             }
         }).start();
 
@@ -164,7 +165,7 @@ public class VotingActivity extends AppCompatActivity {
         super.onPause();
         if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
-        SharedPreferences mPrefs = getSharedPreferences("label", 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor
                 .putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString())
@@ -192,7 +193,7 @@ public class VotingActivity extends AppCompatActivity {
                     contractAddress.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);
-                showToast("Invalid Ethereum address", this);
+                showToast(getString(R.string.invalid_ethereum_address), this);
             }
         } else if (resultCode == RESULT_CANCELED) {
             Log.d(TAG, "QR Code scanning canceled.");

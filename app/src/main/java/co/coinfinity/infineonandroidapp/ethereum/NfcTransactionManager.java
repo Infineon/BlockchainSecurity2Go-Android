@@ -7,6 +7,7 @@ import co.coinfinity.infineonandroidapp.R;
 import co.coinfinity.infineonandroidapp.VotingActivity;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
+import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.TransactionManager;
@@ -59,7 +60,7 @@ public class NfcTransactionManager extends TransactionManager {
             String data, BigInteger value) {
         try {
             Log.d(TAG, "sending ETH transaction..");
-            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data);
+            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {
@@ -75,7 +76,7 @@ public class NfcTransactionManager extends TransactionManager {
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
             if (!(activity instanceof VotingActivity))
-                showToast(String.format("Could not send transaction: %s", e.getMessage()), activity);
+                showToast(String.format(activity.getString(R.string.could_not_send_transaction), e.getMessage()), activity);
         }
         return null;
     }

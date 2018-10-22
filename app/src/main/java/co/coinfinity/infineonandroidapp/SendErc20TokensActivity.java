@@ -1,6 +1,7 @@
 package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
@@ -97,7 +98,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
             ethAddress = b.getString("ethAddress");
         }
 
-        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS, "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
         recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS, "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
         gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
@@ -123,7 +124,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         BigInteger erc20Balance = new BigInteger("0");
         try {
             Log.d(TAG, "reading ERC20 Balance..");
-            erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress);
+            erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress, UiUtils.getFullNodeUrl(this));
             Log.d(TAG, String.format("got ERC20 Balance: %s", erc20Balance));
         } catch (Exception e) {
             Log.e(TAG, "exception while reading ERC20 Balance", e);
@@ -142,7 +143,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         activityPaused = true;
         if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
-        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor
                 .putString(PREF_KEY_ERC20_CONTRACT_ADDRESS, contractAddress.getText().toString())
@@ -196,7 +197,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
             try {
                 Log.d(TAG, "Sending ERC20 tokens " + ethAddress);
                 final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress
-                        , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(), gasLimit.toBigInteger(), this);
+                        , recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(), gasLimit.toBigInteger(), this, UiUtils.getFullNodeUrl(this));
                 Log.d(TAG, String.format("ERC20 tokens sent with Hash: %s", receipt.getTransactionHash()));
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ERC20 tokens", e);
@@ -217,7 +218,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
                     recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);
-                showToast("Invalid Ethereum address", this);
+                showToast(getString(R.string.invalid_ethereum_address), this);
             }
         } else if (resultCode == RESULT_CANCELED) {
             Log.d(TAG, "QR Code scanning canceled.");

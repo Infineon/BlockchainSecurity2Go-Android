@@ -20,12 +20,12 @@ public class AppConstants {
     public static final int KEY_ID_ON_THE_CARD = 0x00;
     private static final String HTTPS = "https://";
     private static final String BASEURL = ".infura.io/v3/7b40d72779e541a498cb0da69aa418a2";
-    private static final String MAINNET = "mainnet";
-    private static final String ROPSTEN = "ropsten";
-    public static final String CHAIN_URL = HTTPS + ROPSTEN + BASEURL;
+    public static final String MAINNET_URI = HTTPS + "mainnet" + BASEURL;
+    public static final String ROPSTEN_URI = HTTPS + "ropsten" + BASEURL;
     public static final byte CHAIN_ID = ChainId.ROPSTEN;
     private static final String ETHEUR = "ETHEUR";
-    public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = "https://coinfinity.co/price/" + ETHEUR;
+    public static final String COINFINITY_BASE_URL = "https://coinfinity.co";
+    public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = COINFINITY_BASE_URL + "/price/" + ETHEUR;
     public static final int TEN_SECONDS = 10;
     public static final int FIVE_SECONDS = 5;
 
@@ -34,6 +34,7 @@ public class AppConstants {
 
     // used for all 3 activities:
     public static final String PREF_KEY_GASPRICE_WEI = "gasPriceInWei";
+    public static final String PREF_KEY_MAIN_NETWORK = "mainNetwork";
 
     // send eth
     public static final String PREF_KEY_RECIPIENT_ADDRESS = "recipientAddressTxt";

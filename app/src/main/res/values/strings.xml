@@ -40,4 +40,18 @@
     <string name="voted_successful">Voted successful!</string>
     <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
     <string name="refresh_balance">Refresh balance</string>
+    <string name="switch_network">Switch network</string>
+    <string name="ask_switch_network">Are you sure you want to switch to %s</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="could_not_refresh">Could not refresh!</string>
+    <string name="switched_to">Switched to %s</string>
+    <string name="could_not_vote">Could not vote!</string>
+    <string name="incorrect_contract">Incorrect contract address!</string>
+    <string name="card_not_whitelisted">This card is not whitelisted!</string>
+    <string name="voting_please_wait">Voting for %s. Please wait…</string>
+    <string name="could_not_send_transaction">Could not send transaction: %s</string>
+    <string name="no_nfc">No NFC</string>
+    <string name="enable_nfc">You need to enable NFC</string>
+    <string name="invalid_ethereum_address">Invalid Ethereum address</string>
 </resources>

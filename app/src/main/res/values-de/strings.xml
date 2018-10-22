@@ -36,4 +36,18 @@
     <string name="voted_successful">Erfolgreich gevoted!</string>
     <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
     <string name="refresh_balance">Aktualisiere Kontostand</string>
+    <string name="switch_network">Wechsel Netzwerk</string>
+    <string name="ask_switch_network">Möchten sie zum %s wechseln?</string>
+    <string name="yes">ja</string>
+    <string name="no">nein</string>
+    <string name="could_not_refresh">Konnte nicht aktuallisieren!</string>
+    <string name="switched_to">Wechsel zu %s</string>
+    <string name="could_not_vote">Konnte nicht voten!</string>
+    <string name="card_not_whitelisted">Diese Karte ist nicht gewhitelistet!</string>
+    <string name="voting_please_wait">Vote für %s. Bitte warten…</string>
+    <string name="could_not_send_transaction">Konnte Transaktion nicht versenden: %s</string>
+    <string name="no_nfc">Kein NFC</string>
+    <string name="enable_nfc">NFC muss aktiviert sein</string>
+    <string name="invalid_ethereum_address">Falsche Ethereum Adresse!</string>
+    <string name="incorrect_contract">Falsche Contract Adresse!</string>
 </resources>

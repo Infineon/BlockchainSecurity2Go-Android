@@ -1,6 +1,7 @@
 package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
@@ -90,7 +91,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         pendingIntent = getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         String savedRecipientAddressTxt = mPrefs.getString(PREF_KEY_RECIPIENT_ADDRESS, "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
         String savedGasPriceWei = mPrefs.getString(PREF_KEY_GASPRICE_WEI, "21");
@@ -128,7 +129,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         activityPaused = true;
         if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
 
-        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, 0);
+        SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString(PREF_KEY_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString()).apply();
         mEditor.putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString()).apply();
@@ -192,14 +193,14 @@ public class SendTransactionActivity extends AppCompatActivity {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                    value.toBigInteger(), isoDep, pubKeyString, "");
+                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
         } catch (NfcCardException e) {
             showToast(getString(R.string.operation_not_supported), this);
             return;
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);
-            showToast(String.format("Could not send transaction: %s", e.getMessage()), this);
+            showToast(String.format(getString(R.string.could_not_send_transaction), e.getMessage()), this);
             return;
         }
 
@@ -223,7 +224,7 @@ public class SendTransactionActivity extends AppCompatActivity {
                     recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);
-                showToast("Invalid Ethereum address", this);
+                showToast(getString(R.string.invalid_ethereum_address), this);
             }
         } else if (resultCode == RESULT_CANCELED) {
             Log.d(TAG, "QR Code scanning canceled.");

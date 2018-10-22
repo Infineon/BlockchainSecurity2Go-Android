@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static co.coinfinity.AppConstants.CHAIN_URL;
+import static co.coinfinity.AppConstants.ROPSTEN_URI;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_LIMIT;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_PRICE;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -42,7 +42,7 @@ public class EthereumUtilsTest {
 
     @Test
     public void testGetBalanceTest() throws Exception {
-        final EthBalanceBean balance = EthereumUtils.getBalance(TransactionSigner.credentials.getAddress());
+        final EthBalanceBean balance = EthereumUtils.getBalance(TransactionSigner.credentials.getAddress(), ROPSTEN_URI);
 
         assertTrue(balance.getEther().doubleValue() > 0);
         assertTrue(balance.getWei().doubleValue() > 0);
@@ -67,7 +67,7 @@ public class EthereumUtilsTest {
                 Convert.toWei("0.002", Convert.Unit.ETHER).toBigInteger(),
                 isoDep,
                 Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128),
-                "");
+                "", ROPSTEN_URI);
 
         assertNull(ethSendTransaction.getError());
         System.out.println(ethSendTransaction.getTransactionHash());
@@ -76,7 +76,7 @@ public class EthereumUtilsTest {
 
     @Test
     public void testGetNextNonce() throws IOException {
-        Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
+        Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_URI));
 
         final BigInteger nextNonce = EthereumUtils.getNextNonce(web3, "0xfd37944e59fB227043F1F53Ca6Aef1C953684f46");
 

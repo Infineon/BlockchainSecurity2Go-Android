@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void updateBalance() throws Exception {
         Log.d(TAG, "reading ETH balance..");
-        ethBalance = EthereumUtils.getBalance(ethAddress);
+        ethBalance = EthereumUtils.getBalance(ethAddress, UiUtils.getFullNodeUrl(this));
         Log.d(TAG, String.format("reading ETH balance finished: %s", balance.toString()));
     }
 
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
-            showToast("No NFC", this);
+            showToast(getString(R.string.no_nfc), this);
             finish();
             return;
         }
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
      * Opens system settings, wireless settings.
      */
     private void openWirelessSettings() {
-        showToast("You need to enable NFC", this);
+        showToast(getString(R.string.enable_nfc), this);
         Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         startActivity(intent);
     }

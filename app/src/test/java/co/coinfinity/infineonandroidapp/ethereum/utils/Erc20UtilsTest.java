@@ -15,6 +15,7 @@ import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
 
+import static co.coinfinity.AppConstants.ROPSTEN_URI;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_LIMIT;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_PRICE;
 import static org.hamcrest.Matchers.greaterThan;
@@ -41,7 +42,7 @@ public class Erc20UtilsTest {
                     return TransactionSigner.signTransaction((byte[]) args[2]);
                 });
 
-        final TransactionReceipt transactionReceipt = Erc20Utils.sendErc20Tokens(ERC_CONTRACT, isoDep, Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128), TransactionSigner.credentials.getAddress(), "0x8720af26d1810ae8fca995002ad56175e4c97b23", new BigInteger("1"), GAS_PRICE, GAS_LIMIT, null);
+        final TransactionReceipt transactionReceipt = Erc20Utils.sendErc20Tokens(ERC_CONTRACT, isoDep, Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128), TransactionSigner.credentials.getAddress(), "0x8720af26d1810ae8fca995002ad56175e4c97b23", new BigInteger("1"), GAS_PRICE, GAS_LIMIT, null, ROPSTEN_URI);
 
         System.out.println(transactionReceipt.getTransactionHash());
         assertNotNull(transactionReceipt.getTransactionHash());
@@ -50,7 +51,7 @@ public class Erc20UtilsTest {
 
     @Test
     public void testGetErc20Balance() throws Exception {
-        final BigInteger erc20Balance = Erc20Utils.getErc20Balance(ERC_CONTRACT, TransactionSigner.credentials.getAddress());
+        final BigInteger erc20Balance = Erc20Utils.getErc20Balance(ERC_CONTRACT, TransactionSigner.credentials.getAddress(), ROPSTEN_URI);
 
         System.out.printf("Token Balance: %s%n", erc20Balance);
         assertThat(erc20Balance.intValue(),

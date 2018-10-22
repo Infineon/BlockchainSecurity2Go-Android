@@ -40,8 +40,8 @@ public class EthereumUtils {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static EthBalanceBean getBalance(String ethAddress) throws Exception {
-        Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
+    public static EthBalanceBean getBalance(String ethAddress, String url) throws Exception {
+        Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         BigInteger wei = getBalanceFromApi(web3, ethAddress, DefaultBlockParameterName.LATEST);
         if (wei == null) {
@@ -97,8 +97,8 @@ public class EthereumUtils {
      */
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
                                                      String to, BigInteger value, IsoDep isoTag,
-                                                     String publicKey, String data) throws Exception {
-        Web3j web3 = Web3jFactory.build(new HttpService(CHAIN_URL));
+                                                     String publicKey, String data, String url) throws Exception {
+        Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value, data);

@@ -15,8 +15,6 @@ import org.web3j.tx.TransactionManager;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
-import static co.coinfinity.AppConstants.CHAIN_URL;
-
 /**
  * Utils class used for interaction with ERC20 tokens.
  */
@@ -36,8 +34,8 @@ public class Erc20Utils {
      * @return transaction receipt
      * @throws Exception on errors
      */
-    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity) throws Exception {
-        Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
+    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) throws Exception {
+        Web3j web3j = Web3jFactory.build(new HttpService(url));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);
 
@@ -57,9 +55,9 @@ public class Erc20Utils {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public static BigInteger getErc20Balance(String ercContract, String ethAddress) throws Exception {
+    public static BigInteger getErc20Balance(String ercContract, String ethAddress, String url) throws Exception {
         if (ercContract != null && !ercContract.equals("") && ethAddress != null && !ethAddress.equals("")) {
-            Web3j web3j = Web3jFactory.build(new HttpService(CHAIN_URL));
+            Web3j web3j = Web3jFactory.build(new HttpService(url));
             ReadonlyTransactionManager transactionManager = new ReadonlyTransactionManager(web3j, ethAddress);
 
             ERC20Contract erc = ERC20Contract.load(ercContract, web3j, transactionManager, BigInteger.ZERO, BigInteger.ZERO);

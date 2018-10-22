@@ -15,6 +15,7 @@ import org.web3j.abi.datatypes.generated.StaticArray4;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Numeric;
 
+import static co.coinfinity.AppConstants.ROPSTEN_URI;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_LIMIT;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_PRICE;
 import static org.junit.Assert.assertEquals;
@@ -43,7 +44,7 @@ public class VotingUtilsTest {
                 });
 
         final TransactionReceipt transactionReceipt = VotingUtils.vote(
-                CONTRACT_ADDRESS, isoDep, Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128), TransactionSigner.credentials.getAddress(), GAS_PRICE, GAS_LIMIT, null);
+                CONTRACT_ADDRESS, isoDep, Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128), TransactionSigner.credentials.getAddress(), GAS_PRICE, GAS_LIMIT, null, ROPSTEN_URI);
 
         System.out.println(transactionReceipt.getTransactionHash());
         assertNotNull(transactionReceipt.getTransactionHash());
@@ -52,7 +53,7 @@ public class VotingUtilsTest {
 
     @Test
     public void testWhitelistedSenderAddresses() throws Exception {
-        final StaticArray4<Address> addresses = VotingUtils.whitelistedSenderAddresses(CONTRACT_ADDRESS, TransactionSigner.credentials.getAddress(), GAS_PRICE, GAS_LIMIT);
+        final StaticArray4<Address> addresses = VotingUtils.whitelistedSenderAddresses(CONTRACT_ADDRESS, TransactionSigner.credentials.getAddress(), GAS_PRICE, GAS_LIMIT, ROPSTEN_URI);
 
         assertEquals(4, addresses.getValue().size());
     }
