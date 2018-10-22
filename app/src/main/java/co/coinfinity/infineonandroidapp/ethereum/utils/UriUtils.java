@@ -21,10 +21,12 @@ public class UriUtils {
         uriWithoutSchema = Numeric.cleanHexPrefix(uriWithoutSchema);
 
         if (uriWithoutSchema.length() != 40) {
-            throw new InvalidEthereumAddressException("Invalid address. The Ethereum address does not match the 40 char length!");
+            throw new InvalidEthereumAddressException(
+                    "Invalid address. The Ethereum address does not match the 40 char length!");
         }
 
-        boolean hasChecksum = !uriWithoutSchema.equals(uriWithoutSchema.toLowerCase()) && !uriWithoutSchema.equals(uriWithoutSchema.toUpperCase());
+        boolean hasChecksum = !uriWithoutSchema.equals(uriWithoutSchema.toLowerCase())
+                && !uriWithoutSchema.equals(uriWithoutSchema.toUpperCase());
 
         uriWithoutSchema = Numeric.prependHexPrefix(uriWithoutSchema);
         if (hasChecksum) {

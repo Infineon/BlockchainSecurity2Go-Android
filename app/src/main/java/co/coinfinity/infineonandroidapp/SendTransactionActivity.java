@@ -118,7 +118,8 @@ public class SendTransactionActivity extends AppCompatActivity {
      */
     public void updateReadingEuroPrice() throws Exception {
         Log.d(TAG, "reading EUR/ETH price..");
-        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(
+                gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
         Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
         this.runOnUiThread(() -> {
             if (transactionPriceBean != null) {

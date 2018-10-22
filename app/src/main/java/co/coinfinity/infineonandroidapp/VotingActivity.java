@@ -128,7 +128,8 @@ public class VotingActivity extends AppCompatActivity {
 
             try {
                 Log.d(TAG, "checking if address is whitelisted.. ");
-                StaticArray4<Address> whiteListResponse = VotingUtils.whitelistedSenderAddresses(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit, UiUtils.getFullNodeUrl(this));
+                StaticArray4<Address> whiteListResponse = VotingUtils.whitelistedSenderAddresses(
+                        contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit, UiUtils.getFullNodeUrl(this));
                 Log.d(TAG, "finished checking if whitelisted.");
                 final List<String> addresses = whiteListResponse.getValue()
                         .stream()
@@ -144,7 +145,8 @@ public class VotingActivity extends AppCompatActivity {
                     showToast(String.format(getString(R.string.voting_please_wait), votingAnswer[indexOfAnswer]), this);
 
                     Log.d(TAG, "sending vote.. ");
-                    final TransactionReceipt response = VotingUtils.vote(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress, gasPrice, gasLimit, this, UiUtils.getFullNodeUrl(this));
+                    final TransactionReceipt response = VotingUtils.vote(contractAddress.getText().toString(), isoDep,
+                            pubKeyString, ethAddress, gasPrice, gasLimit, this, UiUtils.getFullNodeUrl(this));
                     Log.d(TAG, String.format("sending vote finished with Hash: %s", response.getTransactionHash()));
                 } else {
                     showToast(getString(R.string.card_not_whitelisted), this);

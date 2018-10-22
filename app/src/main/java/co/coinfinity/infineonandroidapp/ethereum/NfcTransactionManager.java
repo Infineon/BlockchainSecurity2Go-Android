@@ -60,7 +60,8 @@ public class NfcTransactionManager extends TransactionManager {
             String data, BigInteger value) {
         try {
             Log.d(TAG, "sending ETH transaction..");
-            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity));
+            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
+                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {

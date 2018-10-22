@@ -34,7 +34,9 @@ public class Erc20Utils {
      * @return transaction receipt
      * @throws Exception on errors
      */
-    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from, String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) throws Exception {
+    public static TransactionReceipt sendErc20Tokens(String ercContract, IsoDep tag, String publicKey, String from,
+                                                     String to, BigInteger amount, BigInteger gasPrice, BigInteger gasLimit,
+                                                     Activity activity, String url) throws Exception {
         Web3j web3j = Web3jFactory.build(new HttpService(url));
 
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);

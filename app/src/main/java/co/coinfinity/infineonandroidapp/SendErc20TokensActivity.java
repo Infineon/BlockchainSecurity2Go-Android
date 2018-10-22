@@ -83,7 +83,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         spinnerAdapter.addSpinnerAdapter(this, spinner);
-        inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt, gasLimitTxt, contractAddress);
+        inputErrorUtils = new InputErrorUtils(this, recipientAddressTxt, amountTxt, gasPriceTxt,
+                gasLimitTxt, contractAddress);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -99,8 +100,10 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-        contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS, "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
-        recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS, "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+        contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS,
+                "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
+        recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS,
+                "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
         gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
         gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "60000"));
         amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
@@ -124,7 +127,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         BigInteger erc20Balance = new BigInteger("0");
         try {
             Log.d(TAG, "reading ERC20 Balance..");
-            erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress, UiUtils.getFullNodeUrl(this));
+            erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress,
+                    UiUtils.getFullNodeUrl(this));
             Log.d(TAG, String.format("got ERC20 Balance: %s", erc20Balance));
         } catch (Exception e) {
             Log.e(TAG, "exception while reading ERC20 Balance", e);
@@ -198,8 +202,10 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 Log.d(TAG, "Sending ERC20 tokens " + ethAddress);
-                final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(), isoDep, pubKeyString, ethAddress,
-                        recipientAddressTxt.getText().toString(), new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(), gasLimit.toBigInteger(), this, UiUtils.getFullNodeUrl(this));
+                final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(),
+                        isoDep, pubKeyString, ethAddress, recipientAddressTxt.getText().toString(),
+                        new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(),
+                        gasLimit.toBigInteger(), this, UiUtils.getFullNodeUrl(this));
                 Log.d(TAG, String.format("ERC20 tokens sent with Hash: %s", receipt.getTransactionHash()));
             } catch (Exception e) {
                 Log.e(TAG, "Exception while sending ERC20 tokens", e);
@@ -215,9 +221,11 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             try {
                 if (requestCode == 0) {
-                    contractAddress.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+                    contractAddress.setText(UriUtils.extractEtherAddressFromUri(
+                            data.getStringExtra("SCAN_RESULT")));
                 } else if (requestCode == 1) {
-                    recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(data.getStringExtra("SCAN_RESULT")));
+                    recipientAddressTxt.setText(UriUtils.extractEtherAddressFromUri(
+                            data.getStringExtra("SCAN_RESULT")));
                 }
             } catch (InvalidEthereumAddressException e) {
                 Log.e(TAG, "Exception on reading ethereum address", e);

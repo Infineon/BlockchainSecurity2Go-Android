@@ -31,7 +31,8 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
      * @param etherAmount ether
      * @return transaction bean
      */
-    public TransactionPriceBean readEuroPriceFromApiSync(String gasPriceStr, String gasLimitStr, String etherAmount) throws Exception {
+    public TransactionPriceBean readEuroPriceFromApiSync(String gasPriceStr, String gasLimitStr,
+                                                         String etherAmount) throws Exception {
         this.gasPriceStr = gasPriceStr;
         this.gasLimitStr = gasLimitStr;
         this.etherAmount = etherAmount;
@@ -53,7 +54,8 @@ public class CoinfinityClient extends JsonHttpResponseHandler {
                 final BigDecimal weiGasPrice = Convert.toWei(gasPrice.multiply(gasLimit), Convert.Unit.GWEI);
                 final BigDecimal ethGasPrice = Convert.fromWei(weiGasPrice, Convert.Unit.ETHER);
 
-                transactionPriceBean = new TransactionPriceBean(serverResp.getDouble(ASK) * Double.parseDouble(etherAmount), ethGasPrice.floatValue() * serverResp.getDouble(ASK));
+                transactionPriceBean = new TransactionPriceBean(serverResp.getDouble(ASK) *
+                        Double.parseDouble(etherAmount), ethGasPrice.floatValue() * serverResp.getDouble(ASK));
             }
         } catch (JSONException e) {
             Log.e(TAG, "exception while reading price info from API: ", e);

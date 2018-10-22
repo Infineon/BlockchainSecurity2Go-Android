@@ -34,7 +34,8 @@ public class VotingUtils {
      * @param activity
      * @throws Exception
      */
-    public static TransactionReceipt vote(String contractAddress, IsoDep tag, String publicKey, String from, BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) throws Exception {
+    public static TransactionReceipt vote(String contractAddress, IsoDep tag, String publicKey, String from,
+                                          BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) throws Exception {
         Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit, activity, url);
         return contract.castVote().send();
     }
@@ -49,11 +50,13 @@ public class VotingUtils {
      */
     private static void assertContract(Voting contract) throws InvalidContractException, IOException {
         if (!contract.isValid()) {
-            throw new InvalidContractException("The bytecode at this address does not match our voting contract! Are yu using the correct address?");
+            throw new InvalidContractException(
+                    "The bytecode at this address does not match our voting contract! Are yu using the correct address?");
         }
     }
 
-    public static StaticArray4<Address> whitelistedSenderAddresses(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit, String url) throws Exception {
+    public static StaticArray4<Address> whitelistedSenderAddresses(String contractAddress, String from,
+                                                                   BigInteger gasPrice, BigInteger gasLimit, String url) throws Exception {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit, url);
         assertContract(contract);
         // check if the contract deployed at this address is an instance of our Voting contract
@@ -72,7 +75,8 @@ public class VotingUtils {
      * @param activity
      * @return
      */
-    private static Voting prepareWriteVotingContract(String contractAddress, IsoDep tag, String publicKey, String from, BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) {
+    private static Voting prepareWriteVotingContract(String contractAddress, IsoDep tag, String publicKey, String from,
+                                                     BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) {
         Web3j web3j = Web3jFactory.build(new HttpService(url));
         TransactionManager transactionManager = new NfcTransactionManager(web3j, from, tag, publicKey, activity);
 
@@ -89,7 +93,8 @@ public class VotingUtils {
      * @param gasLimit
      * @return
      */
-    private static Voting prepareReadOnlyVotingContract(String contractAddress, String from, BigInteger gasPrice, BigInteger gasLimit, String url) {
+    private static Voting prepareReadOnlyVotingContract(String contractAddress, String from, BigInteger gasPrice,
+                                                        BigInteger gasLimit, String url) {
         Web3j web3j = Web3jFactory.build(new HttpService(url));
         TransactionManager transactionManager = new ReadonlyTransactionManager(web3j, from);
 

@@ -18,7 +18,8 @@ public class InputErrorUtils {
     private TextView gasLimitTxt;
     private TextView contractAddress;
 
-    public InputErrorUtils(Context ctx, TextView recipientAddressTxt, TextView amountTxt, TextView gasPriceTxt, TextView gasLimitTxt) {
+    public InputErrorUtils(Context ctx, TextView recipientAddressTxt, TextView amountTxt, TextView gasPriceTxt,
+                           TextView gasLimitTxt) {
         this.ctx = ctx;
         this.recipientAddressTxt = recipientAddressTxt;
         this.amountTxt = amountTxt;
@@ -26,7 +27,8 @@ public class InputErrorUtils {
         this.gasLimitTxt = gasLimitTxt;
     }
 
-    public InputErrorUtils(Context ctx, TextView recipientAddressTxt, TextView amountTxt, TextView gasPriceTxt, TextView gasLimitTxt, TextView contractAddress) {
+    public InputErrorUtils(Context ctx, TextView recipientAddressTxt, TextView amountTxt, TextView gasPriceTxt,
+                           TextView gasLimitTxt, TextView contractAddress) {
         this.ctx = ctx;
         this.recipientAddressTxt = recipientAddressTxt;
         this.amountTxt = amountTxt;

@@ -69,7 +69,8 @@ public class EthereumUtils {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress, DefaultBlockParameterName defaultBlockParameterName) throws Exception {
+    private static BigInteger getBalanceFromApi(Web3j web3, String ethAddress,
+                                                DefaultBlockParameterName defaultBlockParameterName) throws Exception {
         BigInteger wei = null;
         EthGetBalance ethGetBalance = web3
                 .ethGetBalance(ethAddress, defaultBlockParameterName)
