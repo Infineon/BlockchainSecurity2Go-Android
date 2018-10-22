@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private void updateBalance() throws Exception {
+    public void updateBalance() throws Exception {
         Log.d(TAG, "reading ETH balance..");
         ethBalance = EthereumUtils.getBalance(ethAddress);
         Log.d(TAG, String.format("reading ETH balance finished: %s", balance.toString()));
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    private void updateEuroPrice() throws Exception {
+    public void updateEuroPrice() throws Exception {
         if (ethBalance == null)
             return;
 
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 while (!activityPaused && ethAddress != null) {
                     updateBalance();
-                    TimeUnit.SECONDS.sleep(THREE_SECONDS);
+                    TimeUnit.SECONDS.sleep(FIVE_SECONDS);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "exception while reading eth balance from api: ", e);

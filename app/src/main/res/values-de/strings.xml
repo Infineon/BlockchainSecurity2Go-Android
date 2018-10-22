@@ -35,4 +35,5 @@
     <string name="question">Wie viele Security Controllers wurden von IFX DSS verkauft?</string>
     <string name="voted_successful">Erfolgreich gevoted!</string>
     <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
+    <string name="refresh_balance">Aktualisiere Kontostand</string>
 </resources>

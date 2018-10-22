@@ -108,7 +108,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
             try {
                 while (!activityPaused) {
                     readAndDisplayErc20Balance();
-                    TimeUnit.SECONDS.sleep(THREE_SECONDS);
+                    TimeUnit.SECONDS.sleep(FIVE_SECONDS);
                 }
             } catch (InterruptedException e) {
                 Log.e(TAG, "interrupted exception while reading ERC20 Balance", e);
@@ -119,7 +119,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     /**
      * this method read ERC20 balance via Api request and displays it.
      */
-    private void readAndDisplayErc20Balance() {
+    public void readAndDisplayErc20Balance() {
         BigInteger erc20Balance = new BigInteger("0");
         try {
             Log.d(TAG, "reading ERC20 Balance..");

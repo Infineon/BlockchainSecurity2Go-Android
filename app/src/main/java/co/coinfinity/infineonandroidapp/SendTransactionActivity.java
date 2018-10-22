@@ -101,21 +101,25 @@ public class SendTransactionActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 while (!activityPaused) {
-                    Log.d(TAG, "reading EUR/ETH price..");
-                    TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
-                    Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
-                    this.runOnUiThread(() -> {
-                        if (transactionPriceBean != null) {
-                            priceInEuroTxt.setText(transactionPriceBean.toString());
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                    });
+                    updateReadingEuroPrice();
                     TimeUnit.SECONDS.sleep(TEN_SECONDS);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Exception while reading price info from API in thread", e);
             }
         }).start();
+    }
+
+    public void updateReadingEuroPrice() throws Exception {
+        Log.d(TAG, "reading EUR/ETH price..");
+        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync(gasPriceTxt.getText().toString(), gasLimitTxt.getText().toString(), amountTxt.getText().toString());
+        Log.d(TAG, "reading EUR/ETH price finished: " + transactionPriceBean);
+        this.runOnUiThread(() -> {
+            if (transactionPriceBean != null) {
+                priceInEuroTxt.setText(transactionPriceBean.toString());
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     @Override

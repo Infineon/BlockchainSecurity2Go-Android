@@ -39,4 +39,5 @@
     <string name="question">How many security controllers have been sold by IFX DSS?</string>
     <string name="voted_successful">Voted successful!</string>
     <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
+    <string name="refresh_balance">Refresh balance</string>
 </resources>

@@ -7,7 +7,10 @@ import android.nfc.Tag;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+import co.coinfinity.infineonandroidapp.MainActivity;
 import co.coinfinity.infineonandroidapp.R;
+import co.coinfinity.infineonandroidapp.SendErc20TokensActivity;
+import co.coinfinity.infineonandroidapp.SendTransactionActivity;
 
 import static co.coinfinity.AppConstants.TAG;
 
@@ -31,6 +34,26 @@ public class UiUtils {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 act.startActivity(i);
+                return true;
+            case R.id.refresh_balance:
+                new Thread(() -> {
+                    try {
+                        Log.d(TAG, "Manual refresh..");
+                        if (act instanceof MainActivity) {
+                            ((MainActivity) act).updateBalance();
+                            ((MainActivity) act).updateEuroPrice();
+                        } else if (act instanceof SendTransactionActivity) {
+                            ((SendTransactionActivity) act).updateReadingEuroPrice();
+                        } else if (act instanceof SendErc20TokensActivity) {
+                            ((SendErc20TokensActivity) act).readAndDisplayErc20Balance();
+                        }
+
+                        Log.d(TAG, "Manual refresh finished.");
+                    } catch (Exception e) {
+                        showToast("Could not refresh!", act);
+                        Log.e(TAG, "Error on manual refresh", e);
+                    }
+                }).start();
                 return true;
             default:
                 return false;
