@@ -8,7 +8,7 @@ Currently three main features are available to demonstrate signing of Ethereum t
 - sending ER20 tokens via card
 - voting via Smart Contract deployed at Ethereum Blockchain via card
  
-How it work
+How it works
 ---
 
 The app is communicating with the card via NFC to generate new private/public keys, read a public key and sign transactions.  

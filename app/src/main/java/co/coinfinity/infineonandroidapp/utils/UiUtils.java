@@ -37,6 +37,7 @@ public class UiUtils {
                 activity.startActivity(i);
                 return true;
             case R.id.refresh_balance:
+                showToast(activity.getString(R.string.refreshing), activity);
                 new Thread(() -> {
                     try {
                         Log.d(TAG, "Manual refresh..");
