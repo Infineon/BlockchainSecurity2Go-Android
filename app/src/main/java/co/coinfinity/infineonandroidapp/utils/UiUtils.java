@@ -1,14 +1,20 @@
 package co.coinfinity.infineonandroidapp.utils;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.Tag;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 import co.coinfinity.infineonandroidapp.MainActivity;
 import co.coinfinity.infineonandroidapp.R;
@@ -23,10 +29,29 @@ import static co.coinfinity.AppConstants.*;
 public class UiUtils {
 
     /**
+     * This method will start a blinking animation for given TextView.
+     *
+     * @param view TextView to start animation on
+     */
+    public static void startBlinkingAnimation(TextView view, int blinkingDuration, int totalDuration) {
+        if (view != null) {
+            final ObjectAnimator animator = ObjectAnimator.ofInt(view, "textColor", Color.BLACK, Color.TRANSPARENT);
+            animator.setDuration(blinkingDuration);
+            animator.setEvaluator(new ArgbEvaluator());
+            animator.setRepeatCount(ValueAnimator.INFINITE);
+            animator.setRepeatMode(ValueAnimator.REVERSE);
+            animator.start();
+
+            Handler handler = new Handler();
+            handler.postDelayed(animator::cancel, totalDuration);
+        }
+    }
+
+    /**
      * Handle option menu click.
      *
-     * @param activity  activity
-     * @param item selected menuitem
+     * @param activity activity
+     * @param item     selected menuitem
      * @return true if handled in here, false otherwise
      */
     public static boolean handleOptionItemSelected(Activity activity, MenuItem item) {

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
@@ -58,6 +59,14 @@ public class VotingActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.spinner)
     Spinner spinner;
+    @BindView(R.id.answer1)
+    TextView answer1;
+    @BindView(R.id.answer2)
+    TextView answer2;
+    @BindView(R.id.answer3)
+    TextView answer3;
+    @BindView(R.id.answer4)
+    TextView answer4;
 
     private InputErrorUtils inputErrorUtils;
 
@@ -143,6 +152,25 @@ public class VotingActivity extends AppCompatActivity {
                 if (whiteListed) {
                     final int indexOfAnswer = addresses.indexOf(ethAddress.toUpperCase());
                     showToast(String.format(getString(R.string.voting_please_wait), votingAnswer[indexOfAnswer]), this);
+
+                    this.runOnUiThread(() -> {
+                        TextView viewOfVote = null;
+                        switch (indexOfAnswer) {
+                            case 0:
+                                viewOfVote = answer1;
+                                break;
+                            case 1:
+                                viewOfVote = answer2;
+                                break;
+                            case 2:
+                                viewOfVote = answer3;
+                                break;
+                            case 3:
+                                viewOfVote = answer4;
+                                break;
+                        }
+                        UiUtils.startBlinkingAnimation(viewOfVote, 500, 5000);
+                    });
 
                     Log.d(TAG, "sending vote.. ");
                     final TransactionReceipt response = VotingUtils.vote(contractAddress.getText().toString(), isoDep,
