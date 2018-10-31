@@ -9,17 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-import co.coinfinity.infineonandroidapp.MainActivity;
-import co.coinfinity.infineonandroidapp.R;
-import co.coinfinity.infineonandroidapp.SendErc20TokensActivity;
-import co.coinfinity.infineonandroidapp.SendTransactionActivity;
+import co.coinfinity.infineonandroidapp.*;
 
 import static co.coinfinity.AppConstants.*;
 
@@ -56,10 +52,9 @@ public class UiUtils {
      */
     public static boolean handleOptionItemSelected(Activity activity, MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.visit_website:
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(COINFINITY_BASE_URL));
-                activity.startActivity(i);
+            case R.id.about:
+                Intent intent = new Intent(activity, AboutActivity.class);
+                activity.startActivity(intent);
                 return true;
             case R.id.refresh_balance:
                 showToast(activity.getString(R.string.refreshing), activity);

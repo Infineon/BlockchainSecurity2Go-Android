@@ -18,7 +18,7 @@
     <string name="token_amount">Anzahl Token</string>
     <string name="contract_address">Contract Adresse</string>
     <string name="current_token_balance">Momentanes ERC-20 Guthaben: %s</string>
-    <string name="visit_website">Unsere Homepage</string>
+    <string name="about">About</string>
     <string name="hold_card_for_while">Halte die Karte für ein paar Sekunden!</string>
     <string name="er20_contract_address">ERC-20 Contract Adresse</string>
     <string name="err_receipient_required">Empfänger Adresse fehlt!</string>

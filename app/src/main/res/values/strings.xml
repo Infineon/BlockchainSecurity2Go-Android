@@ -22,7 +22,7 @@
     <string name="token_amount">Token Amount</string>
     <string name="contract_address">Contract Address</string>
     <string name="current_token_balance">Current Token Balance: %s</string>
-    <string name="visit_website">Visit our Website</string>
+    <string name="about">About</string>
     <string name="hold_card_for_while">Hold card for some seconds!</string>
     <string name="er20_contract_address">ERC20 Contract Address</string>
     <string name="err_receipient_required">Recipient Address is required!</string>

@@ -38,6 +38,9 @@
         <activity android:name=".VotingActivity" android:label="@string/title_activity_voting"
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".AboutActivity" android:label="@string/title_activity_voting"
+                  android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
