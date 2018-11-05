@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Coinfineon</string>
+    <string name="app_name" translatable="false">Home</string>
     <string name="logo" translatable="false">Logo</string>
     <string name="qr_code" translatable="false">QR Code</string>
 
@@ -32,11 +32,11 @@
     <string name="err_contract_address_missing">Contract Address is required!</string>
     <string name="wrong_card">This is no Infineon card!</string>
     <string name="operation_not_supported">Card does not support this operation!</string>
-    <string name="answer_1">1 billion</string>
-    <string name="answer_2">2 billion</string>
-    <string name="answer_3">3 billion</string>
-    <string name="answer_4">4 billion</string>
-    <string name="question">How many security controllers have been sold by IFX DSS?</string>
+    <string name="answer_1">> 5 billion</string>
+    <string name="answer_2">> 10 billion</string>
+    <string name="answer_3">> 15 billion</string>
+    <string name="answer_4">> 20 billion</string>
+    <string name="question">How many security controllers have been sold by IFX in the last 10 years?</string>
     <string name="voted_successful">Voted successful!</string>
     <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
     <string name="refresh_balance">Refresh balance</string>

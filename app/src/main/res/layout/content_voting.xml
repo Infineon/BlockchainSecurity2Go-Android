@@ -65,30 +65,31 @@
         <TextView
                 android:text="@string/question"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textAlignment="viewStart"
-                android:textSize="18sp" android:textStyle="bold" android:paddingTop="20dp"/>
+                android:layout_height="wrap_content" android:textAlignment="center"
+                android:textSize="24sp" android:textStyle="bold" android:paddingTop="20dp"
+                android:textColor="@android:color/holo_red_dark"/>
         <TextView
                 android:text="@string/answer_1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:layout_height="wrap_content" android:textAlignment="center"
                 android:textSize="24sp" android:paddingTop="10dp" android:id="@+id/answer1"
                 android:textColor="@android:color/black"/>
         <TextView
                 android:text="@string/answer_2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textAlignment="textStart"
+                android:layout_height="wrap_content" android:textAlignment="center"
                 android:textSize="24sp" android:paddingTop="10dp" android:id="@+id/answer2"
                 android:textColor="@android:color/black"/>
         <TextView
                 android:text="@string/answer_3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:layout_height="wrap_content" android:textAlignment="center"
                 android:textSize="24sp" android:paddingTop="10dp" android:id="@+id/answer3"
                 android:textColor="@android:color/black"/>
         <TextView
                 android:text="@string/answer_4"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:textAlignment="viewStart"
+                android:layout_height="wrap_content" android:textAlignment="center"
                 android:textSize="24sp" android:paddingTop="10dp" android:id="@+id/answer4"
                 android:textColor="@android:color/black"/>
         <TextView

@@ -28,11 +28,11 @@
     <string name="err_contract_address_missing">Die Adresse des SmartContracts ist nicht gesetzt!</string>
     <string name="wrong_card">Das ist keine Infineon Karte!</string>
     <string name="operation_not_supported">Karte unterstützt diese Funktion nicht!</string>
-    <string name="answer_1">1 Milliarde</string>
-    <string name="answer_2">2 Milliarde</string>
-    <string name="answer_3">3 Milliarde</string>
-    <string name="answer_4">4 Milliarde</string>
-    <string name="question">Wie viele Security Controllers wurden von IFX DSS verkauft?</string>
+    <string name="answer_1">> 5 Milliarden</string>
+    <string name="answer_2">> 10 Milliarden</string>
+    <string name="answer_3">> 15 Milliarden</string>
+    <string name="answer_4">> 20 Milliarden</string>
+    <string name="question">Wie viele Security Controllers wurden von IFX in den letzten 10 Jahren verkauft?</string>
     <string name="voted_successful">Erfolgreich gevoted!</string>
     <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
     <string name="refresh_balance">Aktualisiere Kontostand</string>
