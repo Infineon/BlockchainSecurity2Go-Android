@@ -48,7 +48,7 @@ public class AppConstants {
     public static final String PREF_KEY_ERC20_GASLIMIT = "erc20GasLimit";
 
     // voting
-    public static final String PREF_KEY_VOTING_GASLIMIT = "erc20GasLimit";
+    public static final String PREF_KEY_VOTING_GASLIMIT = "votingGasLimit";
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS = "votingContractAddress";
     public static final String DEFAULT_VOTING_CONTRACT_ADDRESS = "0x5545ccecd05ef6943bc397773c72252cd7560f41";
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET = "votingContractAddressTestnet";
