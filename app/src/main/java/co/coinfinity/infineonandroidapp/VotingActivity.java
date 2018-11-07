@@ -101,7 +101,12 @@ public class VotingActivity extends AppCompatActivity {
         }
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-        String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, "");
+
+        String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, DEFAULT_VOTING_CONTRACT_ADDRESS);
+        if (!pref.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+            savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET, DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET);
+        }
+
         gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
         gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
 
@@ -199,11 +204,16 @@ public class VotingActivity extends AppCompatActivity {
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
-        mEditor
-                .putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString())
-                .putString(PREF_KEY_VOTING_GASLIMIT, gasLimit.getText().toString())
-                .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString())
-                .apply();
+        mEditor.putString(PREF_KEY_VOTING_GASLIMIT, gasLimit.getText().toString())
+                .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString());
+
+        if (!mPrefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+            mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString());
+        } else {
+            mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET, contractAddress.getText().toString());
+        }
+
+        mEditor.apply();
     }
 
     @Override

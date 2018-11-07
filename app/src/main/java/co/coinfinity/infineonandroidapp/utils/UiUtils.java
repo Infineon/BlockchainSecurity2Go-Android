@@ -85,6 +85,7 @@ public class UiUtils {
                             SharedPreferences.Editor mEditor = prefs.edit();
                             mEditor.putBoolean(PREF_KEY_MAIN_NETWORK, !isMainNetwork).apply();
                             showToast(String.format(activity.getString(R.string.switched_to), finalStrNetwork), activity);
+//                            activity.recreate();
                         })
                         .setNegativeButton(R.string.no, null)
                         .show();
