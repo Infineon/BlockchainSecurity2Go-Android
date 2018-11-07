@@ -101,9 +101,9 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS,
-                "0xd5ffaa5d81cfe4d4141a11d83d6d7aada39d230e"));
+                "0xFB09d466E7fE677439D695241d6327ddD8153848"));
         recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS,
-                "0xa8e5590D3E1377BAfac30d3D3AB5779A62e0FF28"));
+                ""));
         gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
         gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "60000"));
         amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
