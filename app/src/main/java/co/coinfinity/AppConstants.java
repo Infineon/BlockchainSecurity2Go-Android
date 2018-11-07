@@ -1,7 +1,5 @@
 package co.coinfinity;
 
-import org.web3j.tx.ChainId;
-
 /**
  * Class used for common app constants.
  */
@@ -22,7 +20,6 @@ public class AppConstants {
     private static final String BASEURL = ".infura.io/v3/7b40d72779e541a498cb0da69aa418a2";
     public static final String MAINNET_URI = HTTPS + "mainnet" + BASEURL;
     public static final String ROPSTEN_URI = HTTPS + "ropsten" + BASEURL;
-    public static final byte CHAIN_ID = ChainId.ROPSTEN;
     private static final String ETHEUR = "ETHEUR";
     public static final String COINFINITY_BASE_URL = "https://coinfinity.co";
     public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = COINFINITY_BASE_URL + "/price/" + ETHEUR;

@@ -24,7 +24,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
-import static co.coinfinity.AppConstants.*;
+import static co.coinfinity.AppConstants.KEY_ID_ON_THE_CARD;
+import static co.coinfinity.AppConstants.TAG;
 import static org.web3j.crypto.TransactionEncoder.encode;
 
 /**
@@ -98,14 +99,14 @@ public class EthereumUtils {
      */
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
                                                      String to, BigInteger value, IsoDep isoTag,
-                                                     String publicKey, String data, String url) throws Exception {
+                                                     String publicKey, String data, String url, byte chainId) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
                 getNextNonce(web3, from), gasPrice, gasLimit, to, value, data);
 
-        String hexValue = null;
-        byte[] encodedTransaction = encode(rawTransaction, CHAIN_ID);
+        byte[] encodedTransaction = encode(rawTransaction, chainId);
+
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
         final byte[] signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), KEY_ID_ON_THE_CARD, hashedTransaction);
 
@@ -123,9 +124,9 @@ public class EthereumUtils {
         Log.d(TAG, String.format("v: %s", v));
 
         Sign.SignatureData signatureData = new Sign.SignatureData(v, r, s);
-        signatureData = TransactionEncoder.createEip155SignatureData(signatureData, CHAIN_ID);
+        signatureData = TransactionEncoder.createEip155SignatureData(signatureData, chainId);
 
-        hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
+        String hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
         EthSendTransaction ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
 
         if (ethSendTransaction != null && ethSendTransaction.getError() != null) {

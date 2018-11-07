@@ -1,6 +1,8 @@
 package co.coinfinity.infineonandroidapp.ethereum;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.R;
@@ -10,11 +12,12 @@ import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.tx.ChainId;
 import org.web3j.tx.TransactionManager;
 
 import java.math.BigInteger;
 
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
@@ -58,10 +61,17 @@ public class NfcTransactionManager extends TransactionManager {
     public EthSendTransaction sendTransaction(
             BigInteger gasPrice, BigInteger gasLimit, String to,
             String data, BigInteger value) {
+
+        SharedPreferences pref = activity.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+        byte chainId = ChainId.MAINNET;
+        if (!pref.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+            chainId = ChainId.ROPSTEN;
+        }
+
         try {
             Log.d(TAG, "sending ETH transaction..");
             final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
-                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity));
+                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId);
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {

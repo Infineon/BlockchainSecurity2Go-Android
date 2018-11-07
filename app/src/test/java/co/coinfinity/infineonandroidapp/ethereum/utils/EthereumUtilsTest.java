@@ -15,6 +15,7 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.ChainId;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
 
@@ -67,7 +68,7 @@ public class EthereumUtilsTest {
                 Convert.toWei("0.002", Convert.Unit.ETHER).toBigInteger(),
                 isoDep,
                 Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128),
-                "", ROPSTEN_URI);
+                "", ROPSTEN_URI, ChainId.ROPSTEN);
 
         assertNull(ethSendTransaction.getError());
         System.out.println(ethSendTransaction.getTransactionHash());

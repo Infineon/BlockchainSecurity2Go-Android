@@ -30,6 +30,7 @@ import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.tx.ChainId;
 import org.web3j.utils.Convert;
 
 import java.math.BigDecimal;
@@ -194,12 +195,18 @@ public class SendTransactionActivity extends AppCompatActivity {
         final String gasLimitStr = gasLimitTxt.getText().toString();
         final BigDecimal gasLimit = new BigDecimal(gasLimitStr.equals("") ? "0" : gasLimitStr);
 
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+        byte chainId = ChainId.MAINNET;
+        if (!pref.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+            chainId = ChainId.ROPSTEN;
+        }
+
         EthSendTransaction response = null;
         try {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this));
+                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId);
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
         } catch (NfcCardException e) {
             showToast(getString(R.string.operation_not_supported), this);
