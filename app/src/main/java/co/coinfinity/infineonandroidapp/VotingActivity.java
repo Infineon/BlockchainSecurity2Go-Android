@@ -75,7 +75,7 @@ public class VotingActivity extends AppCompatActivity {
 
     private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
-    private String[] votingAnswer = {"1 billion", "2 billion", "3 billion", "4 billion"};
+    private String[] votingAnswer = {">5 billion", ">10 billion", ">15 billion", ">20 billion"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
