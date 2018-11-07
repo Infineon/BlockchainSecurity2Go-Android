@@ -33,11 +33,15 @@ public class AppConstants {
     public static final String PREF_KEY_GASPRICE_WEI = "gasPriceInWei";
     public static final String PREF_KEY_MAIN_NETWORK = "mainNetwork";
 
+    public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "15";
+
     // send eth
     public static final String PREF_KEY_RECIPIENT_ADDRESS = "recipientAddressTxt";
     public static final String PREF_KEY_GASLIMIT_SEND_ETH = "gasLimitSendEth";
 
     // send erc 20
+    // default contract: coinfinity CFTEST Tokens: https://etherscan.io/token/0xfb09d466e7fe677439d695241d6327ddd8153848
+    public static final String DEFAULT_ERC20_CONTRACT_ADDRESS = "0xFB09d466E7fE677439D695241d6327ddD8153848";
     public static final String PREF_KEY_ERC20_CONTRACT_ADDRESS = "erc20ContractAddress";
     public static final String PREF_KEY_ERC20_RECIPIENT_ADDRESS = "erc20RecipientAddress";
     public static final String PREF_KEY_ERC20_AMOUNT = "erc20TokenAmount";

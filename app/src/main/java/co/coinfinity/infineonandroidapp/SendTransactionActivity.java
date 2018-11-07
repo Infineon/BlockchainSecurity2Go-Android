@@ -95,7 +95,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         String savedRecipientAddressTxt = mPrefs.getString(PREF_KEY_RECIPIENT_ADDRESS, "");
         recipientAddressTxt.setText(savedRecipientAddressTxt);
-        String savedGasPriceWei = mPrefs.getString(PREF_KEY_GASPRICE_WEI, "21");
+        String savedGasPriceWei = mPrefs.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI);
         gasPriceTxt.setText(savedGasPriceWei);
         String savedGasLimit = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
         gasLimitTxt.setText(savedGasLimit);

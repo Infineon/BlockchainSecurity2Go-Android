@@ -101,11 +101,11 @@ public class SendErc20TokensActivity extends AppCompatActivity {
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         contractAddress.setText(pref.getString(PREF_KEY_ERC20_CONTRACT_ADDRESS,
-                "0xFB09d466E7fE677439D695241d6327ddD8153848"));
+                DEFAULT_ERC20_CONTRACT_ADDRESS));
         recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS,
                 ""));
-        gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
-        gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "60000"));
+        gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
+        gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "50000"));
         amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
 
         new Thread(() -> {
@@ -124,19 +124,20 @@ public class SendErc20TokensActivity extends AppCompatActivity {
      * this method read ERC20 balance via Api request and displays it.
      */
     public void readAndDisplayErc20Balance() {
-        BigInteger erc20Balance = new BigInteger("0");
+        BigDecimal erc20BalanceIn10e18Units = BigDecimal.ZERO;
         try {
             Log.d(TAG, "reading ERC20 Balance..");
-            erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress,
+            BigInteger erc20Balance = Erc20Utils.getErc20Balance(contractAddress.getText().toString(), ethAddress,
                     UiUtils.getFullNodeUrl(this));
-            Log.d(TAG, String.format("got ERC20 Balance: %s", erc20Balance));
+            erc20BalanceIn10e18Units = Convert.fromWei(erc20Balance.toString(10), Convert.Unit.ETHER);
+            Log.d(TAG, String.format("got ERC20 Balance: %s", erc20BalanceIn10e18Units.toPlainString()));
         } catch (Exception e) {
             Log.e(TAG, "exception while reading ERC20 Balance", e);
         }
-        BigInteger finalErc20Balance = erc20Balance;
+        BigDecimal finalErc20Balance = erc20BalanceIn10e18Units;
         this.runOnUiThread(() -> {
             infoTxt.setText(R.string.hold_card_payment);
-            currentBalance.setText(String.format(getString(R.string.current_token_balance), finalErc20Balance));
+            currentBalance.setText(String.format(getString(R.string.current_token_balance), finalErc20Balance.toPlainString()));
             progressBar.setVisibility(View.INVISIBLE);
         });
     }
@@ -193,6 +194,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         }
 
         final String valueStr = amountTxt.getText().toString();
+        BigDecimal amountInTokenBaseUnit = Convert.toWei(valueStr.equals("") ? "0" : valueStr, Convert.Unit.ETHER);
         BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString());
         gasPrice = gasPrice.multiply(spinnerAdapter.getMultiplier());
         final String gasLimitStr = gasLimitTxt.getText().toString();
@@ -201,10 +203,13 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         BigDecimal finalGasPrice = gasPrice;
         new Thread(() -> {
             try {
-                Log.d(TAG, "Sending ERC20 tokens " + ethAddress);
+                Log.d(TAG, "Sending ERC20 tokens: FROM: " + ethAddress + ", TO: " + recipientAddressTxt.getText().toString() +
+                        ", erc-20 contract: " + contractAddress.toString() + ", gasPriceInWei: " + finalGasPrice.toPlainString() +
+                        ", gasLimit: " + gasLimit.toBigInteger() + " amountInBaseUnit: " +
+                        amountInTokenBaseUnit.toBigInteger().toString());
                 final TransactionReceipt receipt = Erc20Utils.sendErc20Tokens(contractAddress.getText().toString(),
                         isoDep, pubKeyString, ethAddress, recipientAddressTxt.getText().toString(),
-                        new BigInteger(valueStr.equals("") ? "0" : valueStr), finalGasPrice.toBigInteger(),
+                        amountInTokenBaseUnit.toBigInteger(), finalGasPrice.toBigInteger(),
                         gasLimit.toBigInteger(), this, UiUtils.getFullNodeUrl(this));
                 Log.d(TAG, String.format("ERC20 tokens sent with Hash: %s", receipt.getTransactionHash()));
             } catch (Exception e) {

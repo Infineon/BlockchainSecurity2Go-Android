@@ -108,7 +108,7 @@ public class VotingActivity extends AppCompatActivity {
         }
 
         gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
-        gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, "21"));
+        gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
 
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
