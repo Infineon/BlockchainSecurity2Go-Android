@@ -44,7 +44,7 @@
     <string name="switched_to">Wechsel zu %s</string>
     <string name="could_not_vote">Konnte nicht voten!</string>
     <string name="card_not_whitelisted">Diese Karte ist nicht gewhitelistet!</string>
-    <string name="voting_please_wait">Vote für %s. Bitte warten…</string>
+    <string name="voting_please_wait">Vote für %s. Bitte Karte weiter ans Gerät halten…</string>
     <string name="could_not_send_transaction">Konnte Transaktion nicht versenden: %s</string>
     <string name="no_nfc">Kein NFC</string>
     <string name="enable_nfc">NFC muss aktiviert sein</string>

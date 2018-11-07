@@ -49,7 +49,7 @@
     <string name="could_not_vote">Could not vote!</string>
     <string name="incorrect_contract">Incorrect contract address!</string>
     <string name="card_not_whitelisted">This card is not whitelisted!</string>
-    <string name="voting_please_wait">Voting for %s. Please wait…</string>
+    <string name="voting_please_wait">Voting for %s. Please hold the card…</string>
     <string name="could_not_send_transaction">Could not send transaction: %s</string>
     <string name="no_nfc">No NFC</string>
     <string name="enable_nfc">You need to enable NFC</string>
