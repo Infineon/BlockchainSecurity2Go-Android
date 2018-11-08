@@ -75,7 +75,7 @@ public class VotingActivity extends AppCompatActivity {
 
     private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
-    private String[] votingAnswer = {">5 billion", ">10 billion", ">15 billion", ">20 billion"};
+    private String[] votingAnswers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +113,8 @@ public class VotingActivity extends AppCompatActivity {
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
         }
+
+        votingAnswers = new String[]{getString(R.string.answer_1), getString(R.string.answer_2), getString(R.string.answer_3), getString(R.string.answer_4)};
     }
 
     @Override
@@ -156,7 +158,7 @@ public class VotingActivity extends AppCompatActivity {
 
                 if (whiteListed) {
                     final int indexOfAnswer = addresses.indexOf(ethAddress.toUpperCase());
-                    showToast(String.format(getString(R.string.voting_please_wait), votingAnswer[indexOfAnswer]), this);
+                    showToast(String.format(getString(R.string.voting_please_wait), votingAnswers[indexOfAnswer]), this);
 
                     this.runOnUiThread(() -> {
                         TextView viewOfVote = null;

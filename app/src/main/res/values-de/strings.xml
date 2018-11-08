@@ -32,7 +32,8 @@
     <string name="answer_2">> 10 Milliarden</string>
     <string name="answer_3">> 15 Milliarden</string>
     <string name="answer_4">> 20 Milliarden</string>
-    <string name="question">Wie viele Security Controllers wurden von IFX in den letzten 10 Jahren verkauft?</string>
+    <string name="question">Wie viele Security Controllers wurden von Infineon in den letzten 10 Jahren verkauft?
+    </string>
     <string name="voted_successful">Erfolgreich gevoted!</string>
     <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
     <string name="refresh_balance">Aktualisiere Kontostand</string>

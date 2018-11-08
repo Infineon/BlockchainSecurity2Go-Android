@@ -36,7 +36,7 @@
     <string name="answer_2">> 10 billion</string>
     <string name="answer_3">> 15 billion</string>
     <string name="answer_4">> 20 billion</string>
-    <string name="question">How many security controllers have been sold by IFX in the last 10 years?</string>
+    <string name="question">How many security controllers have been sold by Infineon in the last 10 years?</string>
     <string name="voted_successful">Voted successful!</string>
     <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
     <string name="refresh_balance">Refresh balance</string>
