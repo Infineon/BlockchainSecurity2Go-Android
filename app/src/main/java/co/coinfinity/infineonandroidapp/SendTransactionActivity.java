@@ -21,6 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
+import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.ethereum.exceptions.InvalidEthereumAddressException;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
@@ -100,6 +101,12 @@ public class SendTransactionActivity extends AppCompatActivity {
         String savedGasLimit = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
         gasLimitTxt.setText(savedGasLimit);
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            pubKeyString = bundle.getString("pubKey");
+            ethAddress = bundle.getString("ethAddress");
+        }
+
         new Thread(() -> {
             try {
                 while (!activityPaused) {
@@ -164,12 +171,6 @@ public class SendTransactionActivity extends AppCompatActivity {
      * @param intent includes nfc extras
      */
     private void resolveIntent(Intent intent) {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            pubKeyString = bundle.getString("pubKey");
-            ethAddress = bundle.getString("ethAddress");
-        }
-
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         UiUtils.logTagInfo(tag);
         IsoDep isoDep = IsoDep.get(tag);
@@ -255,5 +256,21 @@ public class SendTransactionActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    public void onSendAll(View view) {
+        new Thread(() -> {
+            try {
+                EthBalanceBean balance = EthereumUtils.getBalance(ethAddress, UiUtils.getFullNodeUrl(this));
+                final BigDecimal ethBalanceInWei = Convert.toWei(balance.getEther(), Convert.Unit.ETHER);
+                final BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString().equals("") ? "0" : gasPriceTxt.getText().toString())
+                        .multiply(spinnerAdapter.getMultiplier());
+                final BigDecimal gasLimit = new BigDecimal(gasLimitTxt.getText().toString().equals("") ? "0" : gasLimitTxt.getText().toString());
+
+                this.runOnUiThread(() -> amountTxt.setText(Convert.fromWei(ethBalanceInWei.subtract(gasPrice.multiply(gasLimit)), Convert.Unit.ETHER).toPlainString()));
+            } catch (Exception e) {
+                Log.e(TAG, "exception while reading eth balance from api: ", e);
+            }
+        }).start();
     }
 }

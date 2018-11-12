@@ -44,6 +44,7 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
      */
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        multiplier = new BigDecimal("1");
         switch (position) {
             case 0:
                 break;

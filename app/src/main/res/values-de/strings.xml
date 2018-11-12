@@ -52,4 +52,5 @@
     <string name="invalid_ethereum_address">Falsche Ethereum Adresse!</string>
     <string name="incorrect_contract">Falsche Contract Adresse!</string>
     <string name="refreshing">Aktualisiere…</string>
+    <string name="send_all">Sende alles</string>
 </resources>
