@@ -41,6 +41,7 @@ public class AboutActivity extends AppCompatActivity {
                     .addGitHub("JakeWharton/butterknife", "Butterknife")
                     .addGitHub("medyo/android-about-page", "Android About Page")
                     .addWebsite("http://thenounproject.com/icon/74440/", "QR code icon by Rohith M S")
+                    .addWebsite("https://commons.wikimedia.org/wiki/File:NFC_logo.svg", "NFC icon CC0")
                     .addItem(getVersionElement())
                     .create();
 

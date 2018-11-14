@@ -18,10 +18,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true" android:layout_alignParentTop="true"
-                    android:layout_weight=".90">
+                    android:layout_weight=".80">
 
                 <android.support.design.widget.TextInputEditText
                         android:layout_height="match_parent"
@@ -30,11 +30,17 @@
                         android:layout_width="match_parent"/>
             </android.support.design.widget.TextInputLayout>
             <ImageButton
-                    android:layout_width="48dp"
+                    android:layout_width="47dp"
                     android:layout_height="47dp"
                     android:layout_alignParentEnd="true"
                     android:src="@drawable/qrcode" android:scaleType="fitCenter" android:onClick="scanQrCode"
-                    android:layout_alignParentTop="true" android:layout_weight=".10"/>
+                    android:layout_alignParentTop="true" android:layout_weight=".10" android:id="@+id/imageButton"/>
+            <ToggleButton
+                    android:text="ToggleButton"
+                    android:layout_width="47dp"
+                    android:layout_height="47dp" android:id="@+id/toggleButton" android:layout_weight=".10"
+                    android:textOff=" " android:textOn=" "
+                    android:drawableTop="@drawable/nfc_logo"/>
         </LinearLayout>
         <LinearLayout
                 android:orientation="horizontal"

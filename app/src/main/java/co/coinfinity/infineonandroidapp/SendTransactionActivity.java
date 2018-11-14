@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
@@ -26,14 +27,18 @@ import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
 import co.coinfinity.infineonandroidapp.ethereum.exceptions.InvalidEthereumAddressException;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.utils.UriUtils;
+import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
+import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
+import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.ChainId;
 import org.web3j.utils.Convert;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
@@ -62,6 +67,8 @@ public class SendTransactionActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.spinner)
     Spinner spinner;
+    @BindView(R.id.toggleButton)
+    ToggleButton toggleButton;
 
     private InputErrorUtils inputErrorUtils;
 
@@ -160,7 +167,6 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent) {
         if (inputErrorUtils.isNoInputError()) {
-            showToast(getString(R.string.hold_card_for_while), this);
             resolveIntent(intent);
         }
     }
@@ -179,8 +185,25 @@ public class SendTransactionActivity extends AppCompatActivity {
             return;
         }
 
-        new Thread(() -> sendTransactionAndShowFeedback(isoDep)).start();
-        finish();
+        if (toggleButton.isChecked()) {
+            try {
+                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
+                isoDep.close();
+                Log.d(TAG, String.format("pubkey read from card: '%s'", readRecipientAddress));
+                final String newAddress = Keys.toChecksumAddress(Keys.getAddress(readRecipientAddress));
+                // use web3j to format this public key as ETH address
+                showToast(String.format("Change recipient address to %s", newAddress), this);
+                recipientAddressTxt.setText(newAddress);
+                toggleButton.toggle();
+            } catch (IOException | NfcCardException e) {
+                showToast(getString(R.string.operation_not_supported), this);
+                Log.e(TAG, "Exception while reading public key from card: ", e);
+            }
+        } else {
+            showToast(getString(R.string.hold_card_for_while), this);
+            new Thread(() -> sendTransactionAndShowFeedback(isoDep)).start();
+            finish();
+        }
     }
 
     /**
