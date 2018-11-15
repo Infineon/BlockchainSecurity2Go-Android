@@ -26,7 +26,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="10sp" android:id="@+id/contractAddress"
-                        android:hint="@string/er20_contract_address"/>
+                        android:hint="@string/er20_contract_address" android:enabled="false"/>
             </android.support.design.widget.TextInputLayout>
             <ImageButton
                     android:layout_width="48dp"

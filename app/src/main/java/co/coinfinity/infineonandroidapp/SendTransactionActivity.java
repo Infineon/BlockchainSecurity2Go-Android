@@ -166,9 +166,7 @@ public class SendTransactionActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
-        if (inputErrorUtils.isNoInputError()) {
-            resolveIntent(intent);
-        }
+        resolveIntent(intent);
     }
 
     /**
@@ -200,9 +198,11 @@ public class SendTransactionActivity extends AppCompatActivity {
                 Log.e(TAG, "Exception while reading public key from card: ", e);
             }
         } else {
-            showToast(getString(R.string.hold_card_for_while), this);
-            new Thread(() -> sendTransactionAndShowFeedback(isoDep)).start();
-            finish();
+            if (inputErrorUtils.isNoInputError()) {
+                showToast(getString(R.string.hold_card_for_while), this);
+                new Thread(() -> sendTransactionAndShowFeedback(isoDep)).start();
+                finish();
+            }
         }
     }
 
