@@ -26,6 +26,7 @@ public class AboutActivity extends AppCompatActivity {
                     .isRTL(false)
                     .setDescription("This App was developed by Coinfinity GmbH to demonstrate the Infineon NFC card functionality via Ethereum blockchain.")
                     .addGroup("Connect with Coinfinity GmbH")
+                    .addWebsite("https://gitlab.com/coinfinity/infineon-android-demo", "Gitlab")
                     .addEmail("office@coinfinity.co")
                     .addWebsite("http://coinfinity.co/")
                     .addFacebook("coinfinitygmbh")
