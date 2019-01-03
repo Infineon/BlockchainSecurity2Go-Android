@@ -3,7 +3,7 @@ package co.coinfinity.infineonandroidapp.infineon.apdu;
 /**
  * @author Coinfinity, 2018
  */
-public class GetPubKeyApdu extends BaseCommandApdu {
+public class GetKeyInfoApdu extends BaseCommandApdu {
 
     /**
      * Instruction byte for GET PUBKEY operation
@@ -15,7 +15,7 @@ public class GetPubKeyApdu extends BaseCommandApdu {
      *
      * @param keyIndex key id on card, 0x00 means default key
      */
-    public GetPubKeyApdu(int keyIndex) {
+    public GetKeyInfoApdu(int keyIndex) {
         if (keyIndex > 0xFF) {
             throw new IllegalArgumentException("KeyIndex cannot be larger than 0xFF");
         }

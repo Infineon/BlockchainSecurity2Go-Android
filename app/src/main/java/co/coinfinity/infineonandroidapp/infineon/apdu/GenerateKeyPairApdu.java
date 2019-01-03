@@ -3,7 +3,7 @@ package co.coinfinity.infineonandroidapp.infineon.apdu;
 /**
  * @author Coinfinity, 2018
  */
-public class GenerateKeyPairKeyApdu extends BaseCommandApdu {
+public class GenerateKeyPairApdu extends BaseCommandApdu {
 
     /**
      * Instruction byte for GENERATE KEYPAIR operation.
@@ -20,7 +20,7 @@ public class GenerateKeyPairKeyApdu extends BaseCommandApdu {
      *
      * @param ellipticCurveIndex key id on card, 0x00 means default key
      */
-    public GenerateKeyPairKeyApdu(int ellipticCurveIndex) {
+    public GenerateKeyPairApdu(int ellipticCurveIndex) {
         if (ellipticCurveIndex > 0xFF) {
             throw new IllegalArgumentException("Curve index cannot be larger than 0xFF");
         }

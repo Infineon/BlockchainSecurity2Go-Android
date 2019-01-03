@@ -6,9 +6,10 @@ import co.coinfinity.infineonandroidapp.infineon.apdu.*;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import static co.coinfinity.AppConstants.TAG;
-import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairKeyApdu.CURVE_INDEX_SECP256K1;
+import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairApdu.CURVE_INDEX_SECP256K1;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.ResponseApdu.SW_KEY_WITH_IDX_NOT_AVAILABLE;
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 
@@ -67,6 +68,50 @@ public class NfcUtils {
         }
     }
 
+    public static boolean generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
+        GenerateKeyFromSeedApdu apdu = new GenerateKeyFromSeedApdu(seed.getBytes());
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY FROM SEED");
+
+        //TODO fix this later on
+        // get DATA part of response and convert to hex string
+        return bytesToHex(resp.getData()).equals("9000");
+    }
+
+    public static String initializePinAndReturnPuk(NfcTranceiver card, String pin) throws IOException, NfcCardException {
+        SetPinApdu apdu = new SetPinApdu(pin.getBytes());
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "SET PIN");
+
+        //TODO fix this later on - should return puk
+        // get DATA part of response and convert to hex string
+        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+    }
+
+    public static String changePin(NfcTranceiver card, String currentPin, String newPin) throws IOException, NfcCardException {
+        ChangePinApdu apdu = new ChangePinApdu(currentPin.getBytes(), newPin.getBytes());
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "CHANGE PIN");
+
+        //TODO fix this later on - should return puk
+        // get DATA part of response and convert to hex string
+        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+    }
+
+    public static String selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
+        SelectApplicationApdu apdu = new SelectApplicationApdu();
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "SELECT APPLICATION");
+
+        //TODO fix this later on - should return puk
+        // get DATA part of response and convert to hex string
+        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+    }
+
     /**
      * Read public key from card.
      *
@@ -78,10 +123,10 @@ public class NfcUtils {
      */
     private static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
             throws IOException, NfcCardException {
-        GetPubKeyApdu apdu = new GetPubKeyApdu(keyId);
+        GetKeyInfoApdu apdu = new GetKeyInfoApdu(keyId);
 
         // send apdu
-        ResponseApdu resp = tranceive(card, apdu, "GET PUBLIC KEY");
+        ResponseApdu resp = tranceive(card, apdu, "GET KEY INFO");
 
         // at the moment we only support uncompressed keys
         // (identified by prefix 0x04 followed by 2x 32 bytes, x- and y- coordinate)
@@ -135,10 +180,10 @@ public class NfcUtils {
      */
     private static int generateNewSecp256K1Keypair(NfcTranceiver card)
             throws IOException, NfcCardException {
-        GenerateKeyPairKeyApdu apdu = new GenerateKeyPairKeyApdu(CURVE_INDEX_SECP256K1);
+        GenerateKeyPairApdu apdu = new GenerateKeyPairApdu(CURVE_INDEX_SECP256K1);
 
         // send apdu and check response status word
-        ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY PAIR");
+        ResponseApdu resp = tranceive(card, apdu, "GENERATE KEYPAIR");
 
         // should return exactly 1 byte, indicating index of new key
         if (resp.getData().length != 1) {

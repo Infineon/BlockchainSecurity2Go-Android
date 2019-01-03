@@ -60,6 +60,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.github.medyo:android-about-page:1.2.4'
+    implementation 'org.apache.commons:commons-lang3:3.6'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 //    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     testImplementation 'junit:junit:4.12'
