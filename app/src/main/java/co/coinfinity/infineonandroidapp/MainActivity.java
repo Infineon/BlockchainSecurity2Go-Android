@@ -204,10 +204,12 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             Log.d(TAG, "Main activity, start reading price thread...");
             try {
-                updateBalance();
-                while (!activityPaused && ethAddress != null) {
-                    updateEuroPrice();
-                    TimeUnit.SECONDS.sleep(TEN_SECONDS);
+                if (ethAddress != null) {
+                    updateBalance();
+                    while (!activityPaused) {
+                        updateEuroPrice();
+                        TimeUnit.SECONDS.sleep(TEN_SECONDS);
+                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "exception while reading euro price from api: ", e);

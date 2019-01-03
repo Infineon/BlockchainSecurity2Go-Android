@@ -109,7 +109,8 @@ public class NfcUtils {
 
         //TODO fix this later on - should return puk
         // get DATA part of response and convert to hex string
-        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+//        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+        return null;
     }
 
     /**
@@ -130,7 +131,8 @@ public class NfcUtils {
 
         // at the moment we only support uncompressed keys
         // (identified by prefix 0x04 followed by 2x 32 bytes, x- and y- coordinate)
-        if (resp.getData()[0] != (byte) 0x04 || resp.getData().length != 65) {
+        //TODO do something with glob sig and sig count currently we just cut it off
+        if (resp.getData()[8] != (byte) 0x04 || resp.getData().length != 73) {
             throw new NfcCardException(resp.getSW1SW2(), String.format("Cannot parse returned " +
                     "PubKey from card. Expected uncompressed 64 byte long key data, prefixed with 0x04, " +
                     "but got instead: %s", bytesToHex(resp.getData())));
@@ -139,8 +141,8 @@ public class NfcUtils {
         // get DATA part of response and convert to hex string
         String hex = bytesToHex(resp.getData());
 
-        // cut off the first byte (2 hex characters), which contain the 0x04 (prefix for uncompressed keys)
-        return hex.substring(2);
+        // cut off the first bytes (10 hex characters), which contain global sig + sig count + 0x04 (prefix for uncompressed keys)
+        return hex.substring(10);
     }
 
     /**

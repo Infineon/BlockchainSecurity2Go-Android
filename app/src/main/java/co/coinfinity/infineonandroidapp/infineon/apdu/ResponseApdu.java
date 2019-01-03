@@ -10,6 +10,7 @@ public class ResponseApdu {
 
     public static final int SW_SUCCESS = 0x9000;
     public static final int SW_KEY_WITH_IDX_NOT_AVAILABLE = 0x6A88;
+    public static final int SW_SUCCESS_WITH_RESPONSE = 0x61;
 
     // According to ISO 7816-4 last two bytes are the "status words" (SW1 and SW2)
     /**
@@ -107,7 +108,7 @@ public class ResponseApdu {
      * @return true if the Status words indicated Success, false otherwise
      */
     public boolean isSuccess() {
-        return getSW1SW2() == SW_SUCCESS;
+        return getSW1SW2() == SW_SUCCESS || getSW1() == SW_SUCCESS_WITH_RESPONSE;
     }
 
     /**
