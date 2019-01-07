@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
         displayOnUI(GuiState.PROGRESS_BAR);
 
         try {
-            NfcUtils.selectApplication(IsoTagWrapper.of(isoDep));
+            //TODO TESTT !!!!
+//            NfcUtils.resetCard(IsoTagWrapper.of(isoDep));
             pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
             isoDep.close();
         } catch (IOException | NfcCardException e) {

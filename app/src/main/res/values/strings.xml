@@ -56,4 +56,5 @@
     <string name="invalid_ethereum_address">Invalid Ethereum address</string>
     <string name="refreshing">Refreshing…</string>
     <string name="send_all">Send all</string>
+    <string name="chang_pin">Change/Set PIN</string>
 </resources>

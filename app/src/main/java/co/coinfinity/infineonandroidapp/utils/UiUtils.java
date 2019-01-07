@@ -90,6 +90,18 @@ public class UiUtils {
                         .setNegativeButton(R.string.no, null)
                         .show();
                 return true;
+            case R.id.change_pin:
+                //TODO currently always true, check is needed
+                boolean isChangePin = true;
+                if (isChangePin) {
+                    Intent changePinIntent = new Intent(activity, ChangePinActivity.class);
+                    activity.startActivity(changePinIntent);
+                } else {
+                    Intent setPinIntent = new Intent(activity, SetPinActivity.class);
+                    activity.startActivity(setPinIntent);
+                }
+
+                return true;
             default:
                 return false;
 

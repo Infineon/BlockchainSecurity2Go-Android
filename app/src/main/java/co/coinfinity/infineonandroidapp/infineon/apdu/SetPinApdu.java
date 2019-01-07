@@ -6,12 +6,12 @@ package co.coinfinity.infineonandroidapp.infineon.apdu;
 public class SetPinApdu extends BaseCommandApdu {
 
     /**
-     * Instruction byte for GET PUBKEY operation
+     * Instruction byte for SET PIN operation
      */
     private static final int INS_SET_PIN = 0x40;
 
     /**
-     * Constructs a GET PUBKEY command apdu.
+     * Constructs a SET PIN command apdu.
      *
      * @param pin value used for initializing
      */

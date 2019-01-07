@@ -32,13 +32,15 @@ public class NfcUtils {
      */
     public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign)
             throws IOException, NfcCardException {
+        selectApplication(card);
+
         GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
 
         // send apdu and check response status word
         ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
 
-        //return signature data
-        return resp.getData();
+        //return signature data and remove first 8 bytes
+        return bytesToHex(resp.getData()).substring(16).getBytes();
     }
 
     /**
@@ -52,6 +54,7 @@ public class NfcUtils {
     public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card)
             throws IOException, NfcCardException {
         try {
+            selectApplication(card);
             // try to read public key
             return readPublicKeyFromCard(card, AppConstants.KEY_ID_ON_THE_CARD);
         } catch (NfcCardException e) {
@@ -69,6 +72,8 @@ public class NfcUtils {
     }
 
     public static boolean generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
+        selectApplication(card);
+
         GenerateKeyFromSeedApdu apdu = new GenerateKeyFromSeedApdu(seed.getBytes());
 
         // send apdu
@@ -80,6 +85,8 @@ public class NfcUtils {
     }
 
     public static String initializePinAndReturnPuk(NfcTranceiver card, String pin) throws IOException, NfcCardException {
+        selectApplication(card);
+
         SetPinApdu apdu = new SetPinApdu(pin.getBytes());
 
         // send apdu
@@ -91,6 +98,8 @@ public class NfcUtils {
     }
 
     public static String changePin(NfcTranceiver card, String currentPin, String newPin) throws IOException, NfcCardException {
+        selectApplication(card);
+
         ChangePinApdu apdu = new ChangePinApdu(currentPin.getBytes(), newPin.getBytes());
 
         // send apdu
@@ -101,7 +110,7 @@ public class NfcUtils {
         return new String(resp.getData(), 0, 8, Charset.defaultCharset());
     }
 
-    public static String selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
+    private static String selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
         SelectApplicationApdu apdu = new SelectApplicationApdu();
 
         // send apdu
@@ -111,6 +120,16 @@ public class NfcUtils {
         // get DATA part of response and convert to hex string
 //        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
         return null;
+    }
+
+    //TODO TESTT !!!!
+    public static void resetCard(NfcTranceiver card) throws IOException, NfcCardException {
+        selectApplication(card);
+
+        ResetApdu apdu = new ResetApdu();
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "RESET CARD");
     }
 
     /**

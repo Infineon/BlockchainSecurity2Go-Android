@@ -53,4 +53,5 @@
     <string name="incorrect_contract">Falsche Contract Adresse!</string>
     <string name="refreshing">Aktualisiere…</string>
     <string name="send_all">Sende alles</string>
+    <string name="chang_pin">Change/Set PIN</string>
 </resources>

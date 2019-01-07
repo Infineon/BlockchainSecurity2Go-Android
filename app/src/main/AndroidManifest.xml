@@ -29,17 +29,34 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SendTransactionActivity" android:label="@string/title_activity_send_transaction"
-                  android:theme="@style/AppTheme.NoActionBar">
+        <activity
+                android:name=".SendTransactionActivity"
+                android:label="@string/title_activity_send_transaction"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".SendErc20TokensActivity" android:label="@string/title_activity_send_erc20_tokens"
-                  android:theme="@style/AppTheme.NoActionBar">
+        <activity
+                android:name=".SendErc20TokensActivity"
+                android:label="@string/title_activity_send_erc20_tokens"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".VotingActivity" android:label="@string/title_activity_voting"
-                  android:theme="@style/AppTheme.NoActionBar">
+        <activity
+                android:name=".VotingActivity"
+                android:label="@string/title_activity_voting"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".AboutActivity" android:label="@string/title_activity_voting"
-                  android:theme="@style/AppTheme.NoActionBar">
+        <activity
+                android:name=".AboutActivity"
+                android:label="@string/title_activity_voting"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".ChangePinActivity"
+                android:label="Change PIN"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".SetPinActivity">
+        </activity>
+        <activity android:name=".UnlockPinActivity">
         </activity>
     </application>
 
