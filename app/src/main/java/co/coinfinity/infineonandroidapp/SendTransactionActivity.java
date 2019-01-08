@@ -185,7 +185,8 @@ public class SendTransactionActivity extends AppCompatActivity {
 
         if (toggleButton.isChecked()) {
             try {
-                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
+                SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
                 isoDep.close();
                 Log.d(TAG, String.format("pubkey read from card: '%s'", readRecipientAddress));
                 final String newAddress = Keys.toChecksumAddress(Keys.getAddress(readRecipientAddress));
@@ -230,7 +231,7 @@ public class SendTransactionActivity extends AppCompatActivity {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId);
+                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
         } catch (NfcCardException e) {
             showToast(getString(R.string.operation_not_supported), this);

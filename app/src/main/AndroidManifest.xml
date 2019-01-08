@@ -58,6 +58,8 @@
         </activity>
         <activity android:name=".UnlockPinActivity">
         </activity>
+        <activity android:name=".GenerateFromSeedActivity">
+        </activity>
     </application>
 
 </manifest>

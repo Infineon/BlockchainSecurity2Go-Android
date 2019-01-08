@@ -1,7 +1,9 @@
 package co.coinfinity.infineonandroidapp;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -13,10 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
@@ -68,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView nfcIcon;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.keyIndexSpinner)
+    Spinner keyIndexSpinner;
 
     private String pubKeyString;
     private String ethAddress;
@@ -102,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             //TODO TESTT !!!!
 //            NfcUtils.resetCard(IsoTagWrapper.of(isoDep));
-            pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep));
+            SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+            pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
             isoDep.close();
         } catch (IOException | NfcCardException e) {
             showToast(getString(R.string.operation_not_supported), this);
@@ -176,6 +178,21 @@ public class MainActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+        keyIndexSpinner.setSelection(1);
+        keyIndexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                SharedPreferences prefs = parentView.getContext().getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor mEditor = prefs.edit();
+                mEditor.putInt(KEY_INDEX_OF_CARD, position)
+                        .apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
     }
 
     @Override

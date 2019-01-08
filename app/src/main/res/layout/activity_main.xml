@@ -10,7 +10,8 @@
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" tools:layout_editor_absoluteY="0dp"
+            tools:layout_editor_absoluteX="16dp">
         <android.support.v7.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -22,6 +23,20 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:gravity="center" android:layout_margin="10dp">
+            <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_gravity="right">
+                <TextView
+                        android:text="Key Index:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView3" android:layout_weight="1"
+                        android:textSize="18sp"/>
+                <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/keyIndexSpinner"
+                        android:entries="@array/key_index" android:layout_weight="1"/>
+            </LinearLayout>
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

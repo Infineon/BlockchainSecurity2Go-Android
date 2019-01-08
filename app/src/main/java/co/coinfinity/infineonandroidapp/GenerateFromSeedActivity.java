@@ -1,6 +1,5 @@
 package co.coinfinity.infineonandroidapp;
 
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -23,18 +22,19 @@ import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
-public class UnlockPinActivity extends AppCompatActivity {
+public class GenerateFromSeedActivity extends AppCompatActivity {
 
-    @BindView(R.id.puk)
-    TextView puk;
+    @BindView(R.id.seed)
+    TextView seed;
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_unlock_pin);
+        setContentView(R.layout.activity_generate_from_seed);
         ButterKnife.bind(this);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -76,18 +76,10 @@ public class UnlockPinActivity extends AppCompatActivity {
         }
 
         try {
-            NfcUtils.unlockPin(IsoTagWrapper.of(isoDep), puk.getText().toString());
-
-            AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                    .setTitle(R.string.chang_pin)
-                    .setMessage("Unlocked PIN: " + puk.getText())
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        finish();
-                    });
-            alert.show();
+            NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), seed.getText().toString());
         } catch (IOException | NfcCardException e) {
-            showToast("Could not unlock PIN!", this);
-            Log.e(TAG, "Exception while unlocking PIN", e);
+            showToast("Could not generate key from seed!", this);
+            Log.e(TAG, "Exception while generating key from seed", e);
         }
     }
 

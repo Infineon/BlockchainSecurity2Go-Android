@@ -54,4 +54,6 @@
     <string name="refreshing">Aktualisiere…</string>
     <string name="send_all">Sende alles</string>
     <string name="chang_pin">Change/Set PIN</string>
+    <string name="unlock_pin">Unlock PIN</string>
+    <string name="generate_from_seed">Generate key from seed</string>
 </resources>

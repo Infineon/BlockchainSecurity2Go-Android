@@ -1,12 +1,12 @@
 package co.coinfinity.infineonandroidapp.infineon;
 
 import android.util.Log;
-import co.coinfinity.AppConstants;
 import co.coinfinity.infineonandroidapp.infineon.apdu.*;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairApdu.CURVE_INDEX_SECP256K1;
@@ -40,7 +40,7 @@ public class NfcUtils {
         ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
 
         //return signature data and remove first 8 bytes
-        return bytesToHex(resp.getData()).substring(16).getBytes();
+        return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
     }
 
     /**
@@ -51,12 +51,12 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
-    public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card)
+    public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card, int keyIndex)
             throws IOException, NfcCardException {
         try {
             selectApplication(card);
             // try to read public key
-            return readPublicKeyFromCard(card, AppConstants.KEY_ID_ON_THE_CARD);
+            return readPublicKeyFromCard(card, keyIndex);
         } catch (NfcCardException e) {
             // if Public key is not available yet (Status words: 0x6A88)
             if (e.getSw1Sw2() == SW_KEY_WITH_IDX_NOT_AVAILABLE) {
@@ -71,17 +71,14 @@ public class NfcUtils {
         }
     }
 
-    public static boolean generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
+    public static void generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
         selectApplication(card);
 
         GenerateKeyFromSeedApdu apdu = new GenerateKeyFromSeedApdu(seed.getBytes());
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY FROM SEED");
-
-        //TODO fix this later on
-        // get DATA part of response and convert to hex string
-        return bytesToHex(resp.getData()).equals("9000");
+        //TODO what to return here? boolean?
     }
 
     public static String initializePinAndReturnPuk(NfcTranceiver card, String pin) throws IOException, NfcCardException {
@@ -110,16 +107,22 @@ public class NfcUtils {
         return new String(resp.getData(), 0, 8, Charset.defaultCharset());
     }
 
-    private static String selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
+    public static void unlockPin(NfcTranceiver card, String puk) throws IOException, NfcCardException {
+        selectApplication(card);
+
+        UnlockPinApdu apdu = new UnlockPinApdu(puk.getBytes());
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "UNLOCK PIN");
+        //TODO what to do with response?
+    }
+
+    private static void selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
         SelectApplicationApdu apdu = new SelectApplicationApdu();
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "SELECT APPLICATION");
-
-        //TODO fix this later on - should return puk
-        // get DATA part of response and convert to hex string
-//        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
-        return null;
+        //TODO what to do with response?
     }
 
     //TODO TESTT !!!!

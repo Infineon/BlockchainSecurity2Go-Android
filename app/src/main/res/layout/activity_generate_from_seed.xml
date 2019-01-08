@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".UnlockPinActivity">
+        tools:context=".GenerateFromSeedActivity">
 
     <LinearLayout
             android:orientation="vertical"
@@ -13,7 +13,7 @@
             android:layout_height="643dp" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
             android:textAlignment="center" android:gravity="center">
         <TextView
-                android:text="Enter your PUK to unlock PIN:"
+                android:text="Enter import seed to generate key:"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/textView2" android:textSize="24sp"/>
         <EditText
@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/puk" android:hint="PUK"/>
+                android:id="@+id/seed" android:hint="Import seed"/>
         <ImageView
                 android:id="@+id/image_nfc_icon"
                 android:layout_width="117dp"

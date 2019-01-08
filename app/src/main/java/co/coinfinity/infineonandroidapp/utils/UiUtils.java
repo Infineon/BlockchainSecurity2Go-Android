@@ -102,6 +102,12 @@ public class UiUtils {
                 }
 
                 return true;
+            case R.id.unlock_pin:
+                Intent unlockPinIntent = new Intent(activity, UnlockPinActivity.class);
+                activity.startActivity(unlockPinIntent);
+            case R.id.generate_from_seed:
+                Intent generateFromSeedIntent = new Intent(activity, GenerateFromSeedActivity.class);
+                activity.startActivity(generateFromSeedIntent);
             default:
                 return false;
 

@@ -68,7 +68,7 @@ public class EthereumUtilsTest {
                 Convert.toWei("0.002", Convert.Unit.ETHER).toBigInteger(),
                 isoDep,
                 Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128),
-                "", ROPSTEN_URI, ChainId.ROPSTEN);
+                "", ROPSTEN_URI, ChainId.ROPSTEN, 1);
 
         assertNull(ethSendTransaction.getError());
         System.out.println(ethSendTransaction.getTransactionHash());

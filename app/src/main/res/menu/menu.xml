@@ -10,6 +10,12 @@
     <item android:id="@+id/change_pin"
           android:title="@string/chang_pin"
           app:showAsAction="never"/>
+    <item android:id="@+id/unlock_pin"
+          android:title="@string/unlock_pin"
+          app:showAsAction="never"/>
+    <item android:id="@+id/generate_from_seed"
+          android:title="@string/generate_from_seed"
+          app:showAsAction="never"/>
     <item android:id="@+id/switch_network"
           android:title="@string/switch_network"
           app:showAsAction="never"/>
