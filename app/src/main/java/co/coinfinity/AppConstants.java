@@ -24,13 +24,15 @@ public class AppConstants {
     // preferences
     public static final String PREFERENCE_FILENAME = "CoinfineonPrefs";
 
-    // used for all 3 activities:
+    // used for all activities:
     public static final String PREF_KEY_GASPRICE_WEI = "gasPriceInWei";
     public static final String PREF_KEY_MAIN_NETWORK = "mainNetwork";
 
     public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "15";
 
     public static final String KEY_INDEX_OF_CARD = "keyIndexOfCard";
+
+    public static final String PREF_PIN_SET = "pinSet";
 
     // send eth
     public static final String PREF_KEY_RECIPIENT_ADDRESS = "recipientAddressTxt";

@@ -6,7 +6,6 @@ import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairApdu.CURVE_INDEX_SECP256K1;
@@ -39,8 +38,11 @@ public class NfcUtils {
         // send apdu and check response status word
         ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
 
+        // get DATA part of response and convert to hex string
+        String hex = bytesToHex(resp.getData());
+
         //return signature data and remove first 8 bytes
-        return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
+        return hex.substring(8).getBytes();
     }
 
     /**
@@ -60,8 +62,11 @@ public class NfcUtils {
         } catch (NfcCardException e) {
             // if Public key is not available yet (Status words: 0x6A88)
             if (e.getSw1Sw2() == SW_KEY_WITH_IDX_NOT_AVAILABLE) {
-                // create a new keypair
-                int newKeyIndex = generateNewSecp256K1Keypair(card);
+                int newKeyIndex;
+                do {
+                    // create a new keypair
+                    newKeyIndex = generateNewSecp256K1Keypair(card);
+                } while (newKeyIndex <= keyIndex);
                 // and ask for the pubkey of the newly created keypair
                 return readPublicKeyFromCard(card, newKeyIndex);
             } else {
@@ -114,6 +119,16 @@ public class NfcUtils {
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "UNLOCK PIN");
+        //TODO what to do with response?
+    }
+
+    public static void verifyPin(NfcTranceiver card, String pin) throws IOException, NfcCardException {
+        selectApplication(card);
+
+        VerifyPinApdu apdu = new VerifyPinApdu(pin.getBytes());
+
+        // send apdu
+        ResponseApdu resp = tranceive(card, apdu, "VERIFY PIN");
         //TODO what to do with response?
     }
 

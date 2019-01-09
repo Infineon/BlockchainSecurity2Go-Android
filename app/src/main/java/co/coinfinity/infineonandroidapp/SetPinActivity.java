@@ -2,7 +2,9 @@ package co.coinfinity.infineonandroidapp;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -20,7 +22,7 @@ import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 public class SetPinActivity extends AppCompatActivity {
@@ -77,6 +79,11 @@ public class SetPinActivity extends AppCompatActivity {
 
         try {
             final String puk = NfcUtils.initializePinAndReturnPuk(IsoTagWrapper.of(isoDep), pin.getText().toString());
+
+            SharedPreferences prefs = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor mEditor = prefs.edit();
+            mEditor.putBoolean(PREF_PIN_SET, true)
+                    .apply();
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(R.string.chang_pin)

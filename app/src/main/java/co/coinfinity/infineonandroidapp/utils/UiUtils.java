@@ -90,24 +90,22 @@ public class UiUtils {
                         .setNegativeButton(R.string.no, null)
                         .show();
                 return true;
+            case R.id.set_pin:
+                Intent setPinIntent = new Intent(activity, SetPinActivity.class);
+                activity.startActivity(setPinIntent);
+                return true;
             case R.id.change_pin:
-                //TODO currently always true, check is needed
-                boolean isChangePin = true;
-                if (isChangePin) {
-                    Intent changePinIntent = new Intent(activity, ChangePinActivity.class);
-                    activity.startActivity(changePinIntent);
-                } else {
-                    Intent setPinIntent = new Intent(activity, SetPinActivity.class);
-                    activity.startActivity(setPinIntent);
-                }
-
+                Intent changePinIntent = new Intent(activity, ChangePinActivity.class);
+                activity.startActivity(changePinIntent);
                 return true;
             case R.id.unlock_pin:
                 Intent unlockPinIntent = new Intent(activity, UnlockPinActivity.class);
                 activity.startActivity(unlockPinIntent);
+                return true;
             case R.id.generate_from_seed:
                 Intent generateFromSeedIntent = new Intent(activity, GenerateFromSeedActivity.class);
                 activity.startActivity(generateFromSeedIntent);
+                return true;
             default:
                 return false;
 
