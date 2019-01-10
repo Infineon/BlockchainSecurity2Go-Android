@@ -33,8 +33,8 @@ public class ExceptionHandler {
                     throw new SetPinException(SW1SW2, "Condition of use not satisfied - No PIN has been set – in “PIN inactive” state ");
             }
         } else if (commandApdu instanceof ChangePinApdu) {
-            if (Integer.toString(SW1SW2).startsWith("63C")) {
-                throw new ChangePinException(SW1SW2, "Authentication failed, PIN is not valid, " + Integer.toString(SW1SW2).substring(3, 3) + " retries remaining");
+            if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("63C")) {
+                throw new ChangePinException(SW1SW2, "Authentication failed, PIN is not valid, " + Integer.toHexString(SW1SW2).toUpperCase().substring(3, 4) + " retries remaining");
             }
             switch (SW1SW2) {
                 case 0x6983:
@@ -46,8 +46,8 @@ public class ExceptionHandler {
                             "Format of data field not valid (i.e lengths do not match)");
             }
         } else if (commandApdu instanceof VerifyPinApdu) {
-            if (Integer.toString(SW1SW2).startsWith("63C")) {
-                throw new VerifyPinException(SW1SW2, "Authentication failed, PIN is not valid (" + Integer.toString(SW1SW2).substring(3, 3) + " retries allowed)");
+            if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("63C")) {
+                throw new VerifyPinException(SW1SW2, "Authentication failed, PIN is not valid (" + Integer.toHexString(SW1SW2).toUpperCase().substring(3, 4) + " retries allowed)");
             }
             switch (SW1SW2) {
                 case 0x6983:
@@ -56,8 +56,8 @@ public class ExceptionHandler {
                     throw new VerifyPinException(SW1SW2, "Condition of use not satisfied  - PIN has not been set");
             }
         } else if (commandApdu instanceof UnlockPinApdu) {
-            if (Integer.toString(SW1SW2).startsWith("63C")) {
-                throw new UnlockPinException(SW1SW2, "Authentication failed, PUK is not valid, " + Integer.toString(SW1SW2).substring(3, 3) + " retries remaining");
+            if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("63C")) {
+                throw new UnlockPinException(SW1SW2, "Authentication failed, PUK is not valid, " + Integer.toHexString(SW1SW2).toUpperCase().substring(3, 4) + " retries remaining");
             }
             switch (SW1SW2) {
                 case 0x6983:
@@ -71,8 +71,8 @@ public class ExceptionHandler {
             }
         }
 
-        if (Integer.toString(SW1SW2).startsWith("64")) {
-            throw new UnlockPinException(SW1SW2, "Operation failed (further Information in " + Integer.toString(SW1SW2).substring(2, 3) + ")");
+        if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("64")) {
+            throw new UnlockPinException(SW1SW2, "Operation failed (further Information in SW2: " + Integer.toHexString(SW1SW2).toUpperCase().substring(2, 4) + ")");
         }
 
         switch (SW1SW2) {
@@ -83,13 +83,13 @@ public class ExceptionHandler {
             case 0x6A87:
                 throw new NfcCardException(SW1SW2, "Lc inconsistent");
             case 0x6D00:
-                throw new NfcCardException(SW1SW2, "Instruction code is not supported or invalid or SELECT APP command not sent before");
+                throw new NfcCardException(SW1SW2, "Instruction code is not supported or invalid or SELECT AID command not sent before");
             case 0x6E00:
                 throw new NfcCardException(SW1SW2, "Class not supported");
             case 0x6F00:
-                throw new NfcCardException(SW1SW2, "Unknown error");
+                throw new NfcCardException(SW1SW2, "Unknown Error, SW1 SW2: 6F00");
             default:
-                throw new NfcCardException(SW1SW2, "Unknown Error");
+                throw new NfcCardException(SW1SW2, "Unknown Error, SW1 SW2: " + Integer.toHexString(SW1SW2).toUpperCase());
         }
 
     }
