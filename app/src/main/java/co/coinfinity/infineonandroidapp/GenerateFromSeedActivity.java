@@ -78,7 +78,7 @@ public class GenerateFromSeedActivity extends AppCompatActivity {
         try {
             NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), seed.getText().toString());
         } catch (IOException | NfcCardException e) {
-            showToast("Could not generate key from seed!", this);
+            showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while generating key from seed", e);
         }
     }

@@ -16,7 +16,7 @@ public class AppConstants {
     public static final String MAINNET_URI = HTTPS + "mainnet" + BASEURL;
     public static final String ROPSTEN_URI = HTTPS + "ropsten" + BASEURL;
     private static final String ETHEUR = "ETHEUR";
-    public static final String COINFINITY_BASE_URL = "https://coinfinity.co";
+    private static final String COINFINITY_BASE_URL = "https://coinfinity.co";
     public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = COINFINITY_BASE_URL + "/price/" + ETHEUR;
     public static final int TEN_SECONDS = 10;
     public static final int FIVE_SECONDS = 5;
@@ -31,8 +31,6 @@ public class AppConstants {
     public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "15";
 
     public static final String KEY_INDEX_OF_CARD = "keyIndexOfCard";
-
-    public static final String PREF_PIN_SET = "pinSet";
 
     // send eth
     public static final String PREF_KEY_RECIPIENT_ADDRESS = "recipientAddressTxt";

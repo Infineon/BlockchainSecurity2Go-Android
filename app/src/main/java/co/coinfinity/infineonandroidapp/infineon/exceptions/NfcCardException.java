@@ -23,8 +23,8 @@ public class NfcCardException extends Exception {
 
     @Override
     public String toString() {
-        return "NfcCardException{" +
-                "sw1sw2=" + sw1sw2 +
+        return "{" +
+                "sw1sw2=" + Integer.toHexString(sw1sw2) +
                 ", message='" + message + '\'' +
                 '}';
     }

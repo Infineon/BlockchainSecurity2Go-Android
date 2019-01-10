@@ -37,7 +37,7 @@ public class VotingUtilsTest {
     @Test
     public void testVote() throws Exception {
         PowerMockito.mockStatic(NfcUtils.class);
-        when(NfcUtils.generateSignature(any(), anyInt(), any())).thenAnswer(
+        when(NfcUtils.generateSignature(any(), anyInt(), any(), any())).thenAnswer(
                 (Answer) invocation -> {
                     Object[] args = invocation.getArguments();
                     return TransactionSigner.signTransaction((byte[]) args[2]);

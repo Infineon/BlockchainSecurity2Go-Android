@@ -2,6 +2,7 @@ package co.coinfinity.infineonandroidapp.infineon;
 
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.infineon.apdu.*;
+import co.coinfinity.infineonandroidapp.infineon.exceptions.ExceptionHandler;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
@@ -29,9 +30,13 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
-    public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign)
+    public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, String pin)
             throws IOException, NfcCardException {
         selectApplication(card);
+
+        if (pin != null && !pin.isEmpty()) {
+            verifyPin(card, pin);
+        }
 
         GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
 
@@ -123,8 +128,6 @@ public class NfcUtils {
     }
 
     public static void verifyPin(NfcTranceiver card, String pin) throws IOException, NfcCardException {
-        selectApplication(card);
-
         VerifyPinApdu apdu = new VerifyPinApdu(pin.getBytes());
 
         // send apdu
@@ -200,9 +203,7 @@ public class NfcUtils {
 
         // check if Status OK
         if (!responseApdu.isSuccess()) {
-            throw new NfcCardException(responseApdu.getSW1SW2(),
-                    String.format("Sending %s failed with response status 0x%s",
-                            commandName, responseApdu.getSW1SW2HexString()));
+            ExceptionHandler.handleErrorCodes(commandApdu, responseApdu.getSW1SW2());
         }
 
         // return on success

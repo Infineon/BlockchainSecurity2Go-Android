@@ -89,7 +89,7 @@ public class ChangePinActivity extends AppCompatActivity {
                     });
             alert.show();
         } catch (IOException | NfcCardException e) {
-            showToast("Could not change PIN!", this);
+            showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while changing PIN", e);
         }
     }

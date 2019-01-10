@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
             isoDep.close();
         } catch (IOException | NfcCardException e) {
-            showToast(getString(R.string.operation_not_supported), this);
+            showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while reading public key from card: ", e);
             return;
         }

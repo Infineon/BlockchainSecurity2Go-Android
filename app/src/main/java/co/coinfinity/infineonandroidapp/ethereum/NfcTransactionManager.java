@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
+import android.widget.TextView;
 import co.coinfinity.infineonandroidapp.R;
 import co.coinfinity.infineonandroidapp.VotingActivity;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
@@ -71,7 +72,7 @@ public class NfcTransactionManager extends TransactionManager {
         try {
             Log.d(TAG, "sending ETH transaction..");
             final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
-                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1));
+                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), ((TextView) activity.findViewById(R.id.pin)).getText().toString());
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {
@@ -83,7 +84,8 @@ public class NfcTransactionManager extends TransactionManager {
             return response;
         } catch (NfcCardException e) {
             if (activity != null) {
-                showToast(activity.getString(R.string.operation_not_supported), activity);
+                showToast(e.getMessage(), activity);
+                Log.e(TAG, "Exception while sending ether transaction", e);
             }
         } catch (Exception e) {
             Log.e(TAG, "Exception while sending ether transaction", e);

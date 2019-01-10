@@ -61,6 +61,8 @@ public class SendTransactionActivity extends AppCompatActivity {
     TextView gasLimitTxt;
     @BindView(R.id.priceInEuro)
     TextView priceInEuroTxt;
+    @BindView(R.id.pin)
+    TextView pinTxt;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
@@ -195,7 +197,7 @@ public class SendTransactionActivity extends AppCompatActivity {
                 recipientAddressTxt.setText(newAddress);
                 toggleButton.toggle();
             } catch (IOException | NfcCardException e) {
-                showToast(getString(R.string.operation_not_supported), this);
+                showToast(e.getMessage(), this);
                 Log.e(TAG, "Exception while reading public key from card: ", e);
             }
         } else {
@@ -231,14 +233,11 @@ public class SendTransactionActivity extends AppCompatActivity {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1));
+                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString());
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
-        } catch (NfcCardException e) {
-            showToast(getString(R.string.operation_not_supported), this);
-            return;
         } catch (Exception e) {
+            showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while sending ether transaction", e);
-            showToast(String.format(getString(R.string.could_not_send_transaction), e.getMessage()), this);
             return;
         }
 

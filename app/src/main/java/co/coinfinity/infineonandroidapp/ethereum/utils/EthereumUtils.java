@@ -98,7 +98,7 @@ public class EthereumUtils {
      */
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
                                                      String to, BigInteger value, IsoDep isoTag,
-                                                     String publicKey, String data, String url, byte chainId, int keyIndex) throws Exception {
+                                                     String publicKey, String data, String url, byte chainId, int keyIndex, String pin) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
@@ -107,7 +107,7 @@ public class EthereumUtils {
         byte[] encodedTransaction = encode(rawTransaction, chainId);
 
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-        final byte[] signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), keyIndex, hashedTransaction);
+        final byte[] signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), keyIndex, hashedTransaction, pin);
 
         Log.d(TAG, String.format("signed transaction: %s", ByteUtils.bytesToHex(signedTransaction)));
 

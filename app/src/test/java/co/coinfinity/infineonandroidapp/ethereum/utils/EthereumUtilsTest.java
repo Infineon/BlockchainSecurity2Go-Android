@@ -54,7 +54,7 @@ public class EthereumUtilsTest {
     @Test
     public void testSendTransaction() throws Exception {
         PowerMockito.mockStatic(NfcUtils.class);
-        when(NfcUtils.generateSignature(any(), anyInt(), any())).thenAnswer(
+        when(NfcUtils.generateSignature(any(), anyInt(), any(), any())).thenAnswer(
                 (Answer) invocation -> {
                     Object[] args = invocation.getArguments();
                     return TransactionSigner.signTransaction((byte[]) args[2]);
@@ -68,7 +68,7 @@ public class EthereumUtilsTest {
                 Convert.toWei("0.002", Convert.Unit.ETHER).toBigInteger(),
                 isoDep,
                 Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128),
-                "", ROPSTEN_URI, ChainId.ROPSTEN, 1);
+                "", ROPSTEN_URI, ChainId.ROPSTEN, 1, null);
 
         assertNull(ethSendTransaction.getError());
         System.out.println(ethSendTransaction.getTransactionHash());

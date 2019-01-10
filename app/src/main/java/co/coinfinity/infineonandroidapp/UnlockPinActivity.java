@@ -86,7 +86,7 @@ public class UnlockPinActivity extends AppCompatActivity {
                     });
             alert.show();
         } catch (IOException | NfcCardException e) {
-            showToast("Could not unlock PIN!", this);
+            showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while unlocking PIN", e);
         }
     }
