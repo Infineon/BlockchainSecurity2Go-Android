@@ -60,4 +60,5 @@
     <string name="unlock_pin">Unlock PIN</string>
     <string name="generate_from_seed">Generate key from seed</string>
     <string name="set_pin">Set PIN</string>
+    <string name="label_key_index">Key Index:</string>
 </resources>

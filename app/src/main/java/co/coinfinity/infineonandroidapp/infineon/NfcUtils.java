@@ -4,6 +4,7 @@ import android.util.Log;
 import co.coinfinity.infineonandroidapp.infineon.apdu.*;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.ExceptionHandler;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
+import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -13,6 +14,7 @@ import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairApdu.CURVE_INDEX_SECP256K1;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.ResponseApdu.SW_KEY_WITH_IDX_NOT_AVAILABLE;
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
+import static co.coinfinity.infineonandroidapp.utils.ByteUtils.fromHexString;
 
 /**
  * Utils class used to interact with the Infineon card via NFC.
@@ -22,13 +24,19 @@ import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 public class NfcUtils {
 
     /**
+     * AID of com.ifx.javacard.applets.blockchain.Security2Go
+     */
+    public static final byte[] AID_INFINEON_BLOCKCHAIN2GO = fromHexString("D2760000041502000100000001");
+
+
+    /**
      * Generate an ECDSA signature.
      *
      * @param card       nfc card
      * @param keyIndex   index of the key to use
      * @param dataToSign data to be signed (hash)
      * @return signature data as byte array
-     * @throws IOException      on communication errors
+     * @throws IOException on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, String pin)
@@ -53,7 +61,7 @@ public class NfcUtils {
      *
      * @param card nfc card
      * @return public key as hexadecimal String
-     * @throws IOException      on communication errors
+     * @throws IOException on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card, int keyIndex)
@@ -134,8 +142,7 @@ public class NfcUtils {
     }
 
     private static void selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
-        SelectApplicationApdu apdu = new SelectApplicationApdu();
-
+        SelectApplicationApdu apdu = new SelectApplicationApdu(AID_INFINEON_BLOCKCHAIN2GO);
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "SELECT APPLICATION");
         //TODO what to do with response?
@@ -157,7 +164,7 @@ public class NfcUtils {
      * @param card  nfc card
      * @param keyId key to get
      * @return public key as hexadecimal String
-     * @throws IOException      on communication errors
+     * @throws IOException on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     private static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
@@ -190,7 +197,7 @@ public class NfcUtils {
      * @param commandApdu command
      * @param commandName used for error message
      * @return response
-     * @throws IOException      on communication errors
+     * @throws IOException on communication errors
      * @throws NfcCardException if card reponse status words are != 0x9000
      */
     private static ResponseApdu tranceive(NfcTranceiver card, BaseCommandApdu commandApdu, String commandName)
@@ -213,7 +220,7 @@ public class NfcUtils {
      *
      * @param card nfc tranceiver
      * @return index of the newly created key
-     * @throws IOException      on communication errors
+     * @throws IOException on communication errors
      * @throws NfcCardException when card returns something other than 0x9000
      */
     private static int generateNewSecp256K1Keypair(NfcTranceiver card)

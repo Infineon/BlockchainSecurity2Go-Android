@@ -7,6 +7,8 @@ import java.io.IOException;
 
 /**
  * Wraps IsoDep tag into NfcTranceiver interface.
+ * (this wrapper is used so that the co.coinfinity.infineonandroidapp.infineon package
+ * doesn't have any Android dependencies)
  */
 public class IsoTagWrapper implements NfcTranceiver {
 

@@ -16,7 +16,7 @@ package co.coinfinity.infineonandroidapp.utils;
  * limitations under the License.
  */
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 final public class ByteWriter {
 
@@ -116,12 +116,8 @@ final public class ByteWriter {
     }
 
     public void putRawStringUtf8(String s) {
-        try {
-            byte[] bytes = s.getBytes("UTF-8");
-            putBytes(bytes);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+        putBytes(bytes);
     }
 
     public byte[] toBytes() {
