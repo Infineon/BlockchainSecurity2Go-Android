@@ -4,7 +4,6 @@ import android.util.Log;
 import co.coinfinity.infineonandroidapp.infineon.apdu.*;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.ExceptionHandler;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
-import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -37,7 +36,7 @@ public class NfcUtils {
      * @param dataToSign data to be signed (hash)
      * @return signature data as byte array
      * @throws IOException on communication errors
-     * @throws NfcCardException when card returns something other than 0x9000
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, String pin)
             throws IOException, NfcCardException {
@@ -62,7 +61,7 @@ public class NfcUtils {
      * @param card nfc card
      * @return public key as hexadecimal String
      * @throws IOException on communication errors
-     * @throws NfcCardException when card returns something other than 0x9000
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card, int keyIndex)
             throws IOException, NfcCardException {
@@ -87,6 +86,15 @@ public class NfcUtils {
         }
     }
 
+    /**
+     * Creates a new key on index 0 within the card, derived by the given seed.
+     * Giving the same seed will always create the same key on the card.
+     *
+     * @param card nfc tranceiver
+     * @param seed key derivation seed
+     * @throws IOException on communication errors
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     */
     public static void generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
         selectApplication(card);
 
@@ -97,17 +105,30 @@ public class NfcUtils {
         //TODO what to return here? boolean?
     }
 
-    public static String initializePinAndReturnPuk(NfcTranceiver card, String pin) throws IOException, NfcCardException {
+
+    /**
+     * Initial set up of the PIN. This is only allowed in the “PIN inactive” state.
+     *
+     * @param card     nfc tranceiver
+     * @param pinBytes new pin to set (any byte array with length between 4 and 63 bytes is allowed)
+     * @return PUK bytes
+     * @throws IOException on communication errors
+     * @throws IllegalArgumentException if given PIN is null or shorter than 4 bytes or longer than 63 bytes
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     */
+    public static byte[] initializePinAndReturnPuk(NfcTranceiver card, byte[] pinBytes) throws IOException, NfcCardException {
         selectApplication(card);
 
-        SetPinApdu apdu = new SetPinApdu(pin.getBytes());
+        if (pinBytes == null || pinBytes.length < 4 || pinBytes.length > 63) {
+            throw new IllegalArgumentException("PIN must be a byte array between 4 and 63 bytes length");
+        }
+
+        SetPinApdu apdu = new SetPinApdu(pinBytes);
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "SET PIN");
 
-        //TODO fix this later on - should return puk
-        // get DATA part of response and convert to hex string
-        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+        return resp.getData();
     }
 
     public static String changePin(NfcTranceiver card, String currentPin, String newPin) throws IOException, NfcCardException {
@@ -165,7 +186,7 @@ public class NfcUtils {
      * @param keyId key to get
      * @return public key as hexadecimal String
      * @throws IOException on communication errors
-     * @throws NfcCardException when card returns something other than 0x9000
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     private static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
             throws IOException, NfcCardException {
@@ -221,7 +242,7 @@ public class NfcUtils {
      * @param card nfc tranceiver
      * @return index of the newly created key
      * @throws IOException on communication errors
-     * @throws NfcCardException when card returns something other than 0x9000
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     private static int generateNewSecp256K1Keypair(NfcTranceiver card)
             throws IOException, NfcCardException {

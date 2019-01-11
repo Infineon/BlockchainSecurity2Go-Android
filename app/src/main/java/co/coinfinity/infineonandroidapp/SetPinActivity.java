@@ -12,15 +12,17 @@ import android.util.Log;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.infineonandroidapp.infineon.NfcUtils.initializePinAndReturnPuk;
+import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 public class SetPinActivity extends AppCompatActivity {
@@ -76,7 +78,13 @@ public class SetPinActivity extends AppCompatActivity {
         }
 
         try {
-            final String puk = NfcUtils.initializePinAndReturnPuk(IsoTagWrapper.of(isoDep), pin.getText().toString());
+            // PIN in the card simply is a byte[] array, so for this DEMO we just take the bytes
+            // of the entered String
+
+            // the returned PUK is also a byte[], so we display it in hexadecimal
+            // representation to the user
+            final String puk = bytesToHex(initializePinAndReturnPuk(IsoTagWrapper.of(isoDep),
+                    pin.getText().toString().getBytes(StandardCharsets.UTF_8)));
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(R.string.chang_pin)
@@ -86,7 +94,7 @@ public class SetPinActivity extends AppCompatActivity {
                         finish();
                     });
             alert.show();
-        } catch (IOException | NfcCardException e) {
+        } catch (IOException | NfcCardException | IllegalArgumentException e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while setting PIN", e);
         }
