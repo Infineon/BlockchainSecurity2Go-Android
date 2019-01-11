@@ -7,6 +7,7 @@ import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairApdu.CURVE_INDEX_SECP256K1;
@@ -43,11 +44,8 @@ public class NfcUtils {
         // send apdu and check response status word
         ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
 
-        // get DATA part of response and convert to hex string
-        String hex = bytesToHex(resp.getData());
-
         //return signature data and remove first 8 bytes
-        return hex.substring(8).getBytes();
+        return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
     }
 
     /**
@@ -181,8 +179,8 @@ public class NfcUtils {
         // get DATA part of response and convert to hex string
         String hex = bytesToHex(resp.getData());
 
-        // cut off the first bytes (10 hex characters), which contain global sig + sig count + 0x04 (prefix for uncompressed keys)
-        return hex.substring(10);
+        // cut off the first bytes, which contain global sig + sig count + 0x04 (prefix for uncompressed keys)
+        return hex.substring(18);
     }
 
     /**
