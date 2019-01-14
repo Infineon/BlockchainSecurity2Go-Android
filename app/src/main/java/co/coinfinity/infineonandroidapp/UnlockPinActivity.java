@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.infineonandroidapp.utils.ByteUtils.fromHexString;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 public class UnlockPinActivity extends AppCompatActivity {
@@ -76,15 +77,15 @@ public class UnlockPinActivity extends AppCompatActivity {
         }
 
         try {
-            NfcUtils.unlockPin(IsoTagWrapper.of(isoDep), puk.getText().toString());
-
-            AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                    .setTitle(R.string.chang_pin)
-                    .setMessage("Unlocked PIN: " + puk.getText())
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        finish();
-                    });
-            alert.show();
+            if (NfcUtils.unlockPin(IsoTagWrapper.of(isoDep), fromHexString(puk.getText().toString()))) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(this)
+                        .setTitle(R.string.chang_pin)
+                        .setMessage("Unlocked PIN with PUK " + puk.getText())
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            finish();
+                        });
+                alert.show();
+            }
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while unlocking PIN", e);

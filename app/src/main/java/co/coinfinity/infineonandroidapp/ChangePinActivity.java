@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 public class ChangePinActivity extends AppCompatActivity {
@@ -78,13 +79,13 @@ public class ChangePinActivity extends AppCompatActivity {
         }
 
         try {
-            final String puk = NfcUtils.changePin(IsoTagWrapper.of(isoDep), oldPin.getText().toString(), newPin.getText().toString());
+            final String puk = bytesToHex(NfcUtils.changePin(IsoTagWrapper.of(isoDep), oldPin.getText().toString(), newPin.getText().toString()));
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(R.string.chang_pin)
                     .setMessage("Changed PIN from: " + oldPin.getText() + " to new PIN: " + newPin.getText()
                             + "\nPlease write down following PUK of your card: " + puk)
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    .setPositiveButton("OK", (dialog, which) -> {
                         finish();
                     });
             alert.show();

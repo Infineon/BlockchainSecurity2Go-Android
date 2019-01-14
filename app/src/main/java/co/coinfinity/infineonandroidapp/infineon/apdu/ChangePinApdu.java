@@ -1,6 +1,5 @@
 package co.coinfinity.infineonandroidapp.infineon.apdu;
 
-import com.google.common.primitives.Ints;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -22,8 +21,11 @@ public class ChangePinApdu extends BaseCommandApdu {
     public ChangePinApdu(byte[] currentPin, byte[] newPin) {
         this.ins = INS_CHANGE_PIN;
 
-        byte[] firstBytes = ArrayUtils.addAll(currentPin, Ints.toByteArray(currentPin.length));
-        byte[] secondBytes = ArrayUtils.addAll(newPin, Ints.toByteArray(newPin.length));
+        byte currentPinInByte = (byte) currentPin.length;
+        byte newPinInByte = (byte) newPin.length;
+
+        byte[] firstBytes = ArrayUtils.addAll(new byte[]{currentPinInByte}, currentPin);
+        byte[] secondBytes = ArrayUtils.addAll(new byte[]{newPinInByte}, newPin);
 
         this.setData(ArrayUtils.addAll(firstBytes, secondBytes));
     }

@@ -43,7 +43,8 @@ public class ExceptionHandler {
                     throw new ChangePinException(SW1SW2, "Not in “PIN active state” e.g. PIN has not already been set or maximal number of wrong PUK entries reached (Condition of use not satisfied)");
                 case 0x6A80:
                     throw new ChangePinException(SW1SW2, "Format of new PIN is not valid (min / max length) \n" +
-                            "Format of data field not valid (i.e lengths do not match)");
+                            "Format of data field not valid (i.e lengths do not match) \n" +
+                            "(Incorrect parameter in the command data field)");
             }
         } else if (commandApdu instanceof VerifyPinApdu) {
             if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("63C")) {

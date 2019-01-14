@@ -6,7 +6,6 @@ import co.coinfinity.infineonandroidapp.infineon.exceptions.ExceptionHandler;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
@@ -35,24 +34,24 @@ public class NfcUtils {
      * @param keyIndex   index of the key to use
      * @param dataToSign data to be signed (hash)
      * @return signature data as byte array
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, String pin)
             throws IOException, NfcCardException {
         selectApplication(card);
 
-        if (pin != null && !pin.isEmpty()) {
-            verifyPin(card, pin);
+        if (pin != null && !pin.isEmpty() && verifyPin(card, pin)) {
+            GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
+
+            // send apdu and check response status word
+            ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
+
+            //return signature data and remove first 8 bytes
+            return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
         }
 
-        GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
-
-        // send apdu and check response status word
-        ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
-
-        //return signature data and remove first 8 bytes
-        return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
+        return new byte[]{};
     }
 
     /**
@@ -60,7 +59,7 @@ public class NfcUtils {
      *
      * @param card nfc card
      * @return public key as hexadecimal String
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card, int keyIndex)
@@ -92,7 +91,7 @@ public class NfcUtils {
      *
      * @param card nfc tranceiver
      * @param seed key derivation seed
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     public static void generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
@@ -112,9 +111,9 @@ public class NfcUtils {
      * @param card     nfc tranceiver
      * @param pinBytes new pin to set (any byte array with length between 4 and 63 bytes is allowed)
      * @return PUK bytes
-     * @throws IOException on communication errors
+     * @throws IOException              on communication errors
      * @throws IllegalArgumentException if given PIN is null or shorter than 4 bytes or longer than 63 bytes
-     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     * @throws NfcCardException         when card returns something other than 0x9000 or 0x61XX
      */
     public static byte[] initializePinAndReturnPuk(NfcTranceiver card, byte[] pinBytes) throws IOException, NfcCardException {
         selectApplication(card);
@@ -131,7 +130,7 @@ public class NfcUtils {
         return resp.getData();
     }
 
-    public static String changePin(NfcTranceiver card, String currentPin, String newPin) throws IOException, NfcCardException {
+    public static byte[] changePin(NfcTranceiver card, String currentPin, String newPin) throws IOException, NfcCardException {
         selectApplication(card);
 
         ChangePinApdu apdu = new ChangePinApdu(currentPin.getBytes(), newPin.getBytes());
@@ -139,27 +138,25 @@ public class NfcUtils {
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "CHANGE PIN");
 
-        //TODO fix this later on - should return puk
-        // get DATA part of response and convert to hex string
-        return new String(resp.getData(), 0, 8, Charset.defaultCharset());
+        return resp.getData();
     }
 
-    public static void unlockPin(NfcTranceiver card, String puk) throws IOException, NfcCardException {
+    public static boolean unlockPin(NfcTranceiver card, byte[] puk) throws IOException, NfcCardException {
         selectApplication(card);
 
-        UnlockPinApdu apdu = new UnlockPinApdu(puk.getBytes());
+        UnlockPinApdu apdu = new UnlockPinApdu(puk);
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "UNLOCK PIN");
-        //TODO what to do with response?
+        return resp.getSW1() == 0x90;
     }
 
-    public static void verifyPin(NfcTranceiver card, String pin) throws IOException, NfcCardException {
+    public static boolean verifyPin(NfcTranceiver card, String pin) throws IOException, NfcCardException {
         VerifyPinApdu apdu = new VerifyPinApdu(pin.getBytes());
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "VERIFY PIN");
-        //TODO what to do with response?
+        return resp.getSW1() == 0x90;
     }
 
     private static void selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
@@ -185,7 +182,7 @@ public class NfcUtils {
      * @param card  nfc card
      * @param keyId key to get
      * @return public key as hexadecimal String
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     private static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
@@ -218,7 +215,7 @@ public class NfcUtils {
      * @param commandApdu command
      * @param commandName used for error message
      * @return response
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException if card reponse status words are != 0x9000
      */
     private static ResponseApdu tranceive(NfcTranceiver card, BaseCommandApdu commandApdu, String commandName)
@@ -241,7 +238,7 @@ public class NfcUtils {
      *
      * @param card nfc tranceiver
      * @return index of the newly created key
-     * @throws IOException on communication errors
+     * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
     private static int generateNewSecp256K1Keypair(NfcTranceiver card)
