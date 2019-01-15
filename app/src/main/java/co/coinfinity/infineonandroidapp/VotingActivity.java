@@ -67,6 +67,8 @@ public class VotingActivity extends AppCompatActivity {
     TextView answer3;
     @BindView(R.id.answer4)
     TextView answer4;
+    @BindView(R.id.pin)
+    TextView pinTxt;
 
     private InputErrorUtils inputErrorUtils;
 
@@ -109,6 +111,8 @@ public class VotingActivity extends AppCompatActivity {
 
         gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
         gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
+        pinTxt.setText(pref.getString(PREF_KEY_PIN, ""));
+        ;
 
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
@@ -207,7 +211,8 @@ public class VotingActivity extends AppCompatActivity {
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
         mEditor.putString(PREF_KEY_VOTING_GASLIMIT, gasLimit.getText().toString())
-                .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString());
+                .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString())
+                .putString(PREF_KEY_PIN, pinTxt.getText().toString());
 
         if (!mPrefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
             mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString());

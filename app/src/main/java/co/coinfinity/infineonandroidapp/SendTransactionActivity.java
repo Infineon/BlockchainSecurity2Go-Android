@@ -40,6 +40,7 @@ import org.web3j.utils.Convert;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import static android.app.PendingIntent.getActivity;
@@ -109,6 +110,8 @@ public class SendTransactionActivity extends AppCompatActivity {
         gasPriceTxt.setText(savedGasPriceWei);
         String savedGasLimit = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
         gasLimitTxt.setText(savedGasLimit);
+        String savedPin = mPrefs.getString(PREF_KEY_PIN, "");
+        pinTxt.setText(savedPin);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -154,9 +157,11 @@ public class SendTransactionActivity extends AppCompatActivity {
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
-        mEditor.putString(PREF_KEY_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString()).apply();
-        mEditor.putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString()).apply();
-        mEditor.putString(PREF_KEY_GASLIMIT_SEND_ETH, gasLimitTxt.getText().toString()).apply();
+        mEditor.putString(PREF_KEY_RECIPIENT_ADDRESS, recipientAddressTxt.getText().toString())
+                .putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString())
+                .putString(PREF_KEY_GASLIMIT_SEND_ETH, gasLimitTxt.getText().toString())
+                .putString(PREF_KEY_PIN, pinTxt.getText().toString())
+                .apply();
     }
 
     @Override
@@ -233,7 +238,7 @@ public class SendTransactionActivity extends AppCompatActivity {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString());
+                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString().getBytes(StandardCharsets.UTF_8));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
         } catch (Exception e) {
             showToast(e.getMessage(), this);

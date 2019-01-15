@@ -98,7 +98,7 @@ public class EthereumUtils {
      */
     public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
                                                      String to, BigInteger value, IsoDep isoTag,
-                                                     String publicKey, String data, String url, byte chainId, int keyIndex, String pin) throws Exception {
+                                                     String publicKey, String data, String url, byte chainId, int keyIndex, byte[] pin) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(

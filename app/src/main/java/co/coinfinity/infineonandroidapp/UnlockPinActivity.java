@@ -81,9 +81,7 @@ public class UnlockPinActivity extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this)
                         .setTitle(R.string.chang_pin)
                         .setMessage("Unlocked PIN with PUK " + puk.getText())
-                        .setPositiveButton("OK", (dialog, which) -> {
-                            finish();
-                        });
+                        .setPositiveButton("OK", (dialog, which) -> finish());
                 alert.show();
             }
         } catch (IOException | NfcCardException e) {

@@ -37,21 +37,23 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, String pin)
+    public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, byte[] pin)
             throws IOException, NfcCardException {
         selectApplication(card);
 
-        if (pin != null && !pin.isEmpty() && verifyPin(card, pin)) {
-            GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
-
-            // send apdu and check response status word
-            ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
-
-            //return signature data and remove first 8 bytes
-            return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
+        if (pin != null && pin.length > 0) {
+            if (!verifyPin(card, pin)) {
+                return new byte[]{};
+            }
         }
 
-        return new byte[]{};
+        GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
+
+        // send apdu and check response status word
+        ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
+
+        //return signature data and remove first 8 bytes
+        return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
     }
 
     /**
@@ -94,14 +96,14 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    public static void generateKeyFromSeed(NfcTranceiver card, String seed) throws IOException, NfcCardException {
+    public static boolean generateKeyFromSeed(NfcTranceiver card, byte[] seed) throws IOException, NfcCardException {
         selectApplication(card);
 
-        GenerateKeyFromSeedApdu apdu = new GenerateKeyFromSeedApdu(seed.getBytes());
+        GenerateKeyFromSeedApdu apdu = new GenerateKeyFromSeedApdu(seed);
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "GENERATE KEY FROM SEED");
-        //TODO what to return here? boolean?
+        return resp.getSW1() == 0x90;
     }
 
 
@@ -130,10 +132,16 @@ public class NfcUtils {
         return resp.getData();
     }
 
-    public static byte[] changePin(NfcTranceiver card, String currentPin, String newPin) throws IOException, NfcCardException {
+    public static byte[] changePin(NfcTranceiver card, byte[] currentPin, byte[] newPin) throws IOException, NfcCardException {
         selectApplication(card);
 
-        ChangePinApdu apdu = new ChangePinApdu(currentPin.getBytes(), newPin.getBytes());
+        if (currentPin != null && currentPin.length > 0) {
+            if (!verifyPin(card, currentPin)) {
+                return new byte[]{};
+            }
+        }
+
+        ChangePinApdu apdu = new ChangePinApdu(currentPin, newPin);
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "CHANGE PIN");
@@ -151,8 +159,8 @@ public class NfcUtils {
         return resp.getSW1() == 0x90;
     }
 
-    public static boolean verifyPin(NfcTranceiver card, String pin) throws IOException, NfcCardException {
-        VerifyPinApdu apdu = new VerifyPinApdu(pin.getBytes());
+    public static boolean verifyPin(NfcTranceiver card, byte[] pin) throws IOException, NfcCardException {
+        VerifyPinApdu apdu = new VerifyPinApdu(pin);
 
         // send apdu
         ResponseApdu resp = tranceive(card, apdu, "VERIFY PIN");

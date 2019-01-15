@@ -27,6 +27,7 @@ public class AppConstants {
     // used for all activities:
     public static final String PREF_KEY_GASPRICE_WEI = "gasPriceInWei";
     public static final String PREF_KEY_MAIN_NETWORK = "mainNetwork";
+    public static final String PREF_KEY_PIN = "pin";
 
     public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "15";
 

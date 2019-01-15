@@ -17,6 +17,7 @@ import org.web3j.tx.ChainId;
 import org.web3j.tx.TransactionManager;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
@@ -72,7 +73,7 @@ public class NfcTransactionManager extends TransactionManager {
         try {
             Log.d(TAG, "sending ETH transaction..");
             final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
-                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), ((TextView) activity.findViewById(R.id.pin)).getText().toString());
+                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), ((TextView) activity.findViewById(R.id.pin)).getText().toString().getBytes(StandardCharsets.UTF_8));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {

@@ -1,5 +1,6 @@
 package co.coinfinity.infineonandroidapp;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -13,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
+import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 
@@ -76,7 +78,13 @@ public class GenerateFromSeedActivity extends AppCompatActivity {
         }
 
         try {
-            NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), seed.getText().toString());
+            if (NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), ByteUtils.fromHexString(seed.getText().toString()))) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Generate key from seed")
+                        .setMessage("Generated key on index 0 with seed: " + seed.getText())
+                        .setPositiveButton("OK", (dialog, which) -> finish())
+                        .show();
+            }
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while generating key from seed", e);

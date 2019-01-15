@@ -59,6 +59,8 @@ public class SendErc20TokensActivity extends AppCompatActivity {
     TextView currentBalance;
     @BindView(R.id.textViewInfo)
     TextView infoTxt;
+    @BindView(R.id.pin)
+    TextView pinTxt;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.toolbar)
@@ -107,6 +109,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
         gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "50000"));
         amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
+        pinTxt.setText(pref.getString(PREF_KEY_PIN, ""));
 
         new Thread(() -> {
             try {
@@ -158,6 +161,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
                 .putString(PREF_KEY_ERC20_GASLIMIT, gasLimitTxt.getText().toString())
                 .putString(PREF_KEY_ERC20_AMOUNT, amountTxt.getText().toString())
                 .putString(PREF_KEY_GASPRICE_WEI, gasPriceTxt.getText().toString())
+                .putString(PREF_KEY_PIN, pinTxt.getText().toString())
                 .apply();
     }
 

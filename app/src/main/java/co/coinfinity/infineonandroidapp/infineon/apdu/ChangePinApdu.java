@@ -21,13 +21,13 @@ public class ChangePinApdu extends BaseCommandApdu {
     public ChangePinApdu(byte[] currentPin, byte[] newPin) {
         this.ins = INS_CHANGE_PIN;
 
-        byte currentPinInByte = (byte) currentPin.length;
-        byte newPinInByte = (byte) newPin.length;
+        byte currentPinLength = (byte) currentPin.length;
+        byte newPinLength = (byte) newPin.length;
 
-        byte[] firstBytes = ArrayUtils.addAll(new byte[]{currentPinInByte}, currentPin);
-        byte[] secondBytes = ArrayUtils.addAll(new byte[]{newPinInByte}, newPin);
+        byte[] firstPart = ArrayUtils.addAll(new byte[]{currentPinLength}, currentPin);
+        byte[] secondPart = ArrayUtils.addAll(new byte[]{newPinLength}, newPin);
 
-        this.setData(ArrayUtils.addAll(firstBytes, secondBytes));
+        this.setData(ArrayUtils.addAll(firstPart, secondPart));
     }
 
 }

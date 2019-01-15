@@ -90,9 +90,7 @@ public class SetPinActivity extends AppCompatActivity {
                     .setTitle(R.string.chang_pin)
                     .setMessage("Set PIN to: " + pin.getText()
                             + "\nPlease write down following PUK of your card: " + puk)
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
-                        finish();
-                    });
+                    .setPositiveButton("OK", (dialog, which) -> finish());
             alert.show();
         } catch (IOException | NfcCardException | IllegalArgumentException e) {
             showToast(e.getMessage(), this);
