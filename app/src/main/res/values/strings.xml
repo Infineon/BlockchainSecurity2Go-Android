@@ -62,7 +62,7 @@
     <string name="set_pin">Set PIN</string>
     <string name="label_key_index" translatable="false">Key Index:</string>
     <string name="ok" translatable="false">OK</string>
-    <string name="change_pin_message">Changed PIN from %s to new PIN %s. Please write down following PUK of your card
+    <string name="change_pin_message">Changed PIN from %s to new PIN %s. Please write down following PUK of your card:
         %s
     </string>
     <string name="generate_from_seed_message">Generated key on index 0 with seed: %s</string>

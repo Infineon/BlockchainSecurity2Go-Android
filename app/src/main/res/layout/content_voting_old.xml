@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_voting_old"
+        tools:context=".VotingActivityOld">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_margin="30px">
+        <TextView
+                android:text="@string/contract_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView4"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:ems="10"
+                    android:id="@+id/contractAddress" android:textSize="14sp"
+                    android:layout_weight=".90"/>
+            <ImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent" app:srcCompat="@drawable/qrcode" android:id="@+id/imageButton"
+                    android:scaleType="fitCenter" android:layout_weight=".10" android:onClick="scanQrCode"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true" android:layout_alignParentTop="true"
+                    android:layout_weight=".30">
+
+                <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gasPrice" android:text="50" android:inputType="numberDecimal"
+                        android:hint="@string/gas_price"/>
+            </android.support.design.widget.TextInputLayout>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:id="@+id/spinner" android:layout_weight=".70"/>
+        </LinearLayout>
+        <TextView
+                android:text="@string/gas_limit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView3"
+        />
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/gasLimit" android:hint="@string/gas_limit" android:text="21000"
+        />
+        <TextView
+                android:text="Voting name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView5"/>
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/votingName" android:hint="Voting name"/>
+        <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true">
+
+            <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pin"
+                    android:hint="PIN (optional)" android:inputType="textPassword"/>
+        </android.support.design.widget.TextInputLayout>
+        <TextView
+                android:text="@string/question"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView" android:textAlignment="center"
+                android:textSize="18sp" android:textStyle="bold"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" android:gravity="left|center" android:id="@+id/radioGroup">
+                <RadioButton
+                        android:text="@string/answer_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton1" android:layout_weight="1"
+                        android:textSize="28sp"/>
+                <RadioButton
+                        android:text="@string/answer_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton2" android:layout_weight="1"
+                        android:textSize="28sp"/>
+                <RadioButton
+                        android:text="@string/answer_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton3" android:layout_weight="1"
+                        android:textSize="28sp"/>
+                <RadioButton
+                        android:text="@string/answer_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/radioButton4" android:layout_weight="1"
+                        android:textSize="28sp"/>
+            </RadioGroup>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" android:layout_weight="1">
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/answer1Votes" android:layout_weight="1"
+                        android:textSize="34sp" android:textAlignment="center"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/answer2Votes" android:layout_weight="1"
+                        android:textSize="34sp" android:textAlignment="center"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/answer3Votes" android:layout_weight="1"
+                        android:textSize="34sp" android:textAlignment="center"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/answer4Votes" android:layout_weight="1"
+                        android:textSize="34sp" android:textAlignment="center"/>
+            </LinearLayout>
+        </LinearLayout>
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" android:visibility="visible"/>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

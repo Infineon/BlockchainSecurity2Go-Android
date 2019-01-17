@@ -52,5 +52,5 @@ public class AppConstants {
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS = "votingContractAddress";
     public static final String DEFAULT_VOTING_CONTRACT_ADDRESS = "0x5545ccecd05ef6943bc397773c72252cd7560f41";
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET = "votingContractAddressTestnet";
-    public static final String DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET = "0x6e670c473a2ad5894ae354b832ad4badf1d919bf";
+    public static final String DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET = "0x104d919b299dbbbea258a41e2e910c29c551bf17";
 }

@@ -37,7 +37,8 @@ public class VotingUtils {
     public static TransactionReceipt vote(String contractAddress, IsoDep tag, String publicKey, String from,
                                           BigInteger gasPrice, BigInteger gasLimit, Activity activity, String url) throws Exception {
         Voting contract = prepareWriteVotingContract(contractAddress, tag, publicKey, from, gasPrice, gasLimit, activity, url);
-        return contract.castVote().send();
+//        return contract.castVote().send();
+        return null;
     }
 
 
@@ -60,7 +61,8 @@ public class VotingUtils {
         Voting contract = prepareReadOnlyVotingContract(contractAddress, from, gasPrice, gasLimit, url);
         assertContract(contract);
         // check if the contract deployed at this address is an instance of our Voting contract
-        return contract.whitelistedSenderAddresses().send();
+//        return contract.whitelistedSenderAddresses().send();
+        return null;
     }
 
     /**

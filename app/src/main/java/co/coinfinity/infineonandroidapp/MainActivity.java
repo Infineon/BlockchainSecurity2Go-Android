@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
      * On button click VOTING.
      */
     public void onVoting(View view) {
-        Intent intent = new Intent(this, VotingActivity.class);
+        Intent intent = new Intent(this, VotingActivityOld.class);
         Bundle bundle = new Bundle();
         bundle.putString("pubKey", pubKeyString);
         bundle.putString("ethAddress", ethAddress);
