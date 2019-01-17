@@ -6,9 +6,21 @@ import "./tokenutils/CanRescueERC20.sol";
 
 
 /**
- * @title Simple Public Voting/Poll Demo
+ * Simple Public Voting/Poll Demo
  *
- * @author Coinfinity (www.coinfinity.co), 2018
+ * This is a DEMO contract. Please look carefully into the source code
+ * before using any of this in production.
+ *
+ *
+ * Disclaimer of Warranty:
+ * THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
+ * EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+ * PROVIDE THE PROGRAM “AS IS” WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE
+ * PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+ * NECESSARY SERVICING, REPAIR OR CORRECTION.
+ *
  */
 contract Voting is Ownable, Destructible, CanRescueERC20 {
 
@@ -63,7 +75,8 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     }
 
     /**
-     * @notice Cast your note. Each address can only vote once.
+     * @notice Cast your note. In a real world scenario, you might want to have address
+     *     voting only once. In this DEMO we allow unlimited number of votes per address.
      * @param voterName Name of the voter, will be publicly visible on the blockchain
      * @param givenVote choice the caller has voted for
      */
@@ -72,8 +85,9 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
         // answer must be given
         require(givenVote < numberOfChoices(), "Choice must be less than contract configured numberOfChoices.");
 
+        // DEMO MODE: FOR EASIER TESTING, WE ALLOW UNLIMITED VOTES PER ADDRESS.
         // check if already voted
-        require(!votersInfo[msg.sender].exists, "This address has already voted. Vote denied.");
+        //require(!votersInfo[msg.sender].exists, "This address has already voted. Vote denied.");
 
         //  voter name has to have at least 3 bytes (note: with utf8 some chars have
         // more than 1 byte, so this check is not fully accurate but ok here)

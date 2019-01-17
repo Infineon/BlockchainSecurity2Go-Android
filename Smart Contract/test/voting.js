@@ -246,14 +246,14 @@ contract('Vote: voting tests', function (accounts) {
             await checkResultsInContract(v, 1, 0, 0, 0);
         });
 
-        it('should not allow the same voter to vote again', async function () {
-            let v = await Voting.deployed();
-            await expectFail(v.castVote('voter1', 0, {from: voter1}), errors.alreadyVoted);
-            // different vote
-            await expectFail(v.castVote('voter1', 1, {from: voter1}), errors.alreadyVoted);
-            // results unchanged? (should be guaranteed by EVM, so unnecessary check)
-            await checkResultsInContract(v, 1, 0, 0, 0);
-        });
+        // it('should not allow the same voter to vote again', async function () {
+        //     let v = await Voting.deployed();
+        //     await expectFail(v.castVote('voter1', 0, {from: voter1}), errors.alreadyVoted);
+        //     // different vote
+        //     await expectFail(v.castVote('voter1', 1, {from: voter1}), errors.alreadyVoted);
+        //     // results unchanged? (should be guaranteed by EVM, so unnecessary check)
+        //     await checkResultsInContract(v, 1, 0, 0, 0);
+        // });
 
         it('should not allow to send ether with vote', async function () {
             let v = await Voting.deployed();
