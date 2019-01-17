@@ -2,15 +2,17 @@ package co.coinfinity.infineonandroidapp.infineon;
 
 import android.util.Log;
 import co.coinfinity.infineonandroidapp.infineon.apdu.*;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GenerateSignatureResponseApdu;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GetKeyInfoResponseApdu;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.ResponseApdu;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.ExceptionHandler;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.infineon.apdu.GenerateKeyPairApdu.CURVE_INDEX_SECP256K1;
-import static co.coinfinity.infineonandroidapp.infineon.apdu.ResponseApdu.SW_KEY_WITH_IDX_NOT_AVAILABLE;
+import static co.coinfinity.infineonandroidapp.infineon.apdu.response.ResponseApdu.SW_KEY_WITH_IDX_NOT_AVAILABLE;
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.fromHexString;
 
@@ -37,23 +39,18 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    public static byte[] generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, byte[] pin)
+    public static GenerateSignatureResponseApdu generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, byte[] pin)
             throws IOException, NfcCardException {
         selectApplication(card);
 
         if (pin != null && pin.length > 0) {
             if (!verifyPin(card, pin)) {
-                return new byte[]{};
+                return new GenerateSignatureResponseApdu(new byte[]{});
             }
         }
 
         GenerateSignatureApdu apdu = new GenerateSignatureApdu(keyIndex, dataToSign);
-
-        // send apdu and check response status word
-        ResponseApdu resp = tranceive(card, apdu, "GENERATE SIGNATURE");
-
-        //return signature data and remove first 8 bytes
-        return Arrays.copyOfRange(resp.getData(), 8, resp.getData().length);
+        return (GenerateSignatureResponseApdu) tranceive(card, apdu, "GENERATE SIGNATURE");
     }
 
     /**
@@ -64,7 +61,7 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    public static String readPublicKeyOrCreateIfNotExists(NfcTranceiver card, int keyIndex)
+    public static GetKeyInfoResponseApdu readPublicKeyOrCreateIfNotExists(NfcTranceiver card, int keyIndex)
             throws IOException, NfcCardException {
         try {
             selectApplication(card);
@@ -108,7 +105,7 @@ public class NfcUtils {
 
 
     /**
-     * Initial set up of the PIN. This is only allowed in the “PIN inactive” state.
+     * Initial set up of the PIN. This is only allowed in the PIN inactive state.
      *
      * @param card     nfc tranceiver
      * @param pinBytes new pin to set (any byte array with length between 4 and 63 bytes is allowed)
@@ -132,6 +129,16 @@ public class NfcUtils {
         return resp.getData();
     }
 
+    /**
+     * Change current PIN to a new PIN. This is only allowed in the PIN active state.
+     *
+     * @param card       nfc tranceiver
+     * @param currentPin current PIN
+     * @param newPin     new PIN
+     * @return PUK bytes
+     * @throws IOException      on communication errors
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     */
     public static byte[] changePin(NfcTranceiver card, byte[] currentPin, byte[] newPin) throws IOException, NfcCardException {
         selectApplication(card);
 
@@ -149,6 +156,15 @@ public class NfcUtils {
         return resp.getData();
     }
 
+    /**
+     * Unlock PIN with PUK to get back into PIN inactive state.
+     *
+     * @param card nfc tranceiver
+     * @param puk  PUK bytes
+     * @return if unlocking worked or not
+     * @throws IOException      on communication errors
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     */
     public static boolean unlockPin(NfcTranceiver card, byte[] puk) throws IOException, NfcCardException {
         selectApplication(card);
 
@@ -159,6 +175,15 @@ public class NfcUtils {
         return resp.getSW1() == 0x90;
     }
 
+    /**
+     * Verify PIN if correct or not and return as boolean.
+     *
+     * @param card nfc tranceiver
+     * @param pin  PIN to verify
+     * @return if verified or not
+     * @throws IOException      on communication errors
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     */
     public static boolean verifyPin(NfcTranceiver card, byte[] pin) throws IOException, NfcCardException {
         VerifyPinApdu apdu = new VerifyPinApdu(pin);
 
@@ -167,6 +192,13 @@ public class NfcUtils {
         return resp.getSW1() == 0x90;
     }
 
+    /**
+     * Select the application of Infineon Blockchain2go
+     *
+     * @param card nfc tranceiver
+     * @throws IOException      on communication errors
+     * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
+     */
     private static void selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
         SelectApplicationApdu apdu = new SelectApplicationApdu(AID_INFINEON_BLOCKCHAIN2GO);
         // send apdu
@@ -193,27 +225,21 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    private static String readPublicKeyFromCard(NfcTranceiver card, int keyId)
+    private static GetKeyInfoResponseApdu readPublicKeyFromCard(NfcTranceiver card, int keyId)
             throws IOException, NfcCardException {
         GetKeyInfoApdu apdu = new GetKeyInfoApdu(keyId);
 
         // send apdu
-        ResponseApdu resp = tranceive(card, apdu, "GET KEY INFO");
+        GetKeyInfoResponseApdu resp = (GetKeyInfoResponseApdu) tranceive(card, apdu, "GET KEY INFO");
 
         // at the moment we only support uncompressed keys
         // (identified by prefix 0x04 followed by 2x 32 bytes, x- and y- coordinate)
-        //TODO do something with glob sig and sig count currently we just cut it off
         if (resp.getData()[8] != (byte) 0x04 || resp.getData().length != 73) {
             throw new NfcCardException(resp.getSW1SW2(), String.format("Cannot parse returned " +
                     "PubKey from card. Expected uncompressed 64 byte long key data, prefixed with 0x04, " +
                     "but got instead: %s", bytesToHex(resp.getData())));
         }
-
-        // get DATA part of response and convert to hex string
-        String hex = bytesToHex(resp.getData());
-
-        // cut off the first bytes, which contain global sig + sig count + 0x04 (prefix for uncompressed keys)
-        return hex.substring(18);
+        return resp;
     }
 
     /**
@@ -229,14 +255,22 @@ public class NfcUtils {
     private static ResponseApdu tranceive(NfcTranceiver card, BaseCommandApdu commandApdu, String commandName)
             throws IOException, NfcCardException {
         Log.d(TAG, String.format("CMD: %s - APDU SENT: >>> %s", commandName, commandApdu.toHexString()));
-        ResponseApdu responseApdu = new ResponseApdu(card.transceive(commandApdu.toBytes()));
+
+        ResponseApdu responseApdu;
+        if (commandApdu instanceof GetKeyInfoApdu) {
+            responseApdu = new GetKeyInfoResponseApdu(card.transceive(commandApdu.toBytes()));
+        } else if (commandApdu instanceof GenerateSignatureApdu) {
+            responseApdu = new GenerateSignatureResponseApdu(card.transceive(commandApdu.toBytes()));
+        } else {
+            responseApdu = new ResponseApdu(card.transceive(commandApdu.toBytes()));
+        }
+
         Log.d(TAG, String.format("CMD: %s - APDU RCVD: <<< %s", commandName, responseApdu.toHexString()));
 
         // check if Status OK
         if (!responseApdu.isSuccess()) {
             ExceptionHandler.handleErrorCodes(commandApdu, responseApdu.getSW1SW2());
         }
-
         // return on success
         return responseApdu;
     }

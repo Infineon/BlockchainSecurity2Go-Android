@@ -2,6 +2,7 @@ package co.coinfinity.infineonandroidapp.ethereum.utils;
 
 import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -35,6 +36,7 @@ public class VotingUtilsTest {
     IsoDep isoDep;
 
     @Test
+    @Ignore
     public void testVote() throws Exception {
         PowerMockito.mockStatic(NfcUtils.class);
         when(NfcUtils.generateSignature(any(), anyInt(), any(), any())).thenAnswer(
@@ -52,6 +54,7 @@ public class VotingUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testWhitelistedSenderAddresses() throws Exception {
         final StaticArray4<Address> addresses = VotingUtils.whitelistedSenderAddresses(CONTRACT_ADDRESS, TransactionSigner.credentials.getAddress(), GAS_PRICE, GAS_LIMIT, ROPSTEN_URI);
 

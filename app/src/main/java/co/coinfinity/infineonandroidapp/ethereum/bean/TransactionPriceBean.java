@@ -32,6 +32,6 @@ public class TransactionPriceBean {
 
     @Override
     public String toString() {
-        return String.format(Locale.ENGLISH, "Price: %.2f€ \n Tx Fee: %.2f€", priceInEuro, txFeeInEuro);
+        return String.format(Locale.ENGLISH, "Price: %.2f EUR \n Tx Fee: %.2f EUR", priceInEuro, txFeeInEuro);
     }
 }

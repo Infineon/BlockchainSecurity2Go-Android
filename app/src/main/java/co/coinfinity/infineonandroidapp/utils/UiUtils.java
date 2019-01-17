@@ -106,6 +106,10 @@ public class UiUtils {
                 Intent generateFromSeedIntent = new Intent(activity, GenerateFromSeedActivity.class);
                 activity.startActivity(generateFromSeedIntent);
                 return true;
+            case R.id.check_sig_counters:
+                Intent checkSigCountersIntent = new Intent(activity, CheckSigCountersActivity.class);
+                activity.startActivity(checkSigCountersIntent);
+                return true;
             default:
                 return false;
 

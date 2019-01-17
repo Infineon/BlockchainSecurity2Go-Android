@@ -1,4 +1,4 @@
-package co.coinfinity.infineonandroidapp.infineon.apdu;
+package co.coinfinity.infineonandroidapp.infineon.apdu.response;
 
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 
@@ -31,7 +31,7 @@ public class ResponseApdu {
     /**
      * Raw byte representation of this APDU as received over NFC
      */
-    protected byte[] apduBytes = new byte[0];
+    protected byte[] apduBytes;
 
 
     /**

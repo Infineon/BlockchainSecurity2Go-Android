@@ -55,6 +55,24 @@
     <string name="send_all">Sende alles</string>
     <string name="chang_pin">PIN ändern</string>
     <string name="unlock_pin">PIN entsperren</string>
-    <string name="generate_from_seed">Generate key from seed</string>
+    <string name="generate_from_seed">Generiere Schlüssel mit Seed</string>
     <string name="set_pin">PIN setzen</string>
+    <string name="change_pin_message">PIN von %s auf neuen PIN %s geändert. Schreiben Sie bitte folgenden PUK Ihrer
+        Karte auf: %s
+    </string>
+    <string name="generate_from_seed_message">Schlüssel mit Seed auf Index 0 generiert: %s</string>
+    <string name="set_pin_message">PIN wurde auf %s festgelegt. Schreiben Sie bitte folgenden PUK Ihrer Karte auf: %s
+    </string>
+    <string name="unlock_pin_message">PIN mit PUK %s entsperrt</string>
+    <string name="check_sig_counters">Prüfe Sig Counters</string>
+    <string name="global_sig_counter">Global Signatur Counter: %d</string>
+    <string name="sig_counter">Signature Counter: %d</string>
+    <string name="enter_old_and_new_pin">Geben Sie den alten und neuen PIN ein:</string>
+    <string name="old_pin">Alter PIN</string>
+    <string name="new_pin">Neuer PIN</string>
+    <string name="enter_import_seed_to_generate_key">Geben Sie den Import Seed für das Schlüssel generieren ein:
+    </string>
+    <string name="import_seed">Import Seed</string>
+    <string name="enter_your_preferred_pin">Geben Sie Ihren bevorzugten PIN ein:</string>
+    <string name="enter_your_puk_to_unlock_pin">Geben Sie Ihren PUK zum Entsperren des PIN ein:</string>
 </resources>

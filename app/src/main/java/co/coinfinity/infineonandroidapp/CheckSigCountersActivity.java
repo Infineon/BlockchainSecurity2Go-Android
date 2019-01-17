@@ -1,8 +1,9 @@
 package co.coinfinity.infineonandroidapp;
 
-import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -13,33 +14,34 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GetKeyInfoResponseApdu;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
-import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 
 import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
-import static co.coinfinity.AppConstants.TAG;
+import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
- * Activity class used for generating from seed functionality.
+ * Activity class used for checking signature counters functionality.
  */
-public class GenerateFromSeedActivity extends AppCompatActivity {
+public class CheckSigCountersActivity extends AppCompatActivity {
 
-    @BindView(R.id.seed)
-    TextView seed;
+    @BindView(R.id.sigCount)
+    TextView sigCount;
+    @BindView(R.id.globalSigCount)
+    TextView globalSigCount;
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_generate_from_seed);
+        setContentView(R.layout.activity_check_sig_counters);
         ButterKnife.bind(this);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -81,13 +83,10 @@ public class GenerateFromSeedActivity extends AppCompatActivity {
         }
 
         try {
-            if (NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), ByteUtils.fromHexString(seed.getText().toString()))) {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.generate_from_seed)
-                        .setMessage(String.format(getString(R.string.generate_from_seed_message), seed.getText()))
-                        .setPositiveButton(R.string.ok, (dialog, which) -> finish())
-                        .show();
-            }
+            SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+            final GetKeyInfoResponseApdu responseApdu = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
+            globalSigCount.setText(String.format(getString(R.string.global_sig_counter), responseApdu.getGlobalSigCounterAsInteger()));
+            sigCount.setText(String.format(getString(R.string.sig_counter), responseApdu.getSigCounterAsInteger()));
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while generating key from seed", e);

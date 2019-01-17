@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             //TODO TESTT !!!!
 //            NfcUtils.resetCard(IsoTagWrapper.of(isoDep));
             SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-            pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
+            pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1)).getPublicKeyInHexWithoutPrefix();
             isoDep.close();
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (transactionPriceBean != null && pubKeyString != null) {
             this.runOnUiThread(() -> {
                 balance.setText(String.format("%s%s", ethBalance.toString(),
-                        String.format(Locale.ENGLISH, "\nEuro: %.2f€", transactionPriceBean.getPriceInEuro())));
+                        String.format(Locale.ENGLISH, "\nEuro: %.2f", transactionPriceBean.getPriceInEuro())));
                 if (!sendEthBtn.isEnabled()) {
                     sendEthBtn.setEnabled(true);
                     sendErc20Btn.setEnabled(true);

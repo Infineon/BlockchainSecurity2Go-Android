@@ -25,6 +25,9 @@ import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
+/**
+ * Activity class used for changing PIN functionality.
+ */
 public class ChangePinActivity extends AppCompatActivity {
 
     @BindView(R.id.oldPin)
@@ -84,9 +87,8 @@ public class ChangePinActivity extends AppCompatActivity {
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(R.string.chang_pin)
-                    .setMessage("Changed PIN from: " + oldPin.getText() + " to new PIN: " + newPin.getText()
-                            + "\nPlease write down following PUK of your card: " + puk)
-                    .setPositiveButton("OK", (dialog, which) -> finish());
+                    .setMessage(String.format(getString(R.string.change_pin_message), oldPin.getText(), newPin.getText(), puk))
+                    .setPositiveButton(R.string.ok, (dialog, which) -> finish());
             alert.show();
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);

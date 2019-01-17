@@ -25,6 +25,9 @@ import static co.coinfinity.infineonandroidapp.infineon.NfcUtils.initializePinAn
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.bytesToHex;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
+/**
+ * Activity class used for setting PIN functionality.
+ */
 public class SetPinActivity extends AppCompatActivity {
 
     @BindView(R.id.pin)
@@ -87,10 +90,9 @@ public class SetPinActivity extends AppCompatActivity {
                     pin.getText().toString().getBytes(StandardCharsets.UTF_8)));
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                    .setTitle(R.string.chang_pin)
-                    .setMessage("Set PIN to: " + pin.getText()
-                            + "\nPlease write down following PUK of your card: " + puk)
-                    .setPositiveButton("OK", (dialog, which) -> finish());
+                    .setTitle(R.string.set_pin)
+                    .setMessage(String.format(getString(R.string.set_pin_message), pin.getText(), puk))
+                    .setPositiveButton(R.string.ok, (dialog, which) -> finish());
             alert.show();
         } catch (IOException | NfcCardException | IllegalArgumentException e) {
             showToast(e.getMessage(), this);

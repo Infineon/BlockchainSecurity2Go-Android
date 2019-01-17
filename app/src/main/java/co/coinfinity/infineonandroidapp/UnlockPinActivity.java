@@ -24,6 +24,9 @@ import static co.coinfinity.AppConstants.TAG;
 import static co.coinfinity.infineonandroidapp.utils.ByteUtils.fromHexString;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
+/**
+ * Activity class used for unlocking PIN functionality.
+ */
 public class UnlockPinActivity extends AppCompatActivity {
 
     @BindView(R.id.puk)
@@ -79,9 +82,9 @@ public class UnlockPinActivity extends AppCompatActivity {
         try {
             if (NfcUtils.unlockPin(IsoTagWrapper.of(isoDep), fromHexString(puk.getText().toString()))) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this)
-                        .setTitle(R.string.chang_pin)
-                        .setMessage("Unlocked PIN with PUK " + puk.getText())
-                        .setPositiveButton("OK", (dialog, which) -> finish());
+                        .setTitle(R.string.unlock_pin)
+                        .setMessage(String.format(getString(R.string.unlock_pin_message), puk.getText()))
+                        .setPositiveButton(R.string.ok, (dialog, which) -> finish());
                 alert.show();
             }
         } catch (IOException | NfcCardException e) {

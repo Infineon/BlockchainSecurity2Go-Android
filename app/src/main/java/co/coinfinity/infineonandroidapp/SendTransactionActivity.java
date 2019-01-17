@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,7 @@ import co.coinfinity.infineonandroidapp.ethereum.exceptions.InvalidEthereumAddre
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
 import co.coinfinity.infineonandroidapp.ethereum.utils.UriUtils;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GenerateSignatureResponseApdu;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
@@ -193,7 +195,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         if (toggleButton.isChecked()) {
             try {
                 SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
+                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1)).getPublicKeyInHexWithoutPrefix();
                 isoDep.close();
                 Log.d(TAG, String.format("pubkey read from card: '%s'", readRecipientAddress));
                 final String newAddress = Keys.toChecksumAddress(Keys.getAddress(readRecipientAddress));
@@ -233,21 +235,25 @@ public class SendTransactionActivity extends AppCompatActivity {
             chainId = ChainId.ROPSTEN;
         }
 
-        EthSendTransaction response = null;
+        Pair<EthSendTransaction, GenerateSignatureResponseApdu> response = null;
         try {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
                     value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString().getBytes(StandardCharsets.UTF_8));
-            Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
+            Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.first.getTransactionHash()));
         } catch (Exception e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while sending ether transaction", e);
             return;
+        } finally {
+            if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER || response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
+                showToast("Signature counter below " + WARNING_SIG_COUNTER + "! Backup your funds!", this);
+            }
         }
 
-        if (response.getError() != null) {
-            showToast(response.getError().getMessage(), this);
+        if (response.first.getError() != null) {
+            showToast(response.first.getError().getMessage(), this);
         } else {
             showToast(getString(R.string.send_success), this);
         }

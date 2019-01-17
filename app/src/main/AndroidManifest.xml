@@ -60,6 +60,8 @@
         </activity>
         <activity android:name=".GenerateFromSeedActivity">
         </activity>
+        <activity android:name=".CheckSigCountersActivity">
+        </activity>
     </application>
 
 </manifest>

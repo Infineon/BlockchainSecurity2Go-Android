@@ -1,5 +1,6 @@
 package co.coinfinity.infineonandroidapp.infineon.apdu;
 
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.ResponseApdu;
 import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import org.junit.Test;
 

@@ -20,6 +20,8 @@ public class AppConstants {
     public static final String HTTPS_COINFINITY_CO_PRICE_XBTEUR = COINFINITY_BASE_URL + "/price/" + ETHEUR;
     public static final int TEN_SECONDS = 10;
     public static final int FIVE_SECONDS = 5;
+    //if sig counter below this value warning is shown to user
+    public static final int WARNING_SIG_COUNTER = 100;
 
     // preferences
     public static final String PREFERENCE_FILENAME = "CoinfineonPrefs";

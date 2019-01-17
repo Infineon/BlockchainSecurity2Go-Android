@@ -9,19 +9,19 @@
 
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="395dp"
-            android:layout_height="643dp" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
-            android:textAlignment="center" android:gravity="center">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
+            android:textAlignment="center" android:gravity="center" android:layout_margin="25dp">
         <TextView
-                android:text="Enter your preferred PIN:"
+                android:text="@string/enter_your_preferred_pin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/textView2" android:textSize="24sp"/>
+                android:layout_height="wrap_content" android:id="@+id/textView2" android:textSize="20sp"/>
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:ems="10"
-                android:id="@+id/pin" android:hint="PIN"/>
+                android:id="@+id/pin" android:hint="@string/pin"/>
         <ImageView
                 android:id="@+id/image_nfc_icon"
                 android:layout_width="117dp"

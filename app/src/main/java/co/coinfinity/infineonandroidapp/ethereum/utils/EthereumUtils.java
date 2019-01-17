@@ -2,8 +2,10 @@ package co.coinfinity.infineonandroidapp.ethereum.utils;
 
 import android.nfc.tech.IsoDep;
 import android.util.Log;
+import android.util.Pair;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GenerateSignatureResponseApdu;
 import co.coinfinity.infineonandroidapp.utils.ByteUtils;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import org.web3j.crypto.*;
@@ -96,9 +98,9 @@ public class EthereumUtils {
      * @return Status object of the sent transaction
      * @throws Exception
      */
-    public static EthSendTransaction sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
-                                                     String to, BigInteger value, IsoDep isoTag,
-                                                     String publicKey, String data, String url, byte chainId, int keyIndex, byte[] pin) throws Exception {
+    public static Pair<EthSendTransaction, GenerateSignatureResponseApdu> sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
+                                                                                          String to, BigInteger value, IsoDep isoTag,
+                                                                                          String publicKey, String data, String url, byte chainId, int keyIndex, byte[] pin) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(
@@ -107,12 +109,12 @@ public class EthereumUtils {
         byte[] encodedTransaction = encode(rawTransaction, chainId);
 
         final byte[] hashedTransaction = Hash.sha3(encodedTransaction);
-        final byte[] signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), keyIndex, hashedTransaction, pin);
+        final GenerateSignatureResponseApdu signedTransaction = NfcUtils.generateSignature(IsoTagWrapper.of(isoTag), keyIndex, hashedTransaction, pin);
 
-        Log.d(TAG, String.format("signed transaction: %s", ByteUtils.bytesToHex(signedTransaction)));
+        Log.d(TAG, String.format("signed transaction: %s", ByteUtils.bytesToHex(signedTransaction.getSignature())));
 
-        byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction));
-        byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction));
+        byte[] r = Bytes.trimLeadingZeroes(extractR(signedTransaction.getSignature()));
+        byte[] s = Bytes.trimLeadingZeroes(extractS(signedTransaction.getSignature()));
         Log.d(TAG, String.format("r: %s", ByteUtils.bytesToHex(r)));
         Log.d(TAG, String.format("s: %s", ByteUtils.bytesToHex(s)));
 
@@ -130,10 +132,11 @@ public class EthereumUtils {
 
         if (ethSendTransaction != null && ethSendTransaction.getError() != null) {
             Log.e(TAG, String.format("TransactionError: %s", ethSendTransaction.getError().getMessage()));
-            throw new RuntimeException(String.format("TransactionError: %s",
-                    ethSendTransaction.getError().getMessage()));
+            //TODO is this needed because it doesnt work with sig counter message
+//            throw new RuntimeException(String.format("TransactionError: %s",
+//                    ethSendTransaction.getError().getMessage()));
         }
-        return ethSendTransaction;
+        return new Pair<>(ethSendTransaction, signedTransaction);
     }
 
     /**

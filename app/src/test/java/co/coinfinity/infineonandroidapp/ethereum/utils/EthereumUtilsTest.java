@@ -3,6 +3,7 @@ package co.coinfinity.infineonandroidapp.ethereum.utils;
 import android.nfc.tech.IsoDep;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,6 +43,7 @@ public class EthereumUtilsTest {
     IsoDep isoDep;
 
     @Test
+    @Ignore
     public void testGetBalanceTest() throws Exception {
         final EthBalanceBean balance = EthereumUtils.getBalance(TransactionSigner.credentials.getAddress(), ROPSTEN_URI);
 
@@ -52,6 +54,7 @@ public class EthereumUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testSendTransaction() throws Exception {
         PowerMockito.mockStatic(NfcUtils.class);
         when(NfcUtils.generateSignature(any(), anyInt(), any(), any())).thenAnswer(
@@ -76,6 +79,7 @@ public class EthereumUtilsTest {
     }
 
     @Test
+    @Ignore
     public void testGetNextNonce() throws IOException {
         Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_URI));
 

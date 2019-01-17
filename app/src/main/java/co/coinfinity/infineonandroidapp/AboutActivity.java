@@ -14,6 +14,9 @@ import mehdi.sakout.aboutpage.Element;
 
 import static co.coinfinity.AppConstants.TAG;
 
+/**
+ * Activity used to show about page with information about Infineon and Coinfinity.
+ */
 public class AboutActivity extends AppCompatActivity {
 
     private int numTimesVersionClicked;

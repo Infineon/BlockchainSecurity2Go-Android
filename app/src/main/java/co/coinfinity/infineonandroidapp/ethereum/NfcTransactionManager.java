@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.nfc.tech.IsoDep;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.TextView;
 import co.coinfinity.infineonandroidapp.R;
 import co.coinfinity.infineonandroidapp.VotingActivity;
 import co.coinfinity.infineonandroidapp.ethereum.utils.EthereumUtils;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GenerateSignatureResponseApdu;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.protocol.Web3j;
@@ -70,11 +72,12 @@ public class NfcTransactionManager extends TransactionManager {
             chainId = ChainId.ROPSTEN;
         }
 
+        Pair<EthSendTransaction, GenerateSignatureResponseApdu> response = null;
         try {
             Log.d(TAG, "sending ETH transaction..");
-            final EthSendTransaction response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
+            response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
                     value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), ((TextView) activity.findViewById(R.id.pin)).getText().toString().getBytes(StandardCharsets.UTF_8));
-            Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.getTransactionHash()));
+            Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.first.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {
                     showToast(activity.getString(R.string.voted_successful), activity);
@@ -82,7 +85,8 @@ public class NfcTransactionManager extends TransactionManager {
                     showToast(activity.getString(R.string.send_success), activity);
                 }
             }
-            return response;
+
+            return response.first;
         } catch (NfcCardException e) {
             if (activity != null) {
                 showToast(e.getMessage(), activity);
@@ -92,6 +96,10 @@ public class NfcTransactionManager extends TransactionManager {
             Log.e(TAG, "Exception while sending ether transaction", e);
             if (!(activity instanceof VotingActivity)) {
                 showToast(String.format(activity.getString(R.string.could_not_send_transaction), e.getMessage()), activity);
+            }
+        } finally {
+            if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER || response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
+                showToast("Signature counter below " + WARNING_SIG_COUNTER + "! Backup your funds!", activity);
             }
         }
         return null;
