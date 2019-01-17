@@ -13,8 +13,13 @@ import "./tokenutils/CanRescueERC20.sol";
 contract Voting is Ownable, Destructible, CanRescueERC20 {
 
     /**
+     * @dev number of possible choices. Constant set at compile time.
+     */
+    uint8 internal constant NUMBER_OF_CHOICES = 4;
+
+    /**
      * @notice Number of total cast votes (uint40 is enough as at most
-     *     we support 2**8 choices and 2**32 votes per choice).
+     *     we support 4 choices and 2^32 votes per choice).
      */
     uint40 public voteCountTotal;
 
@@ -25,7 +30,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      *     and still allows 8 entries to be packed in a single storage slot
      *     (EVM wordsize is 256 bit). And of course we check for overflows.
      */
-    uint32[] internal currentVoteResults;
+    uint32[NUMBER_OF_CHOICES] internal currentVoteResults;
 
     /**
      * @notice Mapping of address to vote details
@@ -38,7 +43,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      * @param addedVote choice in the vote
      * @param allVotes array containing updated intermediate result
      */
-    event NewVote(uint8 indexed addedVote, uint32[] allVotes);
+    event NewVote(uint8 indexed addedVote, uint32[NUMBER_OF_CHOICES] allVotes);
 
     /**
      * @dev Represent info about a single voter.
@@ -50,35 +55,11 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     }
 
     /**
-     * @dev Constructor
-     */
-    constructor (uint8 initMaxChoices)
-    public {
-        require(initMaxChoices >= 2, "Minimum 2 choices allowed.");
-        // to avoid uint8 overflow:
-        require(initMaxChoices <= 255, "Maximum 255 choices allowed.");
-
-        // Initialize array:
-        currentVoteResults.length = initMaxChoices;
-        // this has the same effect as:
-        // > currentVoteResults = new uint32[](initMaxChoices)"
-        // but saves an SSTORE. In both cases the variable is layouted
-        // as a "dynamically sized" array, as for constant sized array
-        // layout the size would have to be a literal or a constant
-        // (and solidity doesn't support yet constants to be set in
-        // the constructor) but with "new" operator solidity immediately
-        // writes 0 at position 0 (storage is always 0 before 1st write,
-        // so this is unnecessary).
-    }
-
-    /**
-     * Fallback function. We do not allow to be ether sent to us. And we also
-     * do not allow transactions without any function call. Fallback function
-     * simply always throws.
+     * @notice Fallback function. Will be called whenever the contract receives ether, or
+     *     when is called without data or with unknown function signature.
      */
     function()
     public {
-        require(false, "Fallback function always throws.");
     }
 
     /**
@@ -158,7 +139,7 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     function currentResult()
     external
     view
-    returns (uint32[]) {
+    returns (uint32[NUMBER_OF_CHOICES]) {
         return currentVoteResults;
     }
 

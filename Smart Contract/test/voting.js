@@ -13,8 +13,11 @@ const {expectFailWithoutMsg, expectFail, checkEvents, nulladdress, getBalance, g
 // Some error messages we expect to be thrown from the contract.
 const errors = {
     onlyOwner: 'Only the owner can do this.',
-    ownerZeroNotAllowed: 'New owner cannot be 0x0.',
-    onlyWhitelistedCanVote: 'Only whitelisted sender addresses can cast votes.'
+    alreadyVoted: 'This address has already voted. Vote denied.',
+    invalidChoice: 'Choice must be less than contract configured numberOfChoices.',
+    nameTooShort: 'Name of voter is too short.',
+    ownerZeroNotAllowed: 'New owner cannot be 0x0.'
+
 };
 
 
@@ -25,8 +28,8 @@ contract('Vote: init checks', function (accounts) {
 
         it('should have 4 possible choices', async function () {
             let v = await Voting.deployed();
-
-            (await v.numberOfPossibleChoices()).should.eq.BN(4);
+            // 4 is provided as constructor argument in the migration script ("2_deploy_contracts.js")
+            (await v.numberOfChoices()).should.eq.BN(4);
         });
 
         it('should have 0 votes after deployment', async function () {
@@ -37,16 +40,6 @@ contract('Vote: init checks', function (accounts) {
         it('should return 4 entries in currentResult', async function () {
             let v = await Voting.deployed();
             (await v.currentResult()).length.should.be.eq.BN(4);
-        });
-
-        it('should have only nulladdress in whitelist at beginning', async function () {
-            let v = await Voting.deployed();
-            let whitelist = await v.whitelistedSenderAddresses();
-            whitelist.length.should.be.eq.BN(4);
-            whitelist[0].should.be.equal(nulladdress);
-            whitelist[1].should.be.equal(nulladdress);
-            whitelist[2].should.be.equal(nulladdress);
-            whitelist[3].should.be.equal(nulladdress);
         });
 
         it('should have 0 in all 4 entries in currentResult', async function () {
@@ -73,6 +66,14 @@ contract('Vote: init checks', function (accounts) {
         it('should return error if asking for vote counter of non-existing choice', async function () {
             let v = await Voting.deployed();
             await expectFailWithoutMsg(v.votesPerChoice(4));
+        });
+
+        it('should have no vote for a specific voter yet', async function () {
+            let v = await Voting.deployed();
+            let vote = await v.votersInfo(voter1);
+            vote.exists.should.be.equal(false);
+            vote = await v.votersInfo(voter2);
+            vote.exists.should.be.equal(false);
         });
 
         it('should not accept ether sent to it', async function () {
@@ -109,18 +110,6 @@ contract('Vote: access checks', function (accounts) {
             await expectFail(v.destroyAndSend(otherAcc2, {from: otherAcc3}), errors.onlyOwner);
         });
 
-        it('should only allow to be reset by owner', async function () {
-            let v = await Voting.deployed();
-            // should fail for other
-            await expectFail(v.resetDemo({from: otherAcc1}), errors.onlyOwner);
-            // should work for owner
-            var {logs} = await v.resetDemo({from: owner});
-            checkEvents(logs, [{
-                event: 'DemoResetted',
-                args: {}
-            }]);
-        });
-
         it('should not allow to rescue ERC-20 by non-owner', async function () {
             let v = await Voting.deployed();
             await expectFail(v.recoverTokens(otherAcc3, {from: otherAcc1}), errors.onlyOwner);
@@ -145,25 +134,7 @@ contract('Vote: access checks', function (accounts) {
                     newOwner: owner
                 }
             }]);
-        });
 
-        it('should not allow to set whitelist by non-owner', async function () {
-            let v = await Voting.deployed();
-            let whitelist = [voter1, voter2, voter3, voter4];
-            await expectFail(v.setWhiteList(whitelist, {from: otherAcc1}), errors.onlyOwner);
-
-        });
-
-        it('should allow to set whitelist by owner', async function () {
-            let v = await Voting.deployed();
-            let whitelist = [voter1, voter2, voter3, voter4];
-            var {logs} = await v.setWhiteList(whitelist, {from: owner});
-            checkEvents(logs, [{
-                event: 'WhitelistUpdated',
-                args: {
-                    whitelistedSenderAdresses: whitelist
-                }
-            }]);
         });
 
         it('should allow to transfer ownership from owner to itself', async function () {
@@ -201,7 +172,7 @@ contract('Vote: access checks', function (accounts) {
 contract('Vote: voting tests', function (accounts) {
 
         // define some accounts and give them readable names
-        const [owner, voter1, voter2, voter3, voter4, noVoter1, noVoter2] = accounts;
+        const [owner, voter1, voter2, voter3, voter4, voter5, voter6] = accounts;
 
         /**
          * Small helper functiom that returns the 4 digits as a BN.js array (like web3 returns it)
@@ -243,37 +214,23 @@ contract('Vote: voting tests', function (accounts) {
 
         // Tests start here:
 
-        it('should set whitelist correctly', async function () {
-            let v = await Voting.deployed();
-            // set whitelist and check event:
-            let whitelist = [voter1, voter2, voter3, voter4];
-            var {logs} = await v.setWhiteList(whitelist, {from: owner});
-            checkEvents(logs, [{
-                event: 'WhitelistUpdated',
-                args: {
-                    whitelistedSenderAdresses: whitelist
-                }
-            }]);
-            // read whitelist and compare:
-            let readWhitelist = await v.whitelistedSenderAddresses({from: noVoter2});
-            readWhitelist.length.should.be.eq.BN(4);
-            readWhitelist[0].should.be.equal(voter1);
-            readWhitelist[1].should.be.equal(voter2);
-            readWhitelist[2].should.be.equal(voter3);
-            readWhitelist[3].should.be.equal(voter4);
-        });
-
-
-        it('should not allow votes from other addresses', async function () {
+        it('should not allow votes for invalid options', async function () {
             let v = await Voting.deployed();
             // we have only option 0-3
-            await expectFail(v.castVote({from: noVoter1}), errors.onlyWhitelistedCanVote);
+            await expectFail(v.castVote('voter1', 4, {from: voter1}), errors.invalidChoice);
+            await checkResultsInContract(v, 0, 0, 0, 0);
+        });
+
+        it('should not allow votes with too short name', async function () {
+            let v = await Voting.deployed();
+            // we have only option 0-3
+            await expectFail(v.castVote('v', 0, {from: voter1}), errors.nameTooShort);
             await checkResultsInContract(v, 0, 0, 0, 0);
         });
 
         it('should give a vote for option 0 and emit correct event', async function () {
             let v = await Voting.deployed();
-            let {logs} = await v.castVote({from: voter1});
+            let {logs} = await v.castVote('voter1', 0, {from: voter1});
             // check if correct log gets emitted:
             checkEvents(logs, [{
                 event: 'NewVote',
@@ -289,15 +246,24 @@ contract('Vote: voting tests', function (accounts) {
             await checkResultsInContract(v, 1, 0, 0, 0);
         });
 
+        it('should not allow the same voter to vote again', async function () {
+            let v = await Voting.deployed();
+            await expectFail(v.castVote('voter1', 0, {from: voter1}), errors.alreadyVoted);
+            // different vote
+            await expectFail(v.castVote('voter1', 1, {from: voter1}), errors.alreadyVoted);
+            // results unchanged? (should be guaranteed by EVM, so unnecessary check)
+            await checkResultsInContract(v, 1, 0, 0, 0);
+        });
+
         it('should not allow to send ether with vote', async function () {
             let v = await Voting.deployed();
-            await expectFailWithoutMsg(v.castVote({from: voter1, value: 50}));
+            await expectFailWithoutMsg(v.castVote('voter4', 2, {from: voter4, value: 50}));
             await checkResultsInContract(v, 1, 0, 0, 0);
         });
 
         it('should update counters correctly after vote for another option', async function () {
             let v = await Voting.deployed();
-            let {logs} = await v.castVote({from: voter4});
+            let {logs} = await v.castVote('voter2', 3, {from: voter2});
             // check if correct log gets emitted:
             checkEvents(logs, [{
                 event: 'NewVote',
@@ -311,7 +277,7 @@ contract('Vote: voting tests', function (accounts) {
 
         it('should update counters correctly after vote for the same option', async function () {
             let v = await Voting.deployed();
-            let {logs} = await v.castVote({from: voter4});
+            let {logs} = await v.castVote('voter3', 3, {from: voter3});
             // check if correct log gets emitted:
             checkEvents(logs, [{
                 event: 'NewVote',
@@ -323,10 +289,32 @@ contract('Vote: voting tests', function (accounts) {
             await checkResultsInContract(v, 1, 0, 0, 2);
         });
 
+        it('should return correct voter names', async function () {
+            let v = await Voting.deployed();
+            let name = await v.thisVotersName({from: voter1});
+            name.should.be.equal('voter1');
+            name = await v.thisVotersName({from: voter2});
+            name.should.be.equal('voter2');
+            name = await v.thisVotersName({from: voter3});
+            name.should.be.equal('voter3');
+            await expectFailWithoutMsg(v.thisVotersName({from: voter4}));
+        });
+
+        it('should return correct choice per voter', async function () {
+            let v = await Voting.deployed();
+            let choice = await v.thisVotersChoice({from: voter1});
+            choice.should.be.eq.BN(0);
+            choice = await v.thisVotersChoice({from: voter2});
+            choice.should.be.eq.BN(3);
+            choice = await v.thisVotersChoice({from: voter3});
+            choice.should.be.eq.BN(3);
+            await expectFailWithoutMsg(v.thisVotersName({from: voter4}));
+        });
+
         it('should update counters after also after a few votes', async function () {
             let v = await Voting.deployed();
 
-            var {logs} = await v.castVote({from: voter3});
+            var {logs} = await v.castVote('voter4', 2, {from: voter4});
             checkEvents(logs, [{
                 event: 'NewVote',
                 args: {
@@ -336,7 +324,7 @@ contract('Vote: voting tests', function (accounts) {
             }]);
             await checkResultsInContract(v, 1, 0, 1, 2);
 
-            var {logs} = await v.castVote({from: voter2});
+            var {logs} = await v.castVote('voter5', 1, {from: voter5});
             checkEvents(logs, [{
                 event: 'NewVote',
                 args: {
@@ -346,7 +334,7 @@ contract('Vote: voting tests', function (accounts) {
             }]);
             await checkResultsInContract(v, 1, 1, 1, 2);
 
-            var {logs} = await v.castVote({from: voter4});
+            var {logs} = await v.castVote('voter6', 3, {from: voter6});
             checkEvents(logs, [{
                 event: 'NewVote',
                 args: {
@@ -357,54 +345,6 @@ contract('Vote: voting tests', function (accounts) {
             await checkResultsInContract(v, 1, 1, 1, 3);
         });
 
-        it('should reset all votes after calling resetDemo function', async function () {
-            let v = await Voting.deployed();
-
-            var {logs} = await v.resetDemo({from: owner});
-            checkEvents(logs, [{
-                event: 'DemoResetted',
-                args: {}
-            }]);
-            // now all results should be 0 again
-            await checkResultsInContract(v, 0, 0, 0, 0);
-            // as well as total count of votes
-            let totalCount = await v.voteCountTotal();
-            totalCount.should.be.eq.BN(0);
-        });
-
-        it('should update counters again when voting after reset', async function () {
-            let v = await Voting.deployed();
-
-            var {logs} = await v.castVote({from: voter3});
-            checkEvents(logs, [{
-                event: 'NewVote',
-                args: {
-                    addedVote: 2,
-                    allVotes: arrayAsBn(0, 0, 1, 0)
-                }
-            }]);
-            await checkResultsInContract(v, 0, 0, 1, 0);
-
-            var {logs} = await v.castVote({from: voter2});
-            checkEvents(logs, [{
-                event: 'NewVote',
-                args: {
-                    addedVote: 1,
-                    allVotes: arrayAsBn(0, 1, 1, 0)
-                }
-            }]);
-            await checkResultsInContract(v, 0, 1, 1, 0);
-
-            var {logs} = await v.castVote({from: voter4});
-            checkEvents(logs, [{
-                event: 'NewVote',
-                args: {
-                    addedVote: 3,
-                    allVotes: arrayAsBn(0, 1, 1, 1)
-                }
-            }]);
-            await checkResultsInContract(v, 0, 1, 1, 1);
-        });
     }
 );
 
