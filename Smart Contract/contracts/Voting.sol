@@ -6,32 +6,11 @@ import "./tokenutils/CanRescueERC20.sol";
 
 
 /**
- * @title Simple Voting/Poll Demo for Infineon for TRUST TECH 2018
- * (https://www.trustech-event.com/)
- *
- * This is just a DEMO! It contains a reset function and makes
- * other assumptions which only make sense in the context of a demo.
- *
- * Don't use it like this in a production setup!
+ * @title Simple Public Voting/Poll Demo
  *
  * @author Coinfinity (www.coinfinity.co), 2018
  */
 contract Voting is Ownable, Destructible, CanRescueERC20 {
-
-    /**
-     * @dev number of possible choices. Constant set at compile time.
-     *     (Note: if this is changed you also have to adapt the
-     *     "castVote" function!)
-     */
-    uint8 internal constant NUMBER_OF_CHOICES = 4;
-
-    /**
-     * @notice Only these adresses are allowed to send votes. Depending
-     *     on the sending address the voter's choice is dermined.
-     *     (i.e.: if sending from allowedSenderAdresses[0] means vote
-     *     for choice 0.)
-     */
-    address[NUMBER_OF_CHOICES] internal whitelistedSenderAdresses;
 
     /**
      * @notice Number of total cast votes (uint40 is enough as at most
@@ -46,7 +25,12 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      *     and still allows 8 entries to be packed in a single storage slot
      *     (EVM wordsize is 256 bit). And of course we check for overflows.
      */
-    uint32[NUMBER_OF_CHOICES] internal currentVoteResults;
+    uint32[] internal currentVoteResults;
+
+    /**
+     * @notice Mapping of address to vote details
+     */
+    mapping(address => Voter) public votersInfo;
 
     /**
      * @notice Event gets emitted every time when a new vote is cast.
@@ -54,21 +38,41 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
      * @param addedVote choice in the vote
      * @param allVotes array containing updated intermediate result
      */
-    event NewVote(uint8 indexed addedVote, uint32[NUMBER_OF_CHOICES] allVotes);
+    event NewVote(uint8 indexed addedVote, uint32[] allVotes);
 
     /**
-     * @notice Event gets emitted every time the whitelisted sender addresses
-     *     get updated.
+     * @dev Represent info about a single voter.
      */
-    event WhitelistUpdated(address[NUMBER_OF_CHOICES] whitelistedSenderAdresses);
+    struct Voter {
+        bool exists;
+        uint8 choice;
+        string name;
+    }
 
     /**
-     * @notice Event gets emitted every time this demo contract gets resetted.
+     * @dev Constructor
      */
-    event DemoResetted();
+    constructor (uint8 initMaxChoices)
+    public {
+        require(initMaxChoices >= 2, "Minimum 2 choices allowed.");
+        // to avoid uint8 overflow:
+        require(initMaxChoices <= 255, "Maximum 255 choices allowed.");
+
+        // Initialize array:
+        currentVoteResults.length = initMaxChoices;
+        // this has the same effect as:
+        // > currentVoteResults = new uint32[](initMaxChoices)"
+        // but saves an SSTORE. In both cases the variable is layouted
+        // as a "dynamically sized" array, as for constant sized array
+        // layout the size would have to be a literal or a constant
+        // (and solidity doesn't support yet constants to be set in
+        // the constructor) but with "new" operator solidity immediately
+        // writes 0 at position 0 (storage is always 0 before 1st write,
+        // so this is unnecessary).
+    }
 
     /**
-     * @notice Fallback function. We do not allow to be ether sent to us. And we also
+     * Fallback function. We do not allow to be ether sent to us. And we also
      * do not allow transactions without any function call. Fallback function
      * simply always throws.
      */
@@ -78,88 +82,84 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     }
 
     /**
-     * @notice Only the owner can define which addresses are allowed to vote
-     *     (and also which address stands for which vote choice)
-     *
-     * @param whitelistedSenders array of allowed vote sending addresses,
-     *     address at index 0 will vote for choice 0, address at index 1
-     *     will vote for choice 1, etc.
+     * @notice Cast your note. Each address can only vote once.
+     * @param voterName Name of the voter, will be publicly visible on the blockchain
+     * @param givenVote choice the caller has voted for
      */
-    function setWhiteList(address[NUMBER_OF_CHOICES] whitelistedSenders)
-    external
-    onlyOwner {
-        // Assumption: we assume that owner takes care that list contains no duplicates.
-        // No duplicate check in here.
-        whitelistedSenderAdresses = whitelistedSenders;
-        emit WhitelistUpdated(whitelistedSenders);
-    }
-
-    /**
-     * @notice As this is just a DEMO contract, allow the onwer to reset the
-     *     state of the Demo conract.
-     */
-    function resetDemo()
-    external
-    onlyOwner {
-        voteCountTotal = 0;
-        currentVoteResults[0] = 0;
-        currentVoteResults[1] = 0;
-        currentVoteResults[2] = 0;
-        currentVoteResults[3] = 0;
-        emit DemoResetted();
-    }
-
-    /**
-     * @notice Cast your note. The sending address determines the choice you
-     *      are voting for (each choice has its own sending address). For the Demo
-     *      there will be 1 Infineon card lying around for each choice, and the
-     *      visitor chooses by using a specific card to to send the vote transaction.
-     */
-    function castVote()
+    function castVote(string voterName, uint8 givenVote)
     external {
-        uint8 choice;
-        if (msg.sender == whitelistedSenderAdresses[0]) {
-            choice = 0;
-        } else if (msg.sender == whitelistedSenderAdresses[1]) {
-            choice = 1;
-        } else if (msg.sender == whitelistedSenderAdresses[2]) {
-            choice = 2;
-        } else if (msg.sender == whitelistedSenderAdresses[3]) {
-            choice = 3;
-        } else {
-            require(false, "Only whitelisted sender addresses can cast votes.");
-        }
+        // answer must be given
+        require(givenVote < numberOfChoices(), "Choice must be less than contract configured numberOfChoices.");
+
+        // check if already voted
+        require(!votersInfo[msg.sender].exists, "This address has already voted. Vote denied.");
+
+        //  voter name has to have at least 3 bytes (note: with utf8 some chars have
+        // more than 1 byte, so this check is not fully accurate but ok here)
+        require(bytes(voterName).length > 2, "Name of voter is too short.");
 
         // everything ok, add voter
+        votersInfo[msg.sender] = Voter(true, givenVote, voterName);
         voteCountTotal = safeAdd40(voteCountTotal, 1);
-        currentVoteResults[choice] = safeAdd32(currentVoteResults[choice], 1);
+        currentVoteResults[givenVote] = safeAdd32(currentVoteResults[givenVote], 1);
 
         // emit a NewVote event at this point in time, so that a web3 Dapp
         // can react it to it immediately. Emit full current vote state, as
         // events are cheaper for light clients than querying the state.
-        emit NewVote(choice, currentVoteResults);
+        emit NewVote(givenVote, currentVoteResults);
+    }
+
+    /**
+    * @notice checks if this address has already cast a vote
+    *  this is required to find out if it is safe to call the other "thisVoters..." views.
+    */
+    function thisVoterExists()
+    external
+    view
+    returns (bool) {
+        return votersInfo[msg.sender].exists;
+    }
+
+    /**
+     * @notice Returns the vote details of calling address or throws
+     *    if address has not voted yet.
+     */
+    function thisVotersChoice()
+    external
+    view
+    returns (uint8) {
+        // check if msg sender exists in voter mapping
+        require(votersInfo[msg.sender].exists, "No vote so far.");
+        return votersInfo[msg.sender].choice;
+    }
+
+    /**
+     * @notice Returns the entered voter name of the calling address or throws
+     *    if address has not voted yet.
+     */
+    function thisVotersName()
+    external
+    view
+    returns (string) {
+        // check if msg sender exists in voter mapping
+        require(votersInfo[msg.sender].exists, "No vote so far.");
+        return votersInfo[msg.sender].name;
     }
 
     /**
      * @notice Return array with sums of votes per choice.
+     *
+     * @dev Note that this only will work for external callers, and not
+     *      for other contracts (as of solidity 0.4.25 returning of dynamically
+     *      sized data is still not in stable, it's only available with the
+     *      experimental "ABIEncoderV2" pragma). Also some block-explorers,
+     *      like etherscan, will have problems to display this correctly.
      */
     function currentResult()
     external
     view
-    returns (uint32[NUMBER_OF_CHOICES]) {
+    returns (uint32[]) {
         return currentVoteResults;
-    }
-
-    /**
-     * @notice Return array of allowed voter addresses. Address at index 0
-     *     represents votes for choice 0, addresses at index 1 represent
-     *     votes for choice 1, etc.
-     */
-    function whitelistedSenderAddresses()
-    external
-    view
-    returns (address[NUMBER_OF_CHOICES]) {
-        return whitelistedSenderAdresses;
     }
 
     /**
@@ -169,18 +169,20 @@ contract Voting is Ownable, Destructible, CanRescueERC20 {
     external
     view
     returns (uint32) {
-        require(option < NUMBER_OF_CHOICES, "Choice must be less than numberOfChoices.");
+        require(option < numberOfChoices(), "Choice must be less than contract configured numberOfChoices.");
         return currentVoteResults[option];
     }
 
     /**
      * @notice Returns the number of possible choices, which can be voted for.
      */
-    function numberOfPossibleChoices()
+    function numberOfChoices()
     public
-    pure
+    view
     returns (uint8) {
-        return NUMBER_OF_CHOICES;
+        // save as we only initialize array length in constructor
+        // and there we check it's never larger than uint8.
+        return uint8(currentVoteResults.length);
     }
 
     /**
