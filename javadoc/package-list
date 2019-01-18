@@ -8,6 +8,7 @@ co.coinfinity.infineonandroidapp.ethereum.exceptions
 co.coinfinity.infineonandroidapp.ethereum.utils
 co.coinfinity.infineonandroidapp.infineon
 co.coinfinity.infineonandroidapp.infineon.apdu
+co.coinfinity.infineonandroidapp.infineon.apdu.response
 co.coinfinity.infineonandroidapp.infineon.exceptions
 co.coinfinity.infineonandroidapp.qrcode
 co.coinfinity.infineonandroidapp.utils
