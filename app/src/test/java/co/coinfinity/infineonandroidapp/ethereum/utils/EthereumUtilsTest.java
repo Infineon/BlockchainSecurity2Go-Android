@@ -1,8 +1,10 @@
 package co.coinfinity.infineonandroidapp.ethereum.utils;
 
 import android.nfc.tech.IsoDep;
+import android.util.Pair;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
+import co.coinfinity.infineonandroidapp.infineon.apdu.response.GenerateSignatureResponseApdu;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,7 +65,7 @@ public class EthereumUtilsTest {
                     return TransactionSigner.signTransaction((byte[]) args[2]);
                 });
 
-        final EthSendTransaction ethSendTransaction = EthereumUtils.sendTransaction(
+        final Pair<EthSendTransaction, GenerateSignatureResponseApdu> ethSendTransaction = EthereumUtils.sendTransaction(
                 GAS_PRICE,
                 GAS_LIMIT,
                 TransactionSigner.credentials.getAddress(),
@@ -73,9 +75,9 @@ public class EthereumUtilsTest {
                 Numeric.toHexStringNoPrefixZeroPadded(TransactionSigner.credentials.getEcKeyPair().getPublicKey(), 128),
                 "", ROPSTEN_URI, ChainId.ROPSTEN, 1, null);
 
-        assertNull(ethSendTransaction.getError());
-        System.out.println(ethSendTransaction.getTransactionHash());
-        assertThat(ethSendTransaction.getResult(), containsString("0x"));
+        assertNull(ethSendTransaction.first.getError());
+        System.out.println(ethSendTransaction.first.getTransactionHash());
+        assertThat(ethSendTransaction.first.getResult(), containsString("0x"));
     }
 
     @Test

@@ -101,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
         displayOnUI(GuiState.PROGRESS_BAR);
 
         try {
-            //TODO TESTT !!!!
-//            NfcUtils.resetCard(IsoTagWrapper.of(isoDep));
             SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
             pubKeyString = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1)).getPublicKeyInHexWithoutPrefix();
             isoDep.close();
@@ -322,6 +320,8 @@ public class MainActivity extends AppCompatActivity {
      * On button click VOTING.
      */
     public void onVoting(View view) {
+//        Switch to new voting if needed
+//        Intent intent = new Intent(this, VotingActivity.class);
         Intent intent = new Intent(this, VotingActivityOld.class);
         Bundle bundle = new Bundle();
         bundle.putString("pubKey", pubKeyString);

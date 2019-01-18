@@ -132,9 +132,6 @@ public class EthereumUtils {
 
         if (ethSendTransaction != null && ethSendTransaction.getError() != null) {
             Log.e(TAG, String.format("TransactionError: %s", ethSendTransaction.getError().getMessage()));
-            //TODO is this needed because it doesnt work with sig counter message
-//            throw new RuntimeException(String.format("TransactionError: %s",
-//                    ethSendTransaction.getError().getMessage()));
         }
         return new Pair<>(ethSendTransaction, signedTransaction);
     }

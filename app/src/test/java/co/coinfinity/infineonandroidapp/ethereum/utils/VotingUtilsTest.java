@@ -54,7 +54,6 @@ public class VotingUtilsTest {
     }
 
     @Test
-    @Ignore
     public void testWhitelistedSenderAddresses() throws Exception {
         final StaticArray4<Address> addresses = VotingUtils.whitelistedSenderAddresses(CONTRACT_ADDRESS, TransactionSigner.credentials.getAddress(), GAS_PRICE, GAS_LIMIT, ROPSTEN_URI);
 

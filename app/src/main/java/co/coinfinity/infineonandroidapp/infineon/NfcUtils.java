@@ -202,18 +202,7 @@ public class NfcUtils {
     private static void selectApplication(NfcTranceiver card) throws IOException, NfcCardException {
         SelectApplicationApdu apdu = new SelectApplicationApdu(AID_INFINEON_BLOCKCHAIN2GO);
         // send apdu
-        ResponseApdu resp = tranceive(card, apdu, "SELECT APPLICATION");
-        //TODO what to do with response?
-    }
-
-    //TODO TESTT !!!!
-    public static void resetCard(NfcTranceiver card) throws IOException, NfcCardException {
-        selectApplication(card);
-
-        ResetApdu apdu = new ResetApdu();
-
-        // send apdu
-        ResponseApdu resp = tranceive(card, apdu, "RESET CARD");
+        tranceive(card, apdu, "SELECT APPLICATION");
     }
 
     /**
