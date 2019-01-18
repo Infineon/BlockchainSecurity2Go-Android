@@ -45,7 +45,6 @@ public class EthereumUtilsTest {
     IsoDep isoDep;
 
     @Test
-    @Ignore
     public void testGetBalanceTest() throws Exception {
         final EthBalanceBean balance = EthereumUtils.getBalance(TransactionSigner.credentials.getAddress(), ROPSTEN_URI);
 
@@ -81,7 +80,6 @@ public class EthereumUtilsTest {
     }
 
     @Test
-    @Ignore
     public void testGetNextNonce() throws IOException {
         Web3j web3 = Web3jFactory.build(new HttpService(ROPSTEN_URI));
 

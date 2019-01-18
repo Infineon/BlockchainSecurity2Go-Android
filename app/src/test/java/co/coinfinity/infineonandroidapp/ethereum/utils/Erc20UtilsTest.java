@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import static co.coinfinity.AppConstants.ROPSTEN_URI;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_LIMIT;
 import static co.coinfinity.infineonandroidapp.ethereum.utils.TransactionSigner.GAS_PRICE;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -52,12 +52,11 @@ public class Erc20UtilsTest {
     }
 
     @Test
-    @Ignore
     public void testGetErc20Balance() throws Exception {
         final BigInteger erc20Balance = Erc20Utils.getErc20Balance(ERC_CONTRACT, TransactionSigner.credentials.getAddress(), ROPSTEN_URI);
 
         System.out.printf("Token Balance: %s%n", erc20Balance);
         assertThat(erc20Balance.intValue(),
-                greaterThan(0));
+                comparesEqualTo(0));
     }
 }
