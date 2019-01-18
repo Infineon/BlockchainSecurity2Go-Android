@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.*;
+import static co.coinfinity.infineonandroidapp.utils.UiUtils.logTagInfo;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
 
 /**
@@ -75,7 +76,7 @@ public class CheckSigCountersActivity extends AppCompatActivity {
         }
 
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        UiUtils.logTagInfo(tag);
+        logTagInfo(tag);
         IsoDep isoDep = IsoDep.get(tag);
         if (isoDep == null) {
             showToast(getString(R.string.wrong_card), this);

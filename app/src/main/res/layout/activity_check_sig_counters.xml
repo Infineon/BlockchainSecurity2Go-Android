@@ -12,17 +12,21 @@
             android:layout_height="match_parent" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
             android:textAlignment="center" android:gravity="center" android:layout_margin="25dp">
         <TextView
-                android:text="Global signature counter: -"
+                android:text=""
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/globalSigCount" android:textSize="20sp"/>
         <TextView
-                android:text="Signature counter: -"
+                android:text=""
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/sigCount" android:textSize="20sp"/>
+                android:layout_height="wrap_content" android:id="@+id/sigCount" android:textSize="20sp"
+                android:layout_marginBottom="40dp"
+        />
         <ImageView
                 android:id="@+id/image_nfc_icon"
                 android:layout_width="117dp"
-                android:layout_height="68dp" app:srcCompat="@drawable/nfc_icon"/>
+                android:layout_height="68dp" app:srcCompat="@drawable/nfc_icon"
+                android:layout_marginBottom="20dp"
+        />
         <TextView
                 android:id="@+id/holdCard"
                 android:layout_width="match_parent"
