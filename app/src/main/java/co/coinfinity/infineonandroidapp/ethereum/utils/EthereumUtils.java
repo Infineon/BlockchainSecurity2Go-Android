@@ -98,9 +98,10 @@ public class EthereumUtils {
      * @return Status object of the sent transaction
      * @throws Exception
      */
-    public static Pair<EthSendTransaction, GenerateSignatureResponseApdu> sendTransaction(BigInteger gasPrice, BigInteger gasLimit, String from,
-                                                                                          String to, BigInteger value, IsoDep isoTag,
-                                                                                          String publicKey, String data, String url, byte chainId, int keyIndex, byte[] pin) throws Exception {
+    public static Pair<EthSendTransaction, GenerateSignatureResponseApdu> sendTransaction(
+            BigInteger gasPrice, BigInteger gasLimit, String from,
+            String to, BigInteger value, IsoDep isoTag,
+            String publicKey, String data, String url, byte chainId, int keyIndex, byte[] pin) throws Exception {
         Web3j web3 = Web3jFactory.build(new HttpService(url));
 
         RawTransaction rawTransaction = RawTransaction.createTransaction(

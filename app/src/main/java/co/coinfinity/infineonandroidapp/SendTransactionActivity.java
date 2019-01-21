@@ -155,7 +155,9 @@ public class SendTransactionActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         activityPaused = true;
-        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
 
         SharedPreferences mPrefs = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mPrefs.edit();
@@ -169,7 +171,9 @@ public class SendTransactionActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        }
         activityPaused = false;
     }
 
@@ -195,7 +199,8 @@ public class SendTransactionActivity extends AppCompatActivity {
         if (toggleButton.isChecked()) {
             try {
                 SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1)).getPublicKeyInHexWithoutPrefix();
+                String readRecipientAddress = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep),
+                        pref.getInt(KEY_INDEX_OF_CARD, 1)).getPublicKeyInHexWithoutPrefix();
                 isoDep.close();
                 Log.d(TAG, String.format("pubkey read from card: '%s'", readRecipientAddress));
                 final String newAddress = Keys.toChecksumAddress(Keys.getAddress(readRecipientAddress));
@@ -240,14 +245,16 @@ public class SendTransactionActivity extends AppCompatActivity {
             Log.d(TAG, "sending ETH transaction..");
             response = EthereumUtils.sendTransaction(gasPrice.toBigInteger(),
                     gasLimit.toBigInteger(), ethAddress, recipientAddressTxt.getText().toString(),
-                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString().getBytes(StandardCharsets.UTF_8));
+                    value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId,
+                    pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString().getBytes(StandardCharsets.UTF_8));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.first.getTransactionHash()));
         } catch (Exception e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while sending ether transaction", e);
             return;
         } finally {
-            if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER || response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
+            if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER ||
+                    response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
                 showToast("Signature counter below " + WARNING_SIG_COUNTER + "! Backup your funds!", this);
             }
         }
@@ -297,11 +304,14 @@ public class SendTransactionActivity extends AppCompatActivity {
             try {
                 EthBalanceBean balance = EthereumUtils.getBalance(ethAddress, UiUtils.getFullNodeUrl(this));
                 final BigDecimal ethBalanceInWei = Convert.toWei(balance.getEther(), Convert.Unit.ETHER);
-                final BigDecimal gasPrice = new BigDecimal(gasPriceTxt.getText().toString().equals("") ? "0" : gasPriceTxt.getText().toString())
+                final BigDecimal gasPrice = new BigDecimal(
+                        gasPriceTxt.getText().toString().equals("") ? "0" : gasPriceTxt.getText().toString())
                         .multiply(spinnerAdapter.getMultiplier());
-                final BigDecimal gasLimit = new BigDecimal(gasLimitTxt.getText().toString().equals("") ? "0" : gasLimitTxt.getText().toString());
+                final BigDecimal gasLimit = new BigDecimal(
+                        gasLimitTxt.getText().toString().equals("") ? "0" : gasLimitTxt.getText().toString());
 
-                this.runOnUiThread(() -> amountTxt.setText(Convert.fromWei(ethBalanceInWei.subtract(gasPrice.multiply(gasLimit)), Convert.Unit.ETHER).toPlainString()));
+                this.runOnUiThread(() -> amountTxt.setText(
+                        Convert.fromWei(ethBalanceInWei.subtract(gasPrice.multiply(gasLimit)), Convert.Unit.ETHER).toPlainString()));
             } catch (Exception e) {
                 Log.e(TAG, "exception while reading eth balance from api: ", e);
             }

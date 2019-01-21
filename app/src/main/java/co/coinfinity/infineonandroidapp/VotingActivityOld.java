@@ -203,7 +203,9 @@ public class VotingActivityOld extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        }
     }
 
     public void scanQrCode(View view) {

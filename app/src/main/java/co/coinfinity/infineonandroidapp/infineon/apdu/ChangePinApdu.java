@@ -20,6 +20,7 @@ public class ChangePinApdu extends BaseCommandApdu {
      */
     public ChangePinApdu(byte[] currentPin, byte[] newPin) {
         this.ins = INS_CHANGE_PIN;
+        this.leIncluded = true;
 
         byte currentPinLength = (byte) currentPin.length;
         byte newPinLength = (byte) newPin.length;

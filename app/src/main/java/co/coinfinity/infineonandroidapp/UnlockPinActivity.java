@@ -96,12 +96,16 @@ public class UnlockPinActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        }
     }
 }

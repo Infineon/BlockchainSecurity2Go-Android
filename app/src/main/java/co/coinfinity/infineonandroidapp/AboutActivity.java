@@ -49,7 +49,6 @@ public class AboutActivity extends AppCompatActivity {
                     .addItem(getVersionElement())
                     .create();
 
-
             setContentView(aboutPage);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Exception while getting about page info: ", e);

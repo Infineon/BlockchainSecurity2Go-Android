@@ -83,11 +83,14 @@ public class ChangePinActivity extends AppCompatActivity {
         }
 
         try {
-            final String puk = bytesToHex(NfcUtils.changePin(IsoTagWrapper.of(isoDep), oldPin.getText().toString().getBytes(StandardCharsets.UTF_8), newPin.getText().toString().getBytes(StandardCharsets.UTF_8)));
+            final String puk = bytesToHex(NfcUtils.changePin(IsoTagWrapper.of(isoDep),
+                    oldPin.getText().toString().getBytes(StandardCharsets.UTF_8),
+                    newPin.getText().toString().getBytes(StandardCharsets.UTF_8)));
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(R.string.chang_pin)
-                    .setMessage(String.format(getString(R.string.change_pin_message), oldPin.getText(), newPin.getText(), puk))
+                    .setMessage(String.format(getString(R.string.change_pin_message),
+                            oldPin.getText(), newPin.getText(), puk))
                     .setPositiveButton(R.string.ok, (dialog, which) -> finish());
             alert.show();
         } catch (IOException | NfcCardException e) {
@@ -99,12 +102,16 @@ public class ChangePinActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        }
     }
 }

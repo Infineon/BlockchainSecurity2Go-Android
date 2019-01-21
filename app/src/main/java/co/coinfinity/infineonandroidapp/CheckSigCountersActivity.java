@@ -17,7 +17,6 @@ import co.coinfinity.infineonandroidapp.infineon.NfcUtils;
 import co.coinfinity.infineonandroidapp.infineon.apdu.response.GetKeyInfoResponseApdu;
 import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
-import co.coinfinity.infineonandroidapp.utils.UiUtils;
 
 import java.io.IOException;
 
@@ -85,8 +84,10 @@ public class CheckSigCountersActivity extends AppCompatActivity {
 
         try {
             SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
-            final GetKeyInfoResponseApdu responseApdu = NfcUtils.readPublicKeyOrCreateIfNotExists(IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
-            globalSigCount.setText(String.format(getString(R.string.global_sig_counter), responseApdu.getGlobalSigCounterAsInteger()));
+            final GetKeyInfoResponseApdu responseApdu = NfcUtils.readPublicKeyOrCreateIfNotExists(
+                    IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
+            globalSigCount.setText(String.format(getString(R.string.global_sig_counter),
+                    responseApdu.getGlobalSigCounterAsInteger()));
             sigCount.setText(String.format(getString(R.string.sig_counter), responseApdu.getSigCounterAsInteger()));
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
@@ -97,12 +98,16 @@ public class CheckSigCountersActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (nfcAdapter != null) nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (nfcAdapter != null) nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+        }
     }
 }

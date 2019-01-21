@@ -39,7 +39,8 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    public static GenerateSignatureResponseApdu generateSignature(NfcTranceiver card, int keyIndex, byte[] dataToSign, byte[] pin)
+    public static GenerateSignatureResponseApdu generateSignature(NfcTranceiver card, int keyIndex,
+                                                                  byte[] dataToSign, byte[] pin)
             throws IOException, NfcCardException {
         selectApplication(card);
 

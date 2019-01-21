@@ -80,7 +80,6 @@ public class UnitSpinnerAdapter implements AdapterView.OnItemSelectedListener {
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
     }
 
     /**

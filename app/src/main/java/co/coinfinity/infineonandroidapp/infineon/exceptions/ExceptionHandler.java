@@ -85,7 +85,7 @@ public class ExceptionHandler {
         }
 
         if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("64")) {
-            throw new UnlockPinException(SW1SW2, "Operation failed (further Information in SW2: " + Integer.toHexString(SW1SW2).toUpperCase().substring(2, 4) + ")");
+            throw new NfcCardException(SW1SW2, "Operation failed (further Information in SW2: " + Integer.toHexString(SW1SW2).toUpperCase().substring(2, 4) + ")");
         }
 
         switch (SW1SW2) {

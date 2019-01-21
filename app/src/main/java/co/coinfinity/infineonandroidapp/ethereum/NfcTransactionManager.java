@@ -75,8 +75,9 @@ public class NfcTransactionManager extends TransactionManager {
         Pair<EthSendTransaction, GenerateSignatureResponseApdu> response = null;
         try {
             Log.d(TAG, "sending ETH transaction..");
-            response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to,
-                    value, tag, publicKey, data, UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1), ((TextView) activity.findViewById(R.id.pin)).getText().toString().getBytes(StandardCharsets.UTF_8));
+            response = EthereumUtils.sendTransaction(gasPrice, gasLimit, fromAddress, to, value, tag, publicKey, data,
+                    UiUtils.getFullNodeUrl(activity), chainId, pref.getInt(KEY_INDEX_OF_CARD, 1),
+                    ((TextView) activity.findViewById(R.id.pin)).getText().toString().getBytes(StandardCharsets.UTF_8));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.first.getTransactionHash()));
             if (activity != null) {
                 if ("Voting".equals(activity.getTitle().toString())) {
@@ -98,7 +99,8 @@ public class NfcTransactionManager extends TransactionManager {
                 showToast(String.format(activity.getString(R.string.could_not_send_transaction), e.getMessage()), activity);
             }
         } finally {
-            if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER || response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
+            if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER ||
+                    response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
                 showToast("Signature counter below " + WARNING_SIG_COUNTER + "! Backup your funds!", activity);
             }
         }

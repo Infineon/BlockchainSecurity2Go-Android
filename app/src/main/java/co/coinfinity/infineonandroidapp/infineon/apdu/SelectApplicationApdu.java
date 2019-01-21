@@ -17,6 +17,7 @@ public class SelectApplicationApdu extends BaseCommandApdu {
         this.ins = INS_SELECT_APPLICATION;
         this.p1 = 0x04;
         this.setData(aid);
+        this.leIncluded = true;
     }
 
 }
