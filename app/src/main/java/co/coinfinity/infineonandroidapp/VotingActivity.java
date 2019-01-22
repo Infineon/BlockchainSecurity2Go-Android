@@ -213,7 +213,7 @@ public class VotingActivity extends AppCompatActivity {
                 .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString())
                 .putString(PREF_KEY_PIN, pinTxt.getText().toString());
 
-        if (!mPrefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+        if (mPrefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
             mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString());
         } else {
             mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET, contractAddress.getText().toString());

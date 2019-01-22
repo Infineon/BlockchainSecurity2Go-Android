@@ -103,7 +103,7 @@
                         android:text="@string/answer_1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/radioButton1" android:layout_weight="1"
-                        android:textSize="28sp"/>
+                        android:textSize="28sp" android:checked="true"/>
                 <RadioButton
                         android:text="@string/answer_2"
                         android:layout_width="wrap_content"

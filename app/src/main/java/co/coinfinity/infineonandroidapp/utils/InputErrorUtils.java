@@ -17,6 +17,7 @@ public class InputErrorUtils {
     private TextView gasPriceTxt;
     private TextView gasLimitTxt;
     private TextView contractAddress;
+    private TextView votingName;
 
     public InputErrorUtils(Context ctx, TextView recipientAddressTxt, TextView amountTxt, TextView gasPriceTxt,
                            TextView gasLimitTxt) {
@@ -43,6 +44,15 @@ public class InputErrorUtils {
         this.gasLimitTxt = gasLimitTxt;
         this.contractAddress = contractAddress;
     }
+
+    public InputErrorUtils(TextView gasPriceTxt, TextView gasLimitTxt, TextView contractAddress, TextView votingName, Context ctx) {
+        this.ctx = ctx;
+        this.gasPriceTxt = gasPriceTxt;
+        this.gasLimitTxt = gasLimitTxt;
+        this.contractAddress = contractAddress;
+        this.votingName = votingName;
+    }
+
 
     /**
      * this method is checking if there is an input error and if there is it will set the causing TextView to state error.
@@ -74,6 +84,11 @@ public class InputErrorUtils {
 
         if (contractAddress != null && TextUtils.isEmpty(contractAddress.getText())) {
             contractAddress.setError(ctx.getString(R.string.err_contract_address_missing));
+            isNoError = false;
+        }
+
+        if (votingName != null && TextUtils.isEmpty(votingName.getText())) {
+            votingName.setError("Voting name is required!");
             isNoError = false;
         }
 

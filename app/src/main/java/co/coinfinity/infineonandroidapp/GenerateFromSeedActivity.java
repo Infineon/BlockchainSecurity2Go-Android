@@ -19,6 +19,7 @@ import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static android.app.PendingIntent.getActivity;
 import static co.coinfinity.AppConstants.TAG;
@@ -31,6 +32,8 @@ public class GenerateFromSeedActivity extends AppCompatActivity {
 
     @BindView(R.id.seed)
     TextView seed;
+    @BindView(R.id.pin)
+    TextView pinTxt;
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
@@ -81,7 +84,7 @@ public class GenerateFromSeedActivity extends AppCompatActivity {
         }
 
         try {
-            if (NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), ByteUtils.fromHexString(seed.getText().toString()))) {
+            if (NfcUtils.generateKeyFromSeed(IsoTagWrapper.of(isoDep), ByteUtils.fromHexString(seed.getText().toString()), pinTxt.getText().toString().getBytes(StandardCharsets.UTF_8))) {
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.generate_from_seed)
                         .setMessage(String.format(getString(R.string.generate_from_seed_message), seed.getText()))

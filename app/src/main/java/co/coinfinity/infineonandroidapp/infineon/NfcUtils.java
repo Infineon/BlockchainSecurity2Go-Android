@@ -94,8 +94,14 @@ public class NfcUtils {
      * @throws IOException      on communication errors
      * @throws NfcCardException when card returns something other than 0x9000 or 0x61XX
      */
-    public static boolean generateKeyFromSeed(NfcTranceiver card, byte[] seed) throws IOException, NfcCardException {
+    public static boolean generateKeyFromSeed(NfcTranceiver card, byte[] seed, byte[] pin) throws IOException, NfcCardException {
         selectApplication(card);
+
+        if (pin != null && pin.length > 0) {
+            if (!verifyPin(card, pin)) {
+                return false;
+            }
+        }
 
         GenerateKeyFromSeedApdu apdu = new GenerateKeyFromSeedApdu(seed);
 

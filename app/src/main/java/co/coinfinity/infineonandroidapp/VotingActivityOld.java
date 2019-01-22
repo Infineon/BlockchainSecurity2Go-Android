@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import co.coinfinity.infineonandroidapp.adapter.UnitSpinnerAdapter;
 import co.coinfinity.infineonandroidapp.ethereum.utils.VotingUtilsOld;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
+import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.abi.datatypes.generated.Uint32;
 
@@ -65,6 +66,8 @@ public class VotingActivityOld extends AppCompatActivity {
     private NfcAdapter nfcAdapter;
     private PendingIntent mPendingIntent;
 
+    private InputErrorUtils inputErrorUtils;
+
     private UnitSpinnerAdapter spinnerAdapter = new UnitSpinnerAdapter();
 
     @Override
@@ -75,6 +78,7 @@ public class VotingActivityOld extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         spinnerAdapter.addSpinnerAdapter(this, spinner);
+        inputErrorUtils = new InputErrorUtils(gasPrice, gasLimit, contractAddress, votingName, this);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         // Create a generic PendingIntent that will be deliver to this activity. The NFC stack
@@ -91,15 +95,18 @@ public class VotingActivityOld extends AppCompatActivity {
 
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
 
-        String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, DEFAULT_VOTING_CONTRACT_ADDRESS);
-        if (!pref.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
-            savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET, DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET);
-        }
-
         gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, "100000"));
         gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
         pinTxt.setText(pref.getString(PREF_KEY_PIN, ""));
 
+        reloadVotes(pref);
+    }
+
+    private void reloadVotes(SharedPreferences pref) {
+        String savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS, DEFAULT_VOTING_CONTRACT_ADDRESS);
+        if (!pref.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+            savedContractAddress = pref.getString(PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET, DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET);
+        }
         if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
             Handler mHandler = new Handler();
@@ -108,7 +115,7 @@ public class VotingActivityOld extends AppCompatActivity {
                     handleAfterVote(mHandler);
                 } catch (Exception e) {
                     Log.e(TAG, "exception handle after vote: ", e);
-                    showToast("Problem after vote", this);
+                    showToast("Problem during reload of votes", this);
                 }
             }).start();
         }
@@ -116,7 +123,9 @@ public class VotingActivityOld extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
-        resolveIntent(intent);
+        if (inputErrorUtils.isNoInputError()) {
+            resolveIntent(intent);
+        }
     }
 
     private void resolveIntent(Intent intent) {
@@ -191,7 +200,7 @@ public class VotingActivityOld extends AppCompatActivity {
                 .putString(PREF_KEY_GASPRICE_WEI, gasPrice.getText().toString())
                 .putString(PREF_KEY_PIN, pinTxt.getText().toString());
 
-        if (!mPrefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
+        if (mPrefs.getBoolean(PREF_KEY_MAIN_NETWORK, true)) {
             mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS, contractAddress.getText().toString());
         } else {
             mEditor.putString(PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET, contractAddress.getText().toString());
@@ -206,6 +215,9 @@ public class VotingActivityOld extends AppCompatActivity {
         if (nfcAdapter != null) {
             nfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         }
+
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+        reloadVotes(pref);
     }
 
     public void scanQrCode(View view) {
