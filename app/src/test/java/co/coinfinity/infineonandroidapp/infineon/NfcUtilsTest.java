@@ -57,7 +57,7 @@ public class NfcUtilsTest {
     public void testGenerateKeyFromSeed() throws IOException, NfcCardException {
         when(nfcTranceiver.transceive(any())).thenReturn(new byte[]{(byte) 0x90, 0x00});
         byte[] seed = new byte[]{};
-        final boolean responseApdu = NfcUtils.generateKeyFromSeed(nfcTranceiver, seed);
+        final boolean responseApdu = NfcUtils.generateKeyFromSeed(nfcTranceiver, seed, null);
         assertTrue(responseApdu);
     }
 
