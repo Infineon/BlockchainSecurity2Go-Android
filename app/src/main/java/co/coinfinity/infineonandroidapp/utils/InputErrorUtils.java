@@ -87,8 +87,8 @@ public class InputErrorUtils {
             isNoError = false;
         }
 
-        if (votingName != null && TextUtils.isEmpty(votingName.getText())) {
-            votingName.setError("Voting name is required!");
+        if (votingName != null && votingName.getText().length() < 4) {
+            votingName.setError(ctx.getString(R.string.voting_name_error));
             isNoError = false;
         }
 

@@ -80,4 +80,10 @@
     <string name="enter_your_preferred_pin">Enter your preferred PIN:</string>
     <string name="enter_your_puk_to_unlock_pin">Enter your PUK to unlock PIN:</string>
     <string name="puk" translatable="false">PUK</string>
+    <string name="signature_counter_below">Signature counter below %d! Backup your funds!</string>
+    <string name="change_recipient_address">Changed recipient address to %s</string>
+    <string name="lost_tag">Tag lost</string>
+    <string name="problem_reload_votes">Problem during reload of votes</string>
+    <string name="problem_after_vote">Problem after vote</string>
+    <string name="voting_name_error">Voting name needs at least 4 characters!</string>
 </resources>

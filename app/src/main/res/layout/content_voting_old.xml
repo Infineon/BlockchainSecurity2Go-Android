@@ -26,8 +26,8 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
                     android:ems="10"
-                    android:id="@+id/contractAddress" android:textSize="14sp"
-                    android:layout_weight=".90"/>
+                    android:id="@+id/contractAddress" android:textSize="10sp"
+                    android:layout_weight=".90" android:enabled="false"/>
             <ImageButton
                     android:layout_width="0dp"
                     android:layout_height="match_parent" app:srcCompat="@drawable/qrcode" android:id="@+id/imageButton"

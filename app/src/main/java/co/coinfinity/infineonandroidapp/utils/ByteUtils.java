@@ -48,12 +48,31 @@ public class ByteUtils {
      * @return byte array
      */
     public static byte[] fromHexString(String hexString) {
+        hexString = hexString.replaceAll("\\s+", "");
         int len = hexString.length();
+
+        if (!isNumeric(hexString) || len % 2 != 0) {
+            return new byte[]{};
+        }
+
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
                     + Character.digit(hexString.charAt(i + 1), 16));
         }
         return data;
+    }
+
+    private static boolean isNumeric(String hexString) {
+        if (hexString.length() == 0 ||
+                (hexString.charAt(0) != '-' && Character.digit(hexString.charAt(0), 16) == -1))
+            return false;
+        if (hexString.length() == 1 && hexString.charAt(0) == '-')
+            return false;
+
+        for (int i = 1; i < hexString.length(); i++)
+            if (Character.digit(hexString.charAt(i), 16) == -1)
+                return false;
+        return true;
     }
 }

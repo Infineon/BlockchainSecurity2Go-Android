@@ -115,7 +115,7 @@ public class VotingActivityOld extends AppCompatActivity {
                     handleAfterVote(mHandler);
                 } catch (Exception e) {
                     Log.e(TAG, "exception handle after vote: ", e);
-                    showToast("Problem during reload of votes", this);
+                    showToast(getString(R.string.problem_reload_votes), this);
                 }
             }).start();
         }
@@ -159,7 +159,7 @@ public class VotingActivityOld extends AppCompatActivity {
                 handleAfterVote(mHandler);
             } catch (Exception e) {
                 Log.e(TAG, "exception handle after vote: ", e);
-                showToast("Problem after vote", this);
+                showToast(getString(R.string.problem_after_vote), this);
             }
 
         });
@@ -172,19 +172,14 @@ public class VotingActivityOld extends AppCompatActivity {
         final BigInteger gasLimit = getGasLimitFromString();
         BigInteger gasPrice = getGasPriceFromString().multiply(spinnerAdapter.getMultiplier()).toBigInteger();
 
-        final BigInteger votersAnswer = VotingUtilsOld.getVotersAnswer(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit, this);
-        if (votersAnswer.intValue() != 0) {
-            final List<Uint32> answerCounts = VotingUtilsOld.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit, this);
-            mHandler.post(() -> {
-                answer1Votes.setText(String.format("Votes: %s", answerCounts.get(0).getValue().toString()));
-                answer2Votes.setText(String.format("Votes: %s", answerCounts.get(1).getValue().toString()));
-                answer3Votes.setText(String.format("Votes: %s", answerCounts.get(2).getValue().toString()));
-                answer4Votes.setText(String.format("Votes: %s", answerCounts.get(3).getValue().toString()));
-            });
-        }
+        final List<Uint32> answerCounts = VotingUtilsOld.getCurrentResult(contractAddress.getText().toString(), ethAddress, gasPrice, gasLimit, this);
         mHandler.post(() -> {
-            progressBar.setVisibility(View.INVISIBLE);
+            answer1Votes.setText(String.format("Votes: %s", answerCounts.get(0).getValue().toString()));
+            answer2Votes.setText(String.format("Votes: %s", answerCounts.get(1).getValue().toString()));
+            answer3Votes.setText(String.format("Votes: %s", answerCounts.get(2).getValue().toString()));
+            answer4Votes.setText(String.format("Votes: %s", answerCounts.get(3).getValue().toString()));
         });
+        mHandler.post(() -> progressBar.setVisibility(View.INVISIBLE));
     }
 
     @Override

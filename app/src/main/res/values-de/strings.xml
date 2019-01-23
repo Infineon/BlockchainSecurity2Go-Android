@@ -75,4 +75,9 @@
     <string name="import_seed">Import Seed</string>
     <string name="enter_your_preferred_pin">Geben Sie Ihren bevorzugten PIN ein:</string>
     <string name="enter_your_puk_to_unlock_pin">Geben Sie Ihren PUK zum Entsperren des PIN ein:</string>
+    <string name="signature_counter_below">Signature Zähler unter %d! Mache ein Backup deiner Coins!</string>
+    <string name="lost_tag">Tag verloren</string>
+    <string name="problem_reload_votes">Problem beim Reload der Votes</string>
+    <string name="problem_after_vote">Problem nach Vote</string>
+    <string name="voting_name_error">Voting Name muss mindestens aus 4 Buchstaben bestehen!</string>
 </resources>

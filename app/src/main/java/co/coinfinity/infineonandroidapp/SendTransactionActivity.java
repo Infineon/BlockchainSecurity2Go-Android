@@ -205,7 +205,7 @@ public class SendTransactionActivity extends AppCompatActivity {
                 Log.d(TAG, String.format("pubkey read from card: '%s'", readRecipientAddress));
                 final String newAddress = Keys.toChecksumAddress(Keys.getAddress(readRecipientAddress));
                 // use web3j to format this public key as ETH address
-                showToast(String.format("Change recipient address to %s", newAddress), this);
+                showToast(String.format(getString(R.string.change_recipient_address), newAddress), this);
                 recipientAddressTxt.setText(newAddress);
                 toggleButton.toggle();
             } catch (IOException | NfcCardException e) {
@@ -248,21 +248,23 @@ public class SendTransactionActivity extends AppCompatActivity {
                     value.toBigInteger(), isoDep, pubKeyString, "", UiUtils.getFullNodeUrl(this), chainId,
                     pref.getInt(KEY_INDEX_OF_CARD, 1), pinTxt.getText().toString().getBytes(StandardCharsets.UTF_8));
             Log.d(TAG, String.format("sending ETH transaction finished with Hash: %s", response.first.getTransactionHash()));
+
+            if (response.first.getError() != null) {
+                showToast(response.first.getError().getMessage(), this);
+            } else {
+                showToast(getString(R.string.send_success), this);
+            }
+        } catch (IOException e) {
+            showToast(getString(R.string.lost_tag), this);
+            Log.e(TAG, "IOException while sending ether transaction", e);
         } catch (Exception e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while sending ether transaction", e);
-            return;
         } finally {
             if (response != null && (response.second.getGlobalSigCounterAsInteger() < WARNING_SIG_COUNTER ||
                     response.second.getSigCounterAsInteger() < WARNING_SIG_COUNTER)) {
-                showToast("Signature counter below " + WARNING_SIG_COUNTER + "! Backup your funds!", this);
+                showToast(String.format(getString(R.string.signature_counter_below), WARNING_SIG_COUNTER), this);
             }
-        }
-
-        if (response.first.getError() != null) {
-            showToast(response.first.getError().getMessage(), this);
-        } else {
-            showToast(getString(R.string.send_success), this);
         }
     }
 
