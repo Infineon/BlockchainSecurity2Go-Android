@@ -107,7 +107,7 @@ public class SendErc20TokensActivity extends AppCompatActivity {
         recipientAddressTxt.setText(pref.getString(PREF_KEY_ERC20_RECIPIENT_ADDRESS,
                 ""));
         gasPriceTxt.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
-        gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, "50000"));
+        gasLimitTxt.setText(pref.getString(PREF_KEY_ERC20_GASLIMIT, DEFAULT_GASLIMIT));
         amountTxt.setText(pref.getString(PREF_KEY_ERC20_AMOUNT, "1"));
         pinTxt.setText(pref.getString(PREF_KEY_PIN, ""));
 

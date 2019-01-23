@@ -79,5 +79,5 @@
     <string name="lost_tag">Tag verloren</string>
     <string name="problem_reload_votes">Problem beim Reload der Votes</string>
     <string name="problem_after_vote">Problem nach Vote</string>
-    <string name="voting_name_error">Voting Name muss mindestens aus 4 Buchstaben bestehen!</string>
+    <string name="err_voting_name_required">Voting Name muss mindestens aus 4 Buchstaben bestehen!</string>
 </resources>

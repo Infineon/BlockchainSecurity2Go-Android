@@ -88,7 +88,7 @@ public class InputErrorUtils {
         }
 
         if (votingName != null && votingName.getText().length() < 4) {
-            votingName.setError(ctx.getString(R.string.voting_name_error));
+            votingName.setError(ctx.getString(R.string.err_voting_name_required));
             isNoError = false;
         }
 

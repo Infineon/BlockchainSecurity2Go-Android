@@ -110,7 +110,7 @@ public class SendTransactionActivity extends AppCompatActivity {
         recipientAddressTxt.setText(savedRecipientAddressTxt);
         String savedGasPriceWei = mPrefs.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI);
         gasPriceTxt.setText(savedGasPriceWei);
-        String savedGasLimit = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, "21000");
+        String savedGasLimit = mPrefs.getString(PREF_KEY_GASLIMIT_SEND_ETH, DEFAULT_GASLIMIT);
         gasLimitTxt.setText(savedGasLimit);
         String savedPin = mPrefs.getString(PREF_KEY_PIN, "");
         pinTxt.setText(savedPin);

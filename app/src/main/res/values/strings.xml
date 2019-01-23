@@ -85,5 +85,5 @@
     <string name="lost_tag">Tag lost</string>
     <string name="problem_reload_votes">Problem during reload of votes</string>
     <string name="problem_after_vote">Problem after vote</string>
-    <string name="voting_name_error">Voting name needs at least 4 characters!</string>
+    <string name="err_voting_name_required">Voting name needs at least 4 characters!</string>
 </resources>
