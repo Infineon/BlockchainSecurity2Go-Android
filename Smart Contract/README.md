@@ -4,7 +4,7 @@ This subdirectory contains an Ethereum Smart Contract example,
 which implements a very simple and basic voting contract.
 
 This contract has been deployed to the public ethereum blockchain
-at address: `TODO`
+at address: [0x2c680955cd340eae72703e6886957bf8465f9583](https://etherscan.io/address/0x2c680955cd340eae72703e6886957bf8465f9583#code)
 
 
 ### Requirements
@@ -80,7 +80,7 @@ truffle(ropsten)> migrate --reset
 
 ```
 
-Deployed on Ropsten at: https://ropsten.etherscan.io/address/0x6e670c473A2AD5894aE354b832aD4BADF1d919bf
+Deployed on Ropsten at: [0x104d919b299dbbbea258a41e2e910c29c551bf17](https://ropsten.etherscan.io/address/0x104d919b299dbbbea258a41e2e910c29c551bf17#code)
 
 
 Manual deployment using web3 (example using metamask):
