@@ -66,7 +66,7 @@
     <string name="unlock_pin_message">PIN mit PUK %s entsperrt</string>
     <string name="check_sig_counters">Prüfe Sig Counters</string>
     <string name="global_sig_counter">Globaler Signatur Counter: %d</string>
-    <string name="sig_counter">Signature Counter: %d</string>
+    <string name="sig_counter">Signature Counter (für Key Index %d): %d</string>
     <string name="enter_old_and_new_pin">Geben Sie den alten und neuen PIN ein:</string>
     <string name="old_pin">Alter PIN</string>
     <string name="new_pin">Neuer PIN</string>

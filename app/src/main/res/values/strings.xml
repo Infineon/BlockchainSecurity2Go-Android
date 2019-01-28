@@ -72,7 +72,7 @@
     <string name="unlock_pin_message">Unlocked PIN with PUK %s</string>
     <string name="check_sig_counters">Check sig counters</string>
     <string name="global_sig_counter">Global signature counter: %d</string>
-    <string name="sig_counter">Signature counter: %d</string>
+    <string name="sig_counter">Signature counter (for key index %d): %d</string>
     <string name="enter_old_and_new_pin">Enter old and new PIN:</string>
     <string name="old_pin">Old PIN</string>
     <string name="new_pin">New PIN</string>

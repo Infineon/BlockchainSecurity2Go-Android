@@ -84,11 +84,13 @@ public class CheckSigCountersActivity extends AppCompatActivity {
 
         try {
             SharedPreferences pref = this.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
+            int keyIndex = pref.getInt(KEY_INDEX_OF_CARD, 1);
             final GetKeyInfoResponseApdu responseApdu = NfcUtils.readPublicKeyOrCreateIfNotExists(
-                    IsoTagWrapper.of(isoDep), pref.getInt(KEY_INDEX_OF_CARD, 1));
+                    IsoTagWrapper.of(isoDep), keyIndex);
             globalSigCount.setText(String.format(getString(R.string.global_sig_counter),
                     responseApdu.getGlobalSigCounterAsInteger()));
-            sigCount.setText(String.format(getString(R.string.sig_counter), responseApdu.getSigCounterAsInteger()));
+            sigCount.setText(String.format(getString(R.string.sig_counter), keyIndex,
+                    responseApdu.getSigCounterAsInteger()));
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while generating key from seed", e);
