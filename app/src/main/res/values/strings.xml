@@ -43,6 +43,8 @@
     <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
     <string name="refresh_balance">Refresh balance</string>
     <string name="switch_network">Switch network</string>
+    <string name="switch_to_mainnet">Switch to mainnet</string>
+    <string name="switch_to_ropsten">Switch to testnet</string>
     <string name="ask_switch_network">Are you sure you want to switch to %s</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
@@ -68,8 +70,8 @@
         %s
     </string>
     <string name="generate_from_seed_message">Generated key on index 0 with seed: %s</string>
-    <string name="set_pin_message">Set PIN to %s Please write down following PUK of your card: %s</string>
-    <string name="unlock_pin_message">Unlocked PIN with PUK %s</string>
+    <string name="set_pin_message">Set PIN to %s. Please write down following PUK of your card: %s</string>
+    <string name="unlock_pin_message">Unlocked PIN with PUK: %s</string>
     <string name="check_sig_counters">Check sig counters</string>
     <string name="global_sig_counter">Global signature counter: %d</string>
     <string name="sig_counter">Signature counter (for key index %d): %d</string>
@@ -88,4 +90,7 @@
     <string name="problem_reload_votes">Problem during reload of votes</string>
     <string name="problem_after_vote">Problem after vote</string>
     <string name="err_voting_name_required">Voting name needs at least 4 characters!</string>
+    <string name="copy_puk_to_clipboard">Copy PUK to clipboard</string>
+    <string name="puk_code">PUK unlock code</string>
+    <string name="puk_copied">Copied PUK to clipboard!</string>
 </resources>

@@ -37,7 +37,8 @@
     <string name="voted_successful">Erfolgreich gevoted!</string>
     <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
     <string name="refresh_balance">Aktualisiere Kontostand</string>
-    <string name="switch_network">Wechsel Netzwerk</string>
+    <string name="switch_to_mainnet">Wechsel zum Mainnet</string>
+    <string name="switch_to_ropsten">Wechsel zum Testnet</string>
     <string name="ask_switch_network">Möchten sie zum %s wechseln?</string>
     <string name="yes">ja</string>
     <string name="no">nein</string>
@@ -80,4 +81,7 @@
     <string name="problem_reload_votes">Problem beim Reload der Votes</string>
     <string name="problem_after_vote">Problem nach Vote</string>
     <string name="err_voting_name_required">Voting Name muss mindestens aus 4 Buchstaben bestehen!</string>
+    <string name="copy_puk_to_clipboard">In die Zwischenablage</string>
+    <string name="puk_code">PUK Entsperr-Code</string>
+    <string name="puk_copied">PUK in die Zwischenablage kopiert!</string>
 </resources>
