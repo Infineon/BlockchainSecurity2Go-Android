@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                     TimeUnit.SECONDS.sleep(FIVE_SECONDS);
                 }
             } catch (Exception e) {
-                Log.e(TAG, "exception while reading eth balance from api: ", e);
+                Log.e(TAG, "exception while reading eth balance from api.\n" + e.getMessage(), e);
             }
             Log.d(TAG, "Main activity, reading eth balance thread exited.");
         }).start();
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } catch (Exception e) {
-                Log.e(TAG, "exception while reading euro price from api: ", e);
+                Log.e(TAG, "exception while reading euro price from api.\n" + e.getMessage(), e);
             }
             Log.d(TAG, "Main activity, reading price thread exited.");
         }).start();
