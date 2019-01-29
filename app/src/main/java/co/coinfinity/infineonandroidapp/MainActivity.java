@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException | NfcCardException e) {
             showToast(e.getMessage(), this);
             Log.e(TAG, "Exception while reading public key from card: ", e);
+            resetGuiState();
             return;
         }
         Log.d(TAG, String.format("pubkey read from card: '%s'", pubKeyString));
@@ -215,6 +216,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "exception while reading eth balance from api.\n" + e.getMessage(), e);
+                runOnUiThread(() -> {
+                    showToast(e.getMessage(), this);
+                    if (progressBar.getVisibility() == View.VISIBLE) {
+                        resetGuiState();
+                    }
+                });
             }
             Log.d(TAG, "Main activity, reading eth balance thread exited.");
         }).start();
@@ -231,6 +238,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "exception while reading euro price from api.\n" + e.getMessage(), e);
+                runOnUiThread(() -> {
+                    showToast(e.getMessage(), this);
+                    if (progressBar.getVisibility() == View.VISIBLE) {
+                        resetGuiState();
+                    }
+                });
             }
             Log.d(TAG, "Main activity, reading price thread exited.");
         }).start();
