@@ -40,7 +40,7 @@ public class AppConstants {
     public static final String PREF_KEY_GASLIMIT_SEND_ETH = "gasLimitSendEth";
 
     // send erc 20
-    // default contract: coinfinity CFTEST Tokens: https://etherscan.io/token/0xfb09d466e7fe677439d695241d6327ddd8153848
+    // Dummy test ERC-20 contract: Coinfinity CFTEST Tokens: https://etherscan.io/token/0xfb09d466e7fe677439d695241d6327ddd8153848
     public static final String DEFAULT_ERC20_CONTRACT_ADDRESS = "0xFB09d466E7fE677439D695241d6327ddD8153848";
     public static final String PREF_KEY_ERC20_CONTRACT_ADDRESS = "erc20ContractAddress";
     public static final String PREF_KEY_ERC20_RECIPIENT_ADDRESS = "erc20RecipientAddress";
@@ -50,7 +50,9 @@ public class AppConstants {
     // voting
     public static final String PREF_KEY_VOTING_GASLIMIT = "votingGasLimit";
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS = "votingContractAddress";
-    public static final String DEFAULT_VOTING_CONTRACT_ADDRESS = "0x5545ccecd05ef6943bc397773c72252cd7560f41";
+    // https://etherscan.io/address/0x2c680955cd340eae72703e6886957bf8465f9583#code
+    public static final String DEFAULT_VOTING_CONTRACT_ADDRESS = "0x2c680955cd340eae72703e6886957bf8465f9583";
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET = "votingContractAddressTestnet";
+    // https://ropsten.etherscan.io/address/0x104d919b299dbbbea258a41e2e910c29c551bf17#code
     public static final String DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET = "0x104d919b299dbbbea258a41e2e910c29c551bf17";
 }

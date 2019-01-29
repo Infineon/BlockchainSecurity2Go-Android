@@ -73,13 +73,18 @@ public class UiUtils {
                 SharedPreferences prefs = activity.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
                 boolean isMainNetwork = prefs.getBoolean(PREF_KEY_MAIN_NETWORK, true);
 
-                String strNetwork = "main network";
+                int menuItemTextId;
+                String strNetwork;
                 if (isMainNetwork) {
-                    strNetwork = "test network";
+                    menuItemTextId = R.string.switch_to_ropsten;
+                    strNetwork = "ropsten test network";
+                } else {
+                    menuItemTextId = R.string.switch_to_mainnet;
+                    strNetwork = "main network";
                 }
                 String finalStrNetwork = strNetwork;
                 new AlertDialog.Builder(activity)
-                        .setTitle(R.string.switch_network)
+                        .setTitle(menuItemTextId)
                         .setMessage(String.format(activity.getString(R.string.ask_switch_network), strNetwork))
                         .setPositiveButton(R.string.yes, (dialog, which) -> {
                             SharedPreferences.Editor mEditor = prefs.edit();

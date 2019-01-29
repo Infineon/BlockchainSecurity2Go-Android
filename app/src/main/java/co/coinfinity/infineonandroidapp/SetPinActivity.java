@@ -2,6 +2,9 @@ package co.coinfinity.infineonandroidapp;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -92,7 +95,13 @@ public class SetPinActivity extends AppCompatActivity {
             AlertDialog.Builder alert = new AlertDialog.Builder(this)
                     .setTitle(R.string.set_pin)
                     .setMessage(String.format(getString(R.string.set_pin_message), pin.getText(), puk))
-                    .setPositiveButton(R.string.ok, (dialog, which) -> finish());
+                    .setPositiveButton(R.string.copy_puk_to_clipboard, ((dialog, which) -> {
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText(getString(R.string.puk_code), puk);
+                        clipboard.setPrimaryClip(clip);
+                        UiUtils.showToast(getString(R.string.puk_copied), SetPinActivity.this);
+                    }));
+                    //.setPositiveButton(R.string.ok, (dialog, which) -> finish());
             alert.show();
         } catch (IOException | NfcCardException | IllegalArgumentException e) {
             showToast(e.getMessage(), this);
