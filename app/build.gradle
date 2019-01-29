@@ -27,24 +27,6 @@ android {
         unitTests.returnDefaultValues = true
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-//            if (output.name == "release") {
-            output.processManifest.doLast {
-                String manifestPath = "$manifestOutputDirectory/AndroidManifest.xml"
-                def manifestContent = file(manifestPath).getText('UTF-8')
-                // replacing whitespaces and newlines between `<activity>` and `android:name`, to facilitate the next step
-                manifestContent = manifestContent.replaceAll("<activity\\s+\\R\\s+", "<activity ")
-                // we leverage here that all activities have android:name as the first property in the XML
-                manifestContent = manifestContent.replace(
-                        "android:name=\"co.coinfinity.infineonandroidapp.",
-                        "android:screenOrientation=\"portrait\" android:name=\"co.coinfinity.infineonandroidapp.")
-                file(manifestPath).write(manifestContent, 'UTF-8')
-            }
-//            }
-        }
-    }
-
     task javadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))

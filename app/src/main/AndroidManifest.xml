@@ -20,7 +20,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -30,40 +31,50 @@
         <activity
                 android:name=".SendTransactionActivity"
                 android:label="@string/title_activity_send_transaction"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".SendErc20TokensActivity"
                 android:label="@string/title_activity_send_erc20_tokens"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".VotingActivity"
                 android:label="@string/title_activity_voting"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".VotingActivityOld"
                 android:label="@string/title_activity_voting"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".AboutActivity"
                 android:label="@string/title_activity_voting"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".ChangePinActivity"
                 android:label="Change PIN"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".SetPinActivity">
+        <activity android:name=".SetPinActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UnlockPinActivity">
+        <activity android:name=".UnlockPinActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".GenerateFromSeedActivity">
+        <activity android:name=".GenerateFromSeedActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".CheckSigCountersActivity">
+        <activity android:name=".CheckSigCountersActivity"
+                  android:screenOrientation="portrait">
         </activity>
     </application>
 
