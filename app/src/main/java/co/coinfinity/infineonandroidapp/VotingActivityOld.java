@@ -152,8 +152,6 @@ public class VotingActivityOld extends AppCompatActivity {
                         Toast.LENGTH_LONG).show());
             } catch (Exception e) {
                 Log.e(TAG, "exception while voting: ", e);
-                this.runOnUiThread(() -> Toast.makeText(VotingActivityOld.this, e.getMessage(),
-                        Toast.LENGTH_LONG).show());
             }
             try {
                 handleAfterVote(mHandler);

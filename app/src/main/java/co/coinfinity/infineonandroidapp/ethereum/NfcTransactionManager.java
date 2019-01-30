@@ -18,6 +18,7 @@ import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.tx.ChainId;
 import org.web3j.tx.TransactionManager;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 
@@ -88,6 +89,9 @@ public class NfcTransactionManager extends TransactionManager {
             }
 
             return response.first;
+        } catch (IOException e) {
+            showToast(activity.getString(R.string.lost_tag), activity);
+            Log.e(TAG, "IOException while voting, lost tag", e);
         } catch (NfcCardException e) {
             if (activity != null) {
                 showToast(e.getMessage(), activity);

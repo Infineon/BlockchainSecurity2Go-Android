@@ -42,7 +42,7 @@ public class ExceptionHandler {
                 case 0x6700:
                     throw new SetPinException(SW1SW2, "PIN format is not valid (invalid length)");
                 case 0x6985:
-                    throw new SetPinException(SW1SW2, "Condition of use not satisfied - No PIN has been set - in PIN inactive state ");
+                    throw new SetPinException(SW1SW2, "Condition of use not satisfied - PIN has already been set - in PIN inactive state");
             }
         } else if (commandApdu instanceof ChangePinApdu) {
             if (Integer.toHexString(SW1SW2).toUpperCase().startsWith("63C")) {
