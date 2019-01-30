@@ -2,14 +2,14 @@ Coinfinity Blockchain Security 2Go example app
 ===
 
 
-This project contains an Android app showcasing interaction with the Ethereum Blockchain using 
+This project contains an Android app showcasing interaction with the Ethereum blockchain using 
 the Infineon Blockchain Security 2Go starter kit NFC card.
 
 Currently three main features are available to demonstrate signing of Ethereum transactions 
-using the Infineon NFC card.  
+using the Infineon Blockchain Security 2Go starter kit NFC card:  
 - sending ETH
 - sending ERC-20 tokens
-- Interacting with an example smart contract (voting demo) deployed an the Ethereum blockchain 
+- Interacting with an example smart contract (voting demo) deployed an the Ethereum blockchain.  
  
 How it works
 ---
@@ -38,9 +38,9 @@ Getting started
 Android Device requirements
 ---
 
-Do not use an Android Emulator for testing purposes because NFC is required to interact with Infineon Card.
-- minSdkVersion 19  
-- targetSdkVersion 27  
+Do not use an Android emulator for testing purposes because NFC is required to interact with Infineon Card.
+- minSdkVersion 26  
+- targetSdkVersion 28  
 - NFC enabled device
 - internet connection
 - camera for QR code scanning
