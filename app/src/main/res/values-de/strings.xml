@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="main_activity_title" >Home</string>
     <string name="title_activity_send_transaction">Sende ETH Transaktion</string>
     <string name="title_activity_send_erc20_tokens">Sende ERC-20 Tokens</string>
     <string name="title_activity_voting">Wählen</string>
@@ -37,6 +38,7 @@
     <string name="voted_successful">Erfolgreich gevoted!</string>
     <string name="hold_card_for_vote">Halte eine Karte an die Rückseite des Gerätes um eine Antwort abzugeben</string>
     <string name="refresh_balance">Aktualisiere Kontostand</string>
+    <string name="switch_network">Wechsle Netzwerk</string>
     <string name="switch_to_mainnet">Wechsel zum Mainnet</string>
     <string name="switch_to_ropsten">Wechsel zum Testnet</string>
     <string name="ask_switch_network">Möchten sie zum %s wechseln?</string>
@@ -77,6 +79,7 @@
     <string name="enter_your_preferred_pin">Geben Sie Ihren bevorzugten PIN ein:</string>
     <string name="enter_your_puk_to_unlock_pin">Geben Sie Ihren PUK zum Entsperren des PIN ein:</string>
     <string name="signature_counter_below">Signature Zähler unter %d! Mache ein Backup deiner Coins!</string>
+    <string name="change_recipient_address">Empfänger Adresse geändert auf %s</string>
     <string name="lost_tag">Tag verloren</string>
     <string name="problem_reload_votes">Problem beim Reload der Votes</string>
     <string name="problem_after_vote">Problem nach Vote</string>
