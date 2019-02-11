@@ -39,8 +39,8 @@ Android Device requirements
 ---
 
 Do not use an Android emulator for testing purposes because NFC is required to interact with Infineon Card.
-- minSdkVersion 26  
-- targetSdkVersion 28  
+- minSdkVersion 24  
+- targetSdkVersion 27  
 - NFC enabled device
 - internet connection
 - camera for QR code scanning
