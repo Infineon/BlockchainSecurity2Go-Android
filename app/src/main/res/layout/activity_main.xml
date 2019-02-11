@@ -85,7 +85,7 @@
             <ImageView
                     android:id="@+id/image_nfc_icon"
                     android:layout_width="117dp"
-                    android:layout_height="68dp" app:srcCompat="@drawable/nfc_icon"/>
+                    android:layout_height="68dp" app:srcCompat="@drawable/nfc_logo"/>
             <ProgressBar
                     style="?android:attr/progressBarStyle"
                     android:layout_width="match_parent"

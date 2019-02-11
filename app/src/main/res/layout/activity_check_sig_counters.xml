@@ -24,7 +24,7 @@
         <ImageView
                 android:id="@+id/image_nfc_icon"
                 android:layout_width="117dp"
-                android:layout_height="68dp" app:srcCompat="@drawable/nfc_icon"
+                android:layout_height="68dp" app:srcCompat="@drawable/nfc_logo"
                 android:layout_marginBottom="20dp"
         />
         <TextView
