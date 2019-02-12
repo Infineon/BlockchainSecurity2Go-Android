@@ -21,7 +21,7 @@ public class QrCodeScanner {
             activity.startActivityForResult(intent, requestCode);
         } catch (Exception e) {
             // redirect to Market if not installed
-            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+            Uri marketUri = Uri.parse("market://details?id=com.srowen.bs.android");
             Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
             activity.startActivity(marketIntent);
         }

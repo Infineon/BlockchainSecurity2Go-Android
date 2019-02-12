@@ -7,9 +7,9 @@ the Infineon Blockchain Security 2Go starter kit NFC card.
 
 Currently three main features are available to demonstrate signing of Ethereum transactions 
 using the Infineon Blockchain Security 2Go starter kit NFC card:  
-- sending ETH
-- sending ERC-20 tokens
-- Interacting with an example smart contract (voting demo) deployed an the Ethereum blockchain.  
+- sending and receiving ETH
+- sending and receiving ERC-20 tokens
+- Interacting with an example smart contract (voting demo) deployed on the Ethereum blockchain.  
  
 How it works
 ---
@@ -23,14 +23,18 @@ The conversion of ETH balance to EUR is done via Coinfinity rate API and display
 inside the app.
 
 To be able to use the QR code scanning and displaying functionality the app expects the 
-`com.google.zxing.client.android` QR code scanner to be installed ([Play Store](https://play.google.com/store/apps/details?id=com.google.zxing.client.android))
+`com.srowen.bs.android` QR code scanner to be installed ([Play Store](https://play.google.com/store/apps/details?id=com.srowen.bs.android))   
+
+~~WARNING NO PLAYSTORE VERSION ANYMORE!  
+To be able to use the QR code scanning and displaying functionality the app expects the 
+`com.google.zxing.client.android` QR code scanner to be installed ([Play Store](https://play.google.com/store/apps/details?id=com.google.zxing.client.android))~~
 
 Getting started
 ---
 
 - Import the project into Intellij or Android Studio, use project type "Gradle"
 - Try to build it
-- Make sure to install Zxing barcode scanner app on device to be able to scan QR codes
+- Make sure to install Zxing barcode scanner plus app on device to be able to scan QR codes
 - Add an android run/debug configuration in Intellij/Android Studio
 - Run/debug app via Intellij/Android Studio
   
