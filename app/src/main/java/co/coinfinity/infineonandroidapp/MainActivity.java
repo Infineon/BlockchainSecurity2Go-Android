@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (nfcAdapter != null) {
             if (!nfcAdapter.isEnabled()) {
-                openWirelessSettings();
+                openNfcSettings();
             }
             nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
         }
@@ -259,9 +259,9 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Opens system settings, wireless settings.
      */
-    private void openWirelessSettings() {
+    private void openNfcSettings() {
         showToast(getString(R.string.enable_nfc), this);
-        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+        Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
         startActivity(intent);
     }
 

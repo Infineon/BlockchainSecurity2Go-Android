@@ -44,7 +44,7 @@
     <string name="ask_switch_network">Möchten sie zum %s wechseln?</string>
     <string name="yes">ja</string>
     <string name="no">nein</string>
-    <string name="could_not_refresh">Konnte nicht aktuallisieren!</string>
+    <string name="could_not_refresh">Konnte nicht aktualisieren!</string>
     <string name="switched_to">Wechsel zu %s</string>
     <string name="could_not_vote">Konnte nicht voten!</string>
     <string name="card_not_whitelisted">Diese Karte ist nicht gewhitelistet!</string>
