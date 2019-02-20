@@ -1,24 +1,36 @@
 # Contributing
+First off, thanks for taking the time to contribute! We are really glad you're reading this, because we need volunteer developers to help this project come to fruition.
 
-First, off thanks for taking the time to contribute!
+When contributing to this repository, please first discuss the change you wish to make via issue. 
 
-The following is a set of guidelines for contributing to the Blockchain Security 2Go Android Example, which are hosted in the Infineon Technology AG Organization on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
-
-## Table of Contents
-[TOC]
+Please note we have a code of conduct, please follow it in all your interactions with the project.
 
 ## I don't want to read this whole thing I just have a question!!
 File an issue to ask a question. 
 
 ## How Can I Contribute?
 ### Report a Bug or Problem
-If you are facing an issue with the Blockchain Security 2Go starter kit cards please create a new issue. If you want to support bugs in the Android demo example or the python library please crate a new issue in the corresponding github repository.
+Do you find a bug?
+* Ensure that the bug was not already reported by searching it under [issues](https://github.com/Infineon/BlockchainS2GoAndroid/Issues)
+* If you do not find an open issue, [open a new one](https://github.com/Infineon/BlockchainS2GoAndroid/issues/new). Be sure to include a *title and clear description* and as much relevant information as possible including a *code sample* or an *executable test case* that demonstrate the problem. 
+
+Did you write a patch that fixes a bug?
+* Open a new GitHub pull request with the patch
+* Ensure that the description of the pull request describes the problem and the solution. If applicatble, include the relevant issue number. 
 
 ### Suggest Enhancements
-If you want that the next generation of the starter kit has a certain feature please create a new issue. Such an enchancement could be a new command, other interfaces (e.g. USB), form factors, etc.
+* Open a new GitHub pull request with the new feature. 
+* Ensure that the description of the pull request includes a clear description of the enhancement.
 
-### Help to Resolve Issues
-You know the answer to an open issue? Great! Please share your knowledge and help to resolve the issue.
+### Pull Request
+Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
+
+    $ git commit -m "A brief summary of the commit
+    > 
+    > A paragraph describing what changed and its impact."
+
+   
+Always double check that the pull request dos not crash the build of the project
 
 ## Code of Conduct
 
@@ -86,7 +98,7 @@ members of the project's leadership.
 ### Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version] and the Contributing guidelines of the [atom](https://github.com/atom/atom) and g
+available at [http://contributor-covenant.org/version/1/4][version] as well as from the [OpenGovernment Project](https://github.com/opengovernment/opengovernment/edit/master/CONTRIBUTING.md) and the [Atom Project](https://github.com/atom/atom).
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
