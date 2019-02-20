@@ -1,16 +1,17 @@
-Coinfinity Blockchain Security 2Go example app
+Coinfinity Blockchain Security 2Go Example App
 ===
 
-
-This project contains an Android app showcasing interaction with the Ethereum blockchain using 
-the Infineon Blockchain Security 2Go starter kit NFC card.
+This project contains an Android app showcasing interaction with the Ethereum Blockchain using 
+the Infineon Blockchain Security 2Go starter kit contactless cards.
 
 Currently three main features are available to demonstrate signing of Ethereum transactions 
-using the Infineon Blockchain Security 2Go starter kit NFC card:  
+using the Infineon Blockchain Security 2Go starter kit cards:  
 - sending and receiving ETH
 - sending and receiving ERC-20 tokens
 - Interacting with an example smart contract (voting demo) deployed on the Ethereum blockchain.  
- 
+
+If you want to have more information on Infineon's Blockchain Security 2Go starter kit visit [official Website](https://www.infineon.com/blockchain) and the [BlockchainSecurity 2Go github repository](https://github.com/Infineon/blockchain). On this repository there is also a high-level [user guide](https://github.com/Infineon/blockchain/android/Android_Demo_UserGuide) for the Coinfinity Blockchain Security 2Go Example App.
+
 How it works
 ---
 
@@ -25,11 +26,7 @@ inside the app.
 To be able to use the QR code scanning and displaying functionality the app expects the 
 `com.srowen.bs.android` QR code scanner to be installed ([Play Store](https://play.google.com/store/apps/details?id=com.srowen.bs.android))   
 
-~~WARNING NO PLAYSTORE VERSION ANYMORE!  
-To be able to use the QR code scanning and displaying functionality the app expects the 
-`com.google.zxing.client.android` QR code scanner to be installed ([Play Store](https://play.google.com/store/apps/details?id=com.google.zxing.client.android))~~
-
-Getting started
+Getting Started
 ---
 
 - Import the project into Intellij or Android Studio, use project type "Gradle"
@@ -39,7 +36,7 @@ Getting started
 - Run/debug app via Intellij/Android Studio
   
 
-Android Device requirements
+Android Device Requirements
 ---
 
 Do not use an Android emulator for testing purposes because NFC is required to interact with Infineon Card.
