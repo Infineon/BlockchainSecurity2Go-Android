@@ -1,7 +1,7 @@
 Coinfinity Blockchain Security 2Go Example App
 ===
 
-This project contains an Android app showcasing interaction with the Ethereum Blockchain using 
+This project contains an Android app showcasing interaction with Ethereum using 
 the Infineon Blockchain Security 2Go starter kit contactless cards.
 
 Currently three main features are available to demonstrate signing of Ethereum transactions 
