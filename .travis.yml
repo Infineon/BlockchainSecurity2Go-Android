@@ -7,17 +7,18 @@ android:
     # - platform-tools
 
     # The BuildTools version used by your project
-    - build-tools-26.0.2
+    # - build-tools-26.0.2
 
     # The SDK version used to compile your project
-    - android-26
-
-    # Additional components
-    - extra-google-google_play_services
-    - extra-google-m2repository
-    - extra-android-m2repository
+    - android-27
+    
 
   licenses:
     - android-sdk-license.*
     - android-sdk-preview-license-.+
     - google-gdk-license-.+
+
+  before_install:
+    - yes | sdkmanager "platforms;android-27"
+    
+ 
