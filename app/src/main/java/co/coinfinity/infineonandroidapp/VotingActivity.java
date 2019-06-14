@@ -113,9 +113,9 @@ public class VotingActivity extends AppCompatActivity {
         gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
         pinTxt.setText(pref.getString(PREF_KEY_PIN, ""));
 
-        if (!savedContractAddress.isEmpty()) {
+        //if (!savedContractAddress.isEmpty()) {
             contractAddress.setText(savedContractAddress);
-        }
+        //}
 
         votingAnswers = new String[]{getString(R.string.answer_1), getString(R.string.answer_2), getString(R.string.answer_3), getString(R.string.answer_4)};
     }
