@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Infineon/BlockchainSecurity2Go-Android.svg?branch=master)](https://travis-ci.org/Infineon/BlockchainSecurity2Go-Android)
+
 Coinfinity Blockchain Security 2Go Example App
 ===
 
