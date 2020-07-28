@@ -113,4 +113,5 @@
     <string name="tap_the_producer_card_to_enter_the_details">Tap the producer card to enter the details</string>
     <string name="product_public_key">Product Public Key</string>
     <string name="submit">Submit</string>
+    <string name="brand_protection" translatable="false">Brand Protection</string>
 </resources>

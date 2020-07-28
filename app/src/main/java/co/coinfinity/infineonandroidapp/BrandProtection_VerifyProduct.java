@@ -8,6 +8,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -76,6 +77,7 @@ public class BrandProtection_VerifyProduct extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private String pubKeyString, pubKeyStringLower, ethAddress;
     private BigInteger pubKeyRecovered = null;
+    private boolean check;
 
     @BindView(R.id.pId)
     TextView pId;
@@ -187,39 +189,48 @@ public class BrandProtection_VerifyProduct extends AppCompatActivity {
             BigDecimal gasLimitDecimal=new BigDecimal(gasLimitValue);
             BigInteger gasLimitVal=gasLimitDecimal.toBigInteger();
 
-
             try {
-                this.runOnUiThread(() -> Toast.makeText(BrandProtection_VerifyProduct.this, "Please wait...",
-                        Toast.LENGTH_LONG).show());
-                final Tuple5<String, String, String, String, String> detail=ProductDetailUtils.getProductDetail(pref.getString(PREF_KEY_PRODUCT_DETAIL_CONTRACT_ADDRESS_TESTNET,DEFAULT_PRODUCT_DETAIL_ADDRESS_TESTNET), ethAddress, gasPriceVal, gasLimitVal, this);
-                mHandler.post(()->{
-
-                    verified.setVisibility(View.INVISIBLE);
-                    displayMessage.setVisibility(View.INVISIBLE);
-                    authSuccessful.setVisibility(View.INVISIBLE);
-                    pId.setVisibility(View.VISIBLE);
-                    displayPid.setVisibility(View.VISIBLE);
-                    displayPname.setVisibility(View.VISIBLE);
-                    pName.setVisibility(View.VISIBLE);
-                    displaytime.setVisibility(View.VISIBLE);
-                    pTime.setVisibility(View.VISIBLE);
-                    displaydate.setVisibility(View.VISIBLE);
-                    pDate.setVisibility(View.VISIBLE);
-                    displayManufacturer.setVisibility(View.VISIBLE);
-                    pManufacturer.setVisibility(View.VISIBLE);
-
-                    pId.setText(detail.getValue1());
-                    pName.setText(detail.getValue2());
-                    pTime.setText(detail.getValue3());
-                    pDate.setText(detail.getValue4());
-                    pManufacturer.setText(detail.getValue5());
-                });
-                this.runOnUiThread(() -> Toast.makeText(BrandProtection_VerifyProduct.this, "product details read successfully",
-                        Toast.LENGTH_LONG).show());
+                check=ProductDetailUtils.getAddress(pref.getString(PREF_KEY_PRODUCT_DETAIL_CONTRACT_ADDRESS_TESTNET,DEFAULT_PRODUCT_DETAIL_ADDRESS_TESTNET), ethAddress, gasPriceVal, gasLimitVal, this);
             } catch (Exception e) {
-                Log.e(TAG, "exception while reading product details: ", e);
+                e.printStackTrace();
             }
+            if(check== true) {
+                try {
+                    this.runOnUiThread(() -> Toast.makeText(BrandProtection_VerifyProduct.this, "Please wait...",
+                            Toast.LENGTH_LONG).show());
+                    final Tuple5<String, String, String, String, String> detail = ProductDetailUtils.getProductDetail(pref.getString(PREF_KEY_PRODUCT_DETAIL_CONTRACT_ADDRESS_TESTNET, DEFAULT_PRODUCT_DETAIL_ADDRESS_TESTNET), ethAddress, gasPriceVal, gasLimitVal, this);
+                    mHandler.post(() -> {
 
+                        verified.setVisibility(View.INVISIBLE);
+                        displayMessage.setVisibility(View.INVISIBLE);
+                        authSuccessful.setVisibility(View.INVISIBLE);
+                        pId.setVisibility(View.VISIBLE);
+                        displayPid.setVisibility(View.VISIBLE);
+                        displayPname.setVisibility(View.VISIBLE);
+                        pName.setVisibility(View.VISIBLE);
+                        displaytime.setVisibility(View.VISIBLE);
+                        pTime.setVisibility(View.VISIBLE);
+                        displaydate.setVisibility(View.VISIBLE);
+                        pDate.setVisibility(View.VISIBLE);
+                        displayManufacturer.setVisibility(View.VISIBLE);
+                        pManufacturer.setVisibility(View.VISIBLE);
+
+                        pId.setText(detail.getValue1());
+                        pName.setText(detail.getValue2());
+                        pTime.setText(detail.getValue3());
+                        pDate.setText(detail.getValue4());
+                        pManufacturer.setText(detail.getValue5());
+                    });
+                    this.runOnUiThread(() -> Toast.makeText(BrandProtection_VerifyProduct.this, "product details read successfully",
+                            Toast.LENGTH_LONG).show());
+                } catch (Exception e) {
+                    Log.e(TAG, "exception while reading product details: ", e);
+                }
+            }
+            else{
+                this.runOnUiThread(() -> Toast.makeText(BrandProtection_VerifyProduct.this, "This product detail is not found... try different product",
+                        Toast.LENGTH_LONG).show());
+            }
         });
 
         thread.start();
@@ -274,7 +285,7 @@ public class BrandProtection_VerifyProduct extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_brand_protection__verify_product);
+        setContentView(R.layout.activity_brand_protection_verify_product);
 
         ButterKnife.bind(this);
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);

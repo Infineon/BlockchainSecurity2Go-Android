@@ -319,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
         sendEthBtn.setEnabled(false);
         sendErc20Btn.setEnabled(false);
         votingBtn.setEnabled(false);
+        brandProtectionBtn.setEnabled(false);
     }
 
 
@@ -326,7 +327,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      *  on buttton click Brand Protection
-     * @param view
      */
     public void onBrandProtection(View view){
         Intent intent=new Intent(this,BrandProtection.class);
@@ -415,5 +415,4 @@ public class MainActivity extends AppCompatActivity {
             balance.setVisibility(View.VISIBLE);
         }
     }
-
 }

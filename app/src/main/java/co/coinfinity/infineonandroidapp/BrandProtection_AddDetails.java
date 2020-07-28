@@ -214,7 +214,7 @@ public class BrandProtection_AddDetails extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_brand_protection__add_details);
+        setContentView(R.layout.activity_brand_protection_add_details);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         Bundle bundle = getIntent().getExtras();

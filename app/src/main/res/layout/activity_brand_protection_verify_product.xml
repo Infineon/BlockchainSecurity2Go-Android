@@ -22,7 +22,7 @@
             android:layout_height="40dp"
             android:layout_weight="1"
             android:text="@string/label_key_index"
-            android:textSize="15sp" />
+            android:textSize="18sp" />
 
         <Spinner
             android:id="@+id/keyIndexSpinner"
@@ -59,14 +59,14 @@
         android:layout_below="@+id/verified"
         android:layout_centerInParent="true"
         android:text="@string/authentication_successful"
-        android:textSize="15sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="41dp"
         android:id="@+id/displayPid"
         android:text="@string/product_id"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible"
         android:layout_marginStart="20dp"
         android:layout_marginTop="100dp" />
@@ -79,7 +79,7 @@
         android:layout_marginTop="100dp"
         android:layout_toEndOf="@+id/displayPid"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible"/>
 
     <TextView
@@ -88,7 +88,7 @@
         android:layout_height="41dp"
         android:id="@+id/displayPname"
         android:text="@string/product_name"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp" />
@@ -102,7 +102,7 @@
         android:layout_marginTop="21dp"
         android:layout_toEndOf="@+id/displayPname"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible" />
 
     <TextView
@@ -111,7 +111,7 @@
         android:layout_height="41dp"
         android:id="@+id/displaytime"
         android:text="@string/timestamp"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp" />
@@ -121,11 +121,11 @@
         android:layout_width="150dp"
         android:layout_height="41dp"
         android:layout_below="@+id/pName"
-        android:layout_marginStart="81dp"
+        android:layout_marginStart="93dp"
         android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/displaytime"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible" />
 
     <TextView
@@ -134,8 +134,7 @@
         android:layout_height="41dp"
         android:id="@+id/displaydate"
         android:text="@string/date"
-        android:textSize="15sp"
-
+        android:textSize="18sp"
         android:visibility="invisible"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp" />
@@ -145,11 +144,11 @@
         android:layout_width="150dp"
         android:layout_height="41dp"
         android:layout_below="@+id/pTime"
-        android:layout_marginStart="127dp"
+        android:layout_marginStart="140dp"
         android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/displaydate"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible" />
 
     <TextView
@@ -158,7 +157,7 @@
         android:layout_height="41dp"
         android:id="@+id/displayManufacturer"
         android:text="@string/manufacturer"
-        android:textSize="15sp"
+        android:textSize="18sp"
 
         android:visibility="invisible"
         android:layout_marginStart="20dp"
@@ -173,6 +172,6 @@
         android:layout_marginTop="20dp"
         android:layout_toEndOf="@+id/displayManufacturer"
         android:textAlignment="center"
-        android:textSize="15sp"
+        android:textSize="18sp"
         android:visibility="invisible" />
 </RelativeLayout>
