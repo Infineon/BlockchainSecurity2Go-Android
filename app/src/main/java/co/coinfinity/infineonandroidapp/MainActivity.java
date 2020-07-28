@@ -15,9 +15,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import org.web3j.crypto.Keys;
+
+import org.web3j.protocol.Web3j;
+
+import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import co.coinfinity.infineonandroidapp.ethereum.CoinfinityClient;
 import co.coinfinity.infineonandroidapp.ethereum.bean.EthBalanceBean;
 import co.coinfinity.infineonandroidapp.ethereum.bean.TransactionPriceBean;
@@ -27,12 +43,6 @@ import co.coinfinity.infineonandroidapp.infineon.exceptions.NfcCardException;
 import co.coinfinity.infineonandroidapp.qrcode.QrCodeGenerator;
 import co.coinfinity.infineonandroidapp.utils.IsoTagWrapper;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
-import org.web3j.crypto.Keys;
-
-import java.io.IOException;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static co.coinfinity.AppConstants.*;
 import static co.coinfinity.infineonandroidapp.utils.UiUtils.showToast;
@@ -61,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     Button sendErc20Btn;
     @BindView(R.id.voting)
     Button votingBtn;
+    @BindView(R.id.brandProtection)
+    Button brandProtectionBtn;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.image_nfc_icon)
@@ -118,6 +130,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, String.format("ETH address: %s", ethAddress));
         qrCodeView.setImageBitmap(QrCodeGenerator.generateQrCode(ethAddress));
         holdCard.setText(R.string.card_found);
+
+
     }
 
     /**
@@ -154,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
                     sendEthBtn.setEnabled(true);
                     sendErc20Btn.setEnabled(true);
                     votingBtn.setEnabled(true);
+                    //brand protection
+                    brandProtectionBtn.setEnabled(true);
                 }
                 displayOnUI(GuiState.BALANCE_TEXT);
             });
@@ -305,8 +321,21 @@ public class MainActivity extends AppCompatActivity {
         votingBtn.setEnabled(false);
     }
 
+
     private enum GuiState {NFC_ICON, PROGRESS_BAR, BALANCE_TEXT}
 
+    /**
+     *  on buttton click Brand Protection
+     * @param view
+     */
+    public void onBrandProtection(View view){
+        Intent intent=new Intent(this,BrandProtection.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("pubKey", pubKeyString);
+        bundle.putString("ethAddress", ethAddress);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
     /**
      * On button click SEND ETH.
      */
@@ -345,6 +374,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return UiUtils.handleOptionItemSelected(this, item);
@@ -364,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param state NFC_ICON, PROGRESS_BAR, BALANCE_TEXT
      */
-    private void displayOnUI(GuiState state) {
+    public void displayOnUI(GuiState state) {
         // only display NFC Icon
         if (GuiState.NFC_ICON.equals(state)) {
             progressBar.setVisibility(View.GONE);
