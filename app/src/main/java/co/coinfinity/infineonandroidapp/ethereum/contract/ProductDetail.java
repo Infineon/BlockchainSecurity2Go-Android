@@ -1,10 +1,5 @@
 package co.coinfinity.infineonandroidapp.ethereum.contract;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
 import org.web3j.abi.datatypes.Bool;
@@ -18,6 +13,12 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple5;
 import org.web3j.tx.Contract;
 import org.web3j.tx.TransactionManager;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Auto generated code.
@@ -56,7 +57,7 @@ public class ProductDetail extends Contract {
 
     public RemoteCall<Tuple5<String, String, String, String, String>> getProductDetails(String _address) {
         final Function function = new Function(FUNC_GETPRODUCTDETAILS,
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address)),
+                Arrays.<Type>asList(new Address(_address)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}, new TypeReference<Utf8String>() {}));
         return new RemoteCall<Tuple5<String, String, String, String, String>>(
                 new Callable<Tuple5<String, String, String, String, String>>() {
@@ -76,20 +77,20 @@ public class ProductDetail extends Contract {
     public RemoteCall<TransactionReceipt> setProductDetail(String _address, String _productID, String _productName, String _time, String _date, String _manufacturer, String _publickey) {
         final Function function = new Function(
                 FUNC_SETPRODUCTDETAIL,
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address),
-                        new org.web3j.abi.datatypes.Utf8String(_productID),
-                        new org.web3j.abi.datatypes.Utf8String(_productName),
-                        new org.web3j.abi.datatypes.Utf8String(_time),
-                        new org.web3j.abi.datatypes.Utf8String(_date),
-                        new org.web3j.abi.datatypes.Utf8String(_manufacturer),
-                        new org.web3j.abi.datatypes.Utf8String(_publickey)),
+                Arrays.<Type>asList(new Address(_address),
+                        new Utf8String(_productID),
+                        new Utf8String(_productName),
+                        new Utf8String(_time),
+                        new Utf8String(_date),
+                        new Utf8String(_manufacturer),
+                        new Utf8String(_publickey)),
                 Collections.<TypeReference<?>>emptyList());
         return executeRemoteCallTransaction(function);
     }
 
     public RemoteCall<Boolean> checkProductAddress(String _address) {
         final Function function = new Function(FUNC_CHECKPRODUCTADDRESS,
-                Arrays.<Type>asList(new org.web3j.abi.datatypes.Address(_address)),
+                Arrays.<Type>asList(new Address(_address)),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Bool>() {}));
         return executeRemoteCallSingleValueReturn(function, Boolean.class);
     }

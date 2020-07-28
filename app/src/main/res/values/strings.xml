@@ -93,4 +93,24 @@
     <string name="copy_puk_to_clipboard">Copy PUK to clipboard</string>
     <string name="puk_code">PUK unlock code</string>
     <string name="puk_copied">Copied PUK to clipboard!</string>
+    <string name="tap_the_product_to_verify">Tap the product to verify</string>
+    <string name="authentication_successful">Authentication Successful</string>
+    <string name="product_id">Product ID</string>
+    <string name="product_name">Product Name</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="date">Date</string>
+    <string name="manufacturer">Manufacturer</string>
+
+    <string name="product_details">Add Product Details</string>
+    <string name="verify_product">Verify Product</string>
+    <string name="signatureData">signatureData</string>
+    <string name="tap_the_product_card_to_read_the_public_key">Tap the product card to read the public key</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="_50">50</string>
+    <string name="_21000">21000</string>
+    <string name="pin_optional">PIN (optional)</string>
+    <string name="togglebutton">ToggleButton</string>
+    <string name="tap_the_producer_card_to_enter_the_details">Tap the producer card to enter the details</string>
+    <string name="product_public_key">Product Public Key</string>
+    <string name="submit">Submit</string>
 </resources>

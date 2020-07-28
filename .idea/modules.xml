@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/infineon-android-demo.iml" filepath="$PROJECT_DIR$/.idea/modules/infineon-android-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BlockchainSecurity2Go-Android.iml" filepath="$PROJECT_DIR$/.idea/modules/BlockchainSecurity2Go-Android.iml" group="BlockchainSecurity2Go-Android" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="BlockchainSecurity2Go-Android/app" />
     </modules>
   </component>
 </project>
