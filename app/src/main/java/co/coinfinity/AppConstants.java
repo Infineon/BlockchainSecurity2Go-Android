@@ -33,6 +33,12 @@ public class AppConstants {
 
     public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "15";
     public static final String DEFAULT_GASLIMIT = "21000";
+    
+    //used for brandprotection activity
+    public static final String GASPRICE="100000";
+    public static final String GASLIMIT="800000";
+    public static final String PREF_KEY_BRANDPROTECTION_GASLIMIT="brandProtectionGasLimit";
+    public static final String PREF_KEY_BRANDPROTECTION_GASPRICE="brandprotectionGasPrice";
 
     // send eth
     public static final String PREF_KEY_RECIPIENT_ADDRESS = "recipientAddressTxt";
@@ -55,4 +61,10 @@ public class AppConstants {
     public static final String PREF_KEY_VOTING_CONTRACT_ADDRESS_TESTNET = "votingContractAddressTestnet";
     // https://ropsten.etherscan.io/address/0x104d919b299dbbbea258a41e2e910c29c551bf17#code
     public static final String DEFAULT_VOTING_CONTRACT_ADDRESS_TESTNET = "0x104d919b299dbbbea258a41e2e910c29c551bf17";
+
+    // Brand protection
+    public static final String PREF_KEY_PRODUCT_DETAIL_CONTRACT_ADDRESS_TESTNET = "productDetailContractAddressTestnet";
+    //https://ropsten.etherscan.io/tx/0xb1cb598a3b0e5231b646fe6ce45daa8b0cb8e242e0a97521e813df0723f681ff
+    public static final String DEFAULT_PRODUCT_DETAIL_ADDRESS_TESTNET  =  "0x00aFCb0d565F5D8792F200fC003657892968e66c";
 }
+

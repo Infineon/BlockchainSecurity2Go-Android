@@ -87,4 +87,23 @@
     <string name="copy_puk_to_clipboard">In die Zwischenablage</string>
     <string name="puk_code">PUK Entsperr-Code</string>
     <string name="puk_copied">PUK in die Zwischenablage kopiert!</string>
+    <string name="tap_the_product_to_verify">Tippen Sie auf das Produkt, um zu überprüfen,</string>
+    <string name="authentication_successful">Authentifizierung erfolgreich</string>
+    <string name="product_id" >Produkt-ID</string>
+    <string name="product_name">Produktname</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="date">Datum</string>
+    <string name="manufacturer">Hersteller</string>
+    <string name="product_details">Produktdetails hinzufügen</string>
+    <string name="verify_product">Produkt überprüfen</string>
+    <string name="tap_the_product_card_to_read_the_public_key">Tippen Sie auf die Produktkarte, um den öffentlichen Schlüssel zu lesen</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="_50">50</string>
+    <string name="signatureData">Signaturdaten</string>
+    <string name="_21000">21000</string>
+    <string name="pin_optional">PIN (optional)</string>
+    <string name="togglebutton">ToggleButton</string>
+    <string name="tap_the_producer_card_to_enter_the_details">Tippen Sie auf die Herstellerkarte, um die Details einzugeben</string>
+    <string name="product_public_key">öffentlicher Product-Schlüssel</string>
+    <string name="submit">Senden</string>
 </resources>
