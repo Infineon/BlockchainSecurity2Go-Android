@@ -31,8 +31,8 @@ public class AppConstants {
     public static final String PREF_KEY_PIN = "pin";
     public static final String KEY_INDEX_OF_CARD = "keyIndexOfCard";
 
-    public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "15";
-    public static final String DEFAULT_GASLIMIT = "21000";
+    public static final String DEFAULT_GASPRICE_IN_GIGAWEI = "30";
+    public static final String DEFAULT_GASLIMIT = "554321";
     
     //used for brandprotection activity
     public static final String GASPRICE="100000";

@@ -15,7 +15,11 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.TransactionManager;
+import org.web3j.tx.response.PollingTransactionReceiptProcessor;
+import org.web3j.tx.response.TransactionReceiptProcessor;
 import org.web3j.utils.Bytes;
 import org.web3j.utils.Convert;
 import org.web3j.utils.Numeric;
@@ -129,11 +133,21 @@ public class EthereumUtils {
         signatureData = TransactionEncoder.createEip155SignatureData(signatureData, chainId);
 
         String hexValue = Numeric.toHexString(TransactionEncoder.encode(rawTransaction, signatureData));
+        Log.d(TAG, String.format("r: %s",hexValue )); //FIX: VA: Added for debugging
         EthSendTransaction ethSendTransaction = web3.ethSendRawTransaction(hexValue).send();
 
         if (ethSendTransaction != null && ethSendTransaction.getError() != null) {
             Log.e(TAG, String.format("TransactionError: %s", ethSendTransaction.getError().getMessage()));
         }
+		////FIX: VA: Added to wait for transaction receipt
+        Log.d("HASH_TXN", String.format("r: %s",ethSendTransaction.getResult().toString() ));
+        TransactionReceiptProcessor receiptProcessor = new PollingTransactionReceiptProcessor(
+                web3,
+                TransactionManager.DEFAULT_POLLING_FREQUENCY,
+                5);
+
+        TransactionReceipt receipt = receiptProcessor.waitForTransactionReceipt(ethSendTransaction.getTransactionHash());
+
         return new Pair<>(ethSendTransaction, signedTransaction);
     }
 
@@ -148,7 +162,7 @@ public class EthereumUtils {
     public static BigInteger getNextNonce(Web3j web3j, String etherAddress) throws IOException {
         EthGetTransactionCount ethGetTransactionCount = null;
         ethGetTransactionCount = web3j.ethGetTransactionCount(
-                etherAddress, DefaultBlockParameterName.PENDING).send();
+                etherAddress, DefaultBlockParameterName.LATEST).send(); //FIX: VA : PENDING changed to LATEST to fix "forever pending" issue
 
         Log.d(TAG, String.format("Nonce: %s", ethGetTransactionCount.getTransactionCount()));
         return ethGetTransactionCount.getTransactionCount();

@@ -24,7 +24,12 @@ import co.coinfinity.infineonandroidapp.qrcode.QrCodeScanner;
 import co.coinfinity.infineonandroidapp.utils.InputErrorUtils;
 import co.coinfinity.infineonandroidapp.utils.UiUtils;
 import org.web3j.abi.datatypes.generated.Uint32;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.Web3jFactory;
+import org.web3j.protocol.core.methods.response.EthGasPrice;
+import org.web3j.protocol.http.HttpService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -96,7 +101,17 @@ public class VotingActivityOld extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
 
         gasLimit.setText(pref.getString(PREF_KEY_VOTING_GASLIMIT, DEFAULT_GASLIMIT));
-        gasPrice.setText(pref.getString(PREF_KEY_GASPRICE_WEI, DEFAULT_GASPRICE_IN_GIGAWEI));
+        //FIX: VA: To get gas price from network
+        Web3j web3 = Web3jFactory.build(new HttpService(UiUtils.getFullNodeUrl(this)));
+        EthGasPrice ethGasPrice = null;
+        try {
+            ethGasPrice = web3.ethGasPrice().sendAsync().get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "ethGasPrice.getGasPrice(): " + ethGasPrice.getGasPrice());
+
+        gasPrice.setText(String.valueOf(ethGasPrice.getGasPrice()));
         pinTxt.setText(pref.getString(PREF_KEY_PIN, ""));
 
         reloadVotes(pref);
