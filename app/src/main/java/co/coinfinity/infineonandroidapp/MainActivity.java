@@ -155,15 +155,17 @@ public class MainActivity extends AppCompatActivity {
     public void updateEuroPrice() throws Exception {
         if (ethBalance == null)
             return;
-
-        Log.d(TAG, "reading EUR/ETH price..");
-        TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0",
-                ethBalance.getEther().toString());
-        Log.d(TAG, String.format("reading EUR/ETH price finished: %s", transactionPriceBean));
-        if (transactionPriceBean != null && pubKeyString != null) {
+        //FIX: VA: Comment the coinfinity api use for currency conversion. App will not work if this code uncommented.
+        //Log.d(TAG, "reading EUR/ETH price..");
+        //TransactionPriceBean transactionPriceBean = coinfinityClient.readEuroPriceFromApiSync("0", "0",
+       //         ethBalance.getEther().toString());
+        //Log.d(TAG, String.format("reading EUR/ETH price finished: %s", transactionPriceBean));
+        //if (transactionPriceBean != null && pubKeyString != null) {
+        if (pubKeyString != null) {
             this.runOnUiThread(() -> {
-                balance.setText(String.format("%s%s", ethBalance.toString(),
-                        String.format(Locale.ENGLISH, "\nEuro: %.2f", transactionPriceBean.getPriceInEuro())));
+                //balance.setText(String.format("%s%s", ethBalance.toString(),
+                  //      String.format(Locale.ENGLISH, "\nEuro: %.2f", transactionPriceBean.getPriceInEuro())));
+                balance.setText(String.format("%s", ethBalance.toString()));
                 if (!sendEthBtn.isEnabled()) {
                     sendEthBtn.setEnabled(true);
                     sendErc20Btn.setEnabled(true);
