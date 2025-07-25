@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BrandProtection_AddDetails">
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:id="@+id/toolbar" android:background="@color/colorPrimary"
+        app:titleTextColor="@android:color/white" app:navigationIcon="@drawable/co_logo_white"/>
+
+    <LinearLayout
+        android:id="@+id/linerLayout1"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="188dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_key_index"
+            android:textSize="15sp" />
+
+        <Spinner
+            android:id="@+id/keyIndexSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/key_index" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linerLayout1"
+        android:layout_marginTop="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/contract_address" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/contractAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".90"
+                    android:enabled="false"
+                    android:hint="@string/contract_address"
+                    android:inputType="textPersonName"
+                    android:textSize="15sp"
+                    tools:ignore="SmallSp" />
+
+                <ImageButton
+                    android:id="@+id/imageButton"
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_weight=".10"
+                    android:onClick="scanQrCode"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/qrcode"
+                    android:contentDescription="@string/logo"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/gasPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/gas_price"
+                        android:inputType="numberDecimal"
+                        android:text="@string/_50" />
+                </android.support.design.widget.TextInputLayout>
+
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".70" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textViewgaslimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/gas_limit" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/gasLimit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/gas_limit"
+                android:inputType="number"
+                android:text="@string/_21000"
+                android:textSize="15sp" />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/pin_optional"
+                    android:inputType="textPassword"
+                    android:textSize="15sp" />
+            </android.support.design.widget.TextInputLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".80">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_height="match_parent"
+                        android:id="@+id/productPublicKey"
+                        android:textSize="15sp"
+                        android:hint="@string/product_public_key"
+                        android:layout_width="match_parent"/>
+                </android.support.design.widget.TextInputLayout>
+                <ToggleButton
+                    android:text="@string/togglebutton"
+                    android:layout_width="47dp"
+                    android:layout_height="47dp" android:id="@+id/toggleButton" android:layout_weight=".10"
+                    android:textOff=" " android:textOn=" "
+                    android:drawableTop="@drawable/nfc_logo"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="@string/tap_the_producer_card_to_enter_the_details"
+                android:textSize="18sp" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/productID"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/product_id"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/productName"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/product_name"
+                android:inputType="textNoSuggestions"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/timestamp"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/timestamp"
+                android:inputType="time"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/date"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/date"
+                android:inputType="date"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/manufacturer"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/manufacturer"
+                android:inputType="textPersonName"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/submitBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="150dp"
+                android:layout_marginTop="5dp"
+                android:enabled="false"
+                android:onClick="onSubmit"
+                android:text="@string/submit"
+                android:textSize="18sp"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

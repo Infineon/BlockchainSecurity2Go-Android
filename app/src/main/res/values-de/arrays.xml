@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="key_index">
+        <item>Key 0 - Seed</item>
+        <item>Key 1</item>
+        <item>Key 2</item>
+        <item>Key 3</item>
+        <item>Key 4</item>
+        <item>Key 5</item>
+    </string-array>
+</resources>

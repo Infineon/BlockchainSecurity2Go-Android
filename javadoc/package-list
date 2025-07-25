@@ -1,0 +1,14 @@
+co.coinfinity
+co.coinfinity.infineonandroidapp
+co.coinfinity.infineonandroidapp.adapter
+co.coinfinity.infineonandroidapp.ethereum
+co.coinfinity.infineonandroidapp.ethereum.bean
+co.coinfinity.infineonandroidapp.ethereum.contract
+co.coinfinity.infineonandroidapp.ethereum.exceptions
+co.coinfinity.infineonandroidapp.ethereum.utils
+co.coinfinity.infineonandroidapp.infineon
+co.coinfinity.infineonandroidapp.infineon.apdu
+co.coinfinity.infineonandroidapp.infineon.apdu.response
+co.coinfinity.infineonandroidapp.infineon.exceptions
+co.coinfinity.infineonandroidapp.qrcode
+co.coinfinity.infineonandroidapp.utils

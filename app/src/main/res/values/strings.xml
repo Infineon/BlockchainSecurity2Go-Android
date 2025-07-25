@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">NFC Ethereum Demo Kit</string>
+
+    <string name="main_activity_title" >Home</string>
+    <string name="logo" translatable="false">Logo</string>
+    <string name="qr_code" translatable="false">QR Code</string>
+
+    <string name="title_activity_send_transaction">Send ETH Transaction</string>
+    <string name="title_activity_send_erc20_tokens">Send ERC 20 Tokens</string>
+    <string name="title_activity_voting">Voting</string>
+    <string name="hold_card">Tap a card against the back of your device</string>
+    <string name="send_eth">Send ETH</string>
+    <string name="recipient_address">Recipient Address</string>
+    <string name="amount_eth">Amount ETH</string>
+    <string name="gas_price">Gas Price</string>
+    <string name="gas_limit">Gas Limit</string>
+    <string name="hold_card_payment">Tap a card against the back of your device to send a transaction</string>
+    <string name="card_found">Card detected</string>
+    <string name="send_success">Sent successful!</string>
+    <string name="reading_balance">Reading balance…</string>
+    <string name="send_erc20">Send ERC-20</string>
+    <string name="voting">Voting</string>
+    <string name="token_amount">Token Amount</string>
+    <string name="contract_address">Contract Address</string>
+    <string name="current_token_balance">Current Token Balance: %s</string>
+    <string name="about">About</string>
+    <string name="hold_card_for_while">Hold card for some seconds!</string>
+    <string name="er20_contract_address">ERC20 Contract Address</string>
+    <string name="err_receipient_required">Recipient Address is required!</string>
+    <string name="err_amount_required">Amount is required!</string>
+    <string name="err_gasprice_required">Gas Price is required!</string>
+    <string name="err_gaslimit_required">Gas Limit is required!</string>
+    <string name="err_contract_address_missing">Contract Address is required!</string>
+    <string name="wrong_card">This is no Infineon card!</string>
+    <string name="operation_not_supported">Card does not support this operation!</string>
+    <string name="answer_1">> 5 billion</string>
+    <string name="answer_2">> 10 billion</string>
+    <string name="answer_3">> 15 billion</string>
+    <string name="answer_4">> 20 billion</string>
+    <string name="question">How many security controllers have been sold by Infineon in the last 10 years?</string>
+    <string name="voted_successful">Voted successful!</string>
+    <string name="hold_card_for_vote">Tap a card against the back of your device to vote</string>
+    <string name="refresh_balance">Refresh balance</string>
+    <string name="switch_network">Switch network</string>
+    <string name="switch_to_mainnet">Switch to mainnet</string>
+    <string name="switch_to_ropsten">Switch to testnet</string>
+    <string name="ask_switch_network">Are you sure you want to switch to %s</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="could_not_refresh">Could not refresh!</string>
+    <string name="switched_to">Switched to %s</string>
+    <string name="could_not_vote">Could not vote!</string>
+    <string name="incorrect_contract">Incorrect contract address!</string>
+    <string name="card_not_whitelisted">This card is not whitelisted!</string>
+    <string name="voting_please_wait">Voting for %s. Please hold the card…</string>
+    <string name="could_not_send_transaction">Could not send transaction: %s</string>
+    <string name="no_nfc">No NFC</string>
+    <string name="enable_nfc">You need to enable NFC</string>
+    <string name="invalid_ethereum_address">Invalid Ethereum address</string>
+    <string name="refreshing">Refreshing…</string>
+    <string name="send_all">Send all</string>
+    <string name="chang_pin">Change PIN</string>
+    <string name="unlock_pin">Unlock PIN</string>
+    <string name="generate_from_seed">Generate key from seed</string>
+    <string name="set_pin">Set PIN</string>
+    <string name="label_key_index" translatable="false">Key Index:</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="change_pin_message">Changed PIN from %s to new PIN %s. Please write down following PUK of your card:
+        %s
+    </string>
+    <string name="generate_from_seed_message">Generated key on index 0 with seed: %s</string>
+    <string name="set_pin_message">Set PIN to %s. Please write down following PUK of your card: %s</string>
+    <string name="unlock_pin_message">Unlocked PIN with PUK: %s</string>
+    <string name="check_sig_counters">Check sig counters</string>
+    <string name="global_sig_counter">Global signature counter: %d</string>
+    <string name="sig_counter">Signature counter (for key index %d): %d</string>
+    <string name="enter_old_and_new_pin">Enter old and new PIN:</string>
+    <string name="old_pin">Old PIN</string>
+    <string name="new_pin">New PIN</string>
+    <string name="enter_import_seed_to_generate_key">Enter import seed to generate key:</string>
+    <string name="import_seed">Import seed</string>
+    <string name="pin" translatable="false">PIN</string>
+    <string name="enter_your_preferred_pin">Enter your preferred PIN:</string>
+    <string name="enter_your_puk_to_unlock_pin">Enter your PUK to unlock PIN:</string>
+    <string name="puk" translatable="false">PUK</string>
+    <string name="signature_counter_below">Signature counter below %d! Backup your funds!</string>
+    <string name="change_recipient_address">Changed recipient address to %s</string>
+    <string name="lost_tag">Tag lost</string>
+    <string name="problem_reload_votes">Problem during reload of votes</string>
+    <string name="problem_after_vote">Problem after vote</string>
+    <string name="err_voting_name_required">Voting name needs at least 4 characters!</string>
+    <string name="copy_puk_to_clipboard">Copy PUK to clipboard</string>
+    <string name="puk_code">PUK unlock code</string>
+    <string name="puk_copied">Copied PUK to clipboard!</string>
+    <string name="tap_the_product_to_verify">Tap the product to verify</string>
+    <string name="authentication_successful">Authentication Successful</string>
+    <string name="product_id">Product ID</string>
+    <string name="product_name">Product Name</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="date">Date</string>
+    <string name="manufacturer">Manufacturer</string>
+
+    <string name="product_details">Add Product Details</string>
+    <string name="verify_product">Verify Product</string>
+    <string name="signatureData">signatureData</string>
+    <string name="tap_the_product_card_to_read_the_public_key">Tap the product card to read the public key</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="_50">50</string>
+    <string name="_21000">21000</string>
+    <string name="pin_optional">PIN (optional)</string>
+    <string name="togglebutton">ToggleButton</string>
+    <string name="tap_the_producer_card_to_enter_the_details">Tap the producer card to enter the details</string>
+    <string name="product_public_key">Product Public Key</string>
+    <string name="submit">Submit</string>
+    <string name="brand_protection" translatable="false">Brand Protection</string>
+</resources>
